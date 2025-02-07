@@ -20,11 +20,11 @@ final class DatabaseSeeder extends Seeder
         $this->call([
             // UserSeeder::class,
             // OrderSeeder::class,
-            CategorySeeder::class,
-            VenueSeeder::class,
-            EventSeeder::class,
-            TagSeeder::class,
-            OrganizerProfileSeeder::class,
+            // CategorySeeder::class,
+            // VenueSeeder::class,
+            // EventSeeder::class,
+            // TagSeeder::class,
+            // OrganizerProfileSeeder::class,
         ]);
         $this->createUser();
     }

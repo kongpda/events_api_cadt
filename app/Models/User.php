@@ -46,7 +46,9 @@ final class User extends Authenticatable
             return false;
         }
 
-        return $this->hasValidEmail($this->email)
+        ray($this->email);
+
+        return $this->emailDomainIsValid($this->email)
             && $this->hasVerifiedEmail();
         // && $this->is_admin
         // && $this->hasRole(['super-admin', 'admin']);
@@ -63,5 +65,14 @@ final class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    private function emailDomainIsValid(string $email): bool
+    {
+        /** @var array<string> $validDomains */
+        $validDomains = config('events_api.auth.valid_email_domains');
+        ray($validDomains);
+
+        return collect($validDomains)->contains(fn ($domain) => str_ends_with($email, $domain));
     }
 }

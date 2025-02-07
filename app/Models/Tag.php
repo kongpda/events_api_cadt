@@ -12,7 +12,7 @@ final class Tag extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'slug'];
 
     /**
      * The Events that belong to the tag.
@@ -20,5 +20,10 @@ final class Tag extends Model
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class);
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

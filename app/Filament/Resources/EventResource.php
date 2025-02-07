@@ -11,10 +11,9 @@ use Filament\Forms\Components\Builder;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -29,8 +28,8 @@ final class EventResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Event Info Section ')
-                    ->description('this where you provide event information')
+                Section::make('Event Info')
+                    ->description('Provide event information')
                     ->schema([
                         TextInput::make('title')
                             ->live()
@@ -41,127 +40,104 @@ final class EventResource extends Resource
                             ->required()
                             ->hidden()
                             ->numeric(),
-                        Forms\Components\Select::make('venue_id')
+                        Select::make('venue_id')
                             ->relationship('venue', 'name')
                             ->required(),
-                        Forms\Components\Select::make('category_id')
-                            ->relationship('category', 'name')
+                        Select::make('categories')
+                            ->relationship('categories', 'name')
+                            ->multiple()
                             ->required(),
-                        TextInput::make('tag_id')
+                        Select::make('tags')
+                            ->relationship('tags', 'name')
+                            ->multiple()
+                            ->required(),
+                        Forms\Components\Textarea::make('description')
+                            ->required(),
+                        Select::make('status')
+                            ->options([
+                                'draft' => 'Draft',
+                                'published' => 'Published',
+                                'archived' => 'Archived',
+                            ])
                             ->required()
-                            ->numeric(),
-                        Forms\Components\Textarea::make('description'),
-                    ])->columns(),
-                Section::make('Content Section ')
-                    ->description('this where you provide event information')
+                            ->default('draft'),
+                    ])->columns(2),
+
+                Section::make('Content')
                     ->schema([
                         Builder::make('content')
-                            ->label('')
-                            ->addActionLabel('Add Different Content')
+                            ->label('Event Content')
+                            ->addActionLabel('Add Content Block')
                             ->blocks([
-                                Builder\Block::make('Add Content')
+                                Builder\Block::make('text')
                                     ->schema([
-                                        Forms\Components\RichEditor::make('description')
+                                        Forms\Components\RichEditor::make('content')
                                             ->required()
                                             ->columnSpanFull(),
                                     ]),
                                 Builder\Block::make('image_gallery')
-                                    ->label('Image Gallery')
                                     ->schema([
-                                        FileUpload::make('image_content')
-                                            ->label('Image Gallery')
+                                        FileUpload::make('images')
+                                            ->multiple()
                                             ->required()
                                             ->columnSpanFull(),
                                     ]),
-                                Builder\Block::make('video_content')
-                                    ->label('Add Video')
+                                Builder\Block::make('video')
                                     ->schema([
-                                        FileUpload::make('video_content')
-                                            ->label('Upload Video')
+                                        FileUpload::make('video')
                                             ->required()
                                             ->columnSpanFull(),
                                     ]),
                             ]),
-                        Section::make('Event Date')
+
+                        Section::make('Event Dates')
                             ->schema([
                                 Repeater::make('event_date')
-                                    ->label('')
                                     ->schema([
                                         Forms\Components\DateTimePicker::make('start_date')
-                                            ->format('d/m/Y')
-                                            ->displayFormat('d/m/Y H:i')
-                                            ->default(now())
-                                            ->native(false)
                                             ->required(),
                                         Forms\Components\DateTimePicker::make('end_date')
-                                            ->format('d/m/Y')
-                                            ->displayFormat('d/m/Y H:i')
-                                            ->default(now())
-                                            ->native(false)
                                             ->required(),
                                     ])
-                                    ->itemLabel(fn (array $state): string => formatEventDateTimeSchedule($state['start_date'], $state['end_date']))
-                                    ->columns()
-                                    ->addActionLabel('Add Event Date')
+                                    ->columns(2)
+                                    ->addActionLabel('Add Date')
                                     ->collapsible()
-                                    ->cloneable()
-                                    ->reorderableWithButtons(),
-                            ]),
-                        Section::make('Simple Ticket Section ')
-                            ->description('this where you can sell simple tickets (where you dont need to provide user select seats.)')
-                            ->schema([
-                                Toggle::make('is_sell_tickets')
-                                    ->label('Sell Tickets?')
-                                    ->live(),
-                                Repeater::make('Event Date')
-                                    ->label('')
-                                    ->schema([
-                                        TextInput::make('title'),
-                                        TextInput::make('kind'),
-                                        TextInput::make('price'),
-                                    ])->columns(3)
-                                    //                                    ->itemLabel(function (array $state): ?string {
-                                    //                                        return formatEventDateTimeSchedule($state['start_time'], $state['end_time']);
-                                    //                                    })
-                                    ->addActionLabel('Add Event Tickets')
-                                    ->collapsible()
-                                    ->cloneable()
-                                    ->hidden(fn (Get $get): bool => ! $get('is_sell_tickets')),
+                                    ->cloneable(),
                             ]),
                     ])->columnSpan(2),
 
-                Section::make('Information Section')
+                Section::make('Media & Actions')
                     ->schema([
                         FileUpload::make('feature_image')
-                            ->directory('upload/events')
-                            ->label('Featured Image')
-                            ->image(),
-                        Section::make('Action Buttons Section ')
-                            ->description('this where user can download or click apply for your event')
-                            ->schema([
-                                Builder::make('action_content')
-                                    ->label('')
-                                    ->blocks([
-                                        Builder\Block::make('Link_Button')
-                                            ->schema([
-                                                TextInput::make('label'),
-                                                TextInput::make('url'),
-                                            ]),
-                                        Builder\Block::make('Download Button')
-                                            ->schema([
-                                                TextInput::make('label'),
-                                                FileUpload::make('url')
-                                                    ->label('attachment')
-                                                    ->required(),
-                                            ]),
-                                    ])
-                                    ->addActionLabel('Add Action Button'),
-                            ]),
-                        Section::make('Events Locations')
-                            ->description('this where you can sell simple tickets (where you dont need to provide user select seats.)')
-                            ->schema([
-                                TextInput::make('maps url')
-                                    ->label(''),
+                            ->directory('events/features')
+                            ->image()
+                            ->imageResizeMode('cover')
+                            ->imageCropAspectRatio('16:9'),
+
+                        Builder::make('action_content')
+                            ->label('Action Buttons')
+                            ->blocks([
+                                Builder\Block::make('button')
+                                    ->schema([
+                                        TextInput::make('label')
+                                            ->required(),
+                                        TextInput::make('url')
+                                            ->required()
+                                            ->url(),
+                                        Select::make('type')
+                                            ->options([
+                                                'primary' => 'Primary',
+                                                'secondary' => 'Secondary',
+                                            ])
+                                            ->default('primary'),
+                                    ]),
+                                Builder\Block::make('download')
+                                    ->schema([
+                                        TextInput::make('label')
+                                            ->required(),
+                                        FileUpload::make('file')
+                                            ->required(),
+                                    ]),
                             ]),
                     ])
                     ->columnSpan(1),
@@ -173,29 +149,19 @@ final class EventResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('start_time')
-                    ->dateTime()
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_time')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('venue.name')
+                    ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('venue_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('total_tickets')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('price')
-                    ->money()
-                    ->sortable(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'published' => 'success',
+                        'draft' => 'warning',
+                        'archived' => 'danger',
+                    }),
+                Tables\Columns\ImageColumn::make('feature_image'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -206,7 +172,14 @@ final class EventResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'archived' => 'Archived',
+                    ]),
+                Tables\Filters\SelectFilter::make('venue')
+                    ->relationship('venue', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -220,9 +193,7 @@ final class EventResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

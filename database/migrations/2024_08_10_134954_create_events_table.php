@@ -14,13 +14,13 @@ return new class() extends Migration
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
+            $table->text('description');
             $table->foreignId('venue_id')->constrained()->onDelete('cascade');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tag_id')->constrained()->onDelete('cascade');
             $table->string('feature_image')->nullable();
             $table->json('content')->nullable();
-            $table->json('event_date');
+            $table->json('event_date')->nullable();
             $table->json('action_content');
+            $table->string('status');
             $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
