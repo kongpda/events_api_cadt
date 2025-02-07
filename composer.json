@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "dedoc/scramble": "^0.12.5",
         "devdojo/auth": "^1.0",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.31",
