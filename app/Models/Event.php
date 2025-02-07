@@ -19,13 +19,18 @@ final class Event extends Model
         'slug',
         'description',
         'venue_id',
-        'category_id',
-        'tag_id',
         'feature_image',
         'content',
         'event_date',
         'action_content',
+        'status',
         'user_id',
+    ];
+
+    protected $casts = [
+        'content' => 'array',
+        'event_date' => 'array',
+        'action_content' => 'array',
     ];
 
     public function user(): BelongsTo
@@ -38,9 +43,9 @@ final class Event extends Model
         return $this->belongsTo(Venue::class);
     }
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class);
     }
 
     public function tags(): BelongsToMany
@@ -56,14 +61,5 @@ final class Event extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'content' => 'array',
-            'event_date' => 'array',
-            'action_content' => 'array',
-        ];
     }
 }
