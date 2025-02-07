@@ -152,20 +152,43 @@ final class SeedProductionData extends Command
             'Traditional',
         ];
 
+        $cities = [
+            'Phnom Penh', 'Siem Reap', 'Battambang',
+            'Kampot', 'Kep', 'Sihanoukville',
+            'Kratie', 'Kampong Cham', 'Pursat',
+            'Takeo',
+        ];
+
+        $sampleDescriptions = [
+            'Join us for this amazing event featuring local and international artists.',
+            'A unique cultural experience you won\'t want to miss.',
+            'Celebrating arts and culture in Cambodia.',
+            'An unforgettable showcase of talent and creativity.',
+            'Experience the best of what our community has to offer.',
+        ];
+
+        $sampleAddresses = [
+            '123 Norodom Blvd, Phnom Penh',
+            '456 Sisowath Quay, Phnom Penh',
+            '789 Street 271, Phnom Penh',
+            '321 Mao Tse Toung Blvd, Phnom Penh',
+            '654 Monivong Blvd, Phnom Penh',
+        ];
+
         for ($i = 1; $i <= 20; $i++) {
             $startDate = now()->addDays(rand(1, 365));
 
-            // Generate more realistic event names
-            $title = fake()->randomElement($eventAdjectives) . ' ' .
-                    fake()->city() . ' ' .
-                    fake()->randomElement($eventTypes);
+            // Generate event name using arrays instead of faker
+            $title = $eventAdjectives[array_rand($eventAdjectives)] . ' ' .
+                    $cities[array_rand($cities)] . ' ' .
+                    $eventTypes[array_rand($eventTypes)];
 
             $event = Event::query()->create([
                 'title' => $title,
                 'slug' => Str::slug($title),
-                'description' => fake()->paragraph(3),
-                'address' => fake()->address(),
-                'feature_image' => '@event-image-one.jpg',
+                'description' => $sampleDescriptions[array_rand($sampleDescriptions)],
+                'address' => $sampleAddresses[array_rand($sampleAddresses)],
+                'feature_image' => 'https://picsum.photos/200/300',
                 'start_date' => $startDate,
                 'end_date' => $startDate->copy()->addHours(rand(2, 48)),
                 'status' => 'published',
