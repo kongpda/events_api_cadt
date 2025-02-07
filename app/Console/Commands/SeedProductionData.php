@@ -55,8 +55,8 @@ final class SeedProductionData extends Command
                 $this->createOrganizerProfile($user);
                 $this->info('✓ Organizer profile created');
 
-                $this->createEvent($venue, $user);
-                $this->info('✓ Event created');
+                $this->createMultipleEvents($user);
+                $this->info('✓ Multiple events created');
             });
 
             $this->info('Production data seeding completed successfully!');
@@ -134,26 +134,53 @@ final class SeedProductionData extends Command
         );
     }
 
-    private function createEvent(Venue $venue, User $user): Event
+    private function createMultipleEvents(User $user): void
     {
-        $event = Event::query()->firstOrCreate(
-            ['slug' => 'sample-event'],
-            [
-                'title' => 'Sample Event',
-                'description' => 'A sample event for testing',
-                'feature_image' => 'sample.jpg',
-                'content' => ['description' => 'Sample content'],
-                'action_content' => ['button' => 'Buy Tickets'],
+        $categories = Category::all();
+        $tags = Tag::all();
+        $eventTypes = [
+            'Festival', 'Exhibition', 'Performance',
+            'Concert', 'Show', 'Gala',
+            'Workshop', 'Conference', 'Showcase',
+            'Competition',
+        ];
+
+        $eventAdjectives = [
+            'Annual', 'International', 'Summer',
+            'Winter', 'Spring', 'Grand',
+            'Premier', 'Classic', 'Modern',
+            'Traditional',
+        ];
+
+        for ($i = 1; $i <= 20; $i++) {
+            $startDate = now()->addDays(rand(1, 365));
+
+            // Generate more realistic event names
+            $title = fake()->randomElement($eventAdjectives) . ' ' .
+                    fake()->city() . ' ' .
+                    fake()->randomElement($eventTypes);
+
+            $event = Event::query()->create([
+                'title' => $title,
+                'slug' => Str::slug($title),
+                'description' => fake()->paragraph(3),
+                'address' => fake()->address(),
+                'feature_image' => '@event-image-one.jpg',
+                'start_date' => $startDate,
+                'end_date' => $startDate->copy()->addHours(rand(2, 48)),
                 'status' => 'published',
                 'user_id' => $user->id,
-                'venue_id' => $venue->id,
-            ]
-        );
+            ]);
 
-        // Attach relationships
-        $event->categories()->sync([Category::first()->id]);
-        $event->tags()->sync([Tag::first()->id]);
+            // Attach random categories (1-3)
+            $event->categories()->attach(
+                $categories->random(rand(1, 3))->pluck('id')->toArray()
+            );
 
-        return $event;
+            // Attach random tags (1-5)
+            $event->tags()->attach(
+                $tags->random(rand(1, 5))->pluck('id')->toArray()
+            );
+        }
     }
 }
