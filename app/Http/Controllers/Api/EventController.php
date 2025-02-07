@@ -8,72 +8,97 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 final class EventController extends Controller
 {
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        return EventResource::collection(Event::all());
+        return EventResource::collection(
+            Event::with(['categories', 'tags'])->latest()->paginate()
+        );
     }
 
-    public function store(Request $request)
+    public function store(Request $request): EventResource
     {
         $validatedData = $request->validate([
-            'title' => 'required|max:255',
-            'slug' => 'required|unique:events,slug',
-            'venue_id' => 'required|exists:venues,id',
-            'category_id' => 'required|exists:categories,id',
-            'feature_image' => 'nullable|url',
-            'content' => 'required|array',
-            'event_date' => 'required|array',
-            'action_content' => 'nullable|array',
-            'user_id' => 'required|exists:users,id',
-            // Note: tag_id is not included as it's a many-to-many relationship
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|unique:events,slug',
+            'description' => 'required|string|max:65535',
+            'address' => 'required|string|max:255',
+            'feature_image' => 'nullable|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after:start_date',
+            'status' => 'required|string|in:draft,published,archived',
+            'user_id' => 'required|ulid|exists:users,id',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
+            'tags' => 'required|array',
+            'tags.*' => 'exists:tags,id',
         ]);
 
-        $event = Event::create($validatedData);
+        $event = Event::query()->create($validatedData);
 
-        // Handle tags separately if provided
+        // Sync relationships
+        if ($request->has('categories')) {
+            $event->categories()->sync($request->input('categories'));
+        }
+
         if ($request->has('tags')) {
             $event->tags()->sync($request->input('tags'));
         }
 
-        return new EventResource($event);
+        return new EventResource(
+            $event->load(['categories', 'tags'])
+        );
     }
 
-    public function show(Event $event)
+    public function show(Event $event): EventResource
     {
-        return new EventResource($event);
+        return new EventResource(
+            $event->load(['categories', 'tags'])
+        );
     }
 
-    public function update(Request $request, Event $event)
+    public function update(Request $request, Event $event): EventResource
     {
         $validatedData = $request->validate([
-            'title' => 'sometimes|required|max:255',
-            'slug' => 'sometimes|required|unique:events,slug,' . $event->id,
-            'venue_id' => 'sometimes|required|exists:venues,id',
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'feature_image' => 'nullable|url',
-            'content' => 'sometimes|required|array',
-            'event_date' => 'sometimes|required|array',
-            'action_content' => 'nullable|array',
-            'user_id' => 'sometimes|required|exists:users,id',
+            'title' => 'sometimes|required|string|max:255',
+            'slug' => 'sometimes|required|string|unique:events,slug,' . $event->id,
+            'description' => 'sometimes|required|string|max:65535',
+            'address' => 'sometimes|required|string|max:255',
+            'feature_image' => 'nullable|string|max:255',
+            'start_date' => 'sometimes|required|date',
+            'end_date' => 'nullable|date|after:start_date',
+            'status' => 'sometimes|required|string|in:draft,published,archived',
+            'user_id' => 'sometimes|required|ulid|exists:users,id',
+            'categories' => 'sometimes|required|array',
+            'categories.*' => 'exists:categories,id',
+            'tags' => 'sometimes|required|array',
+            'tags.*' => 'exists:tags,id',
         ]);
 
         $event->update($validatedData);
 
-        // Handle tags separately if provided
+        // Sync relationships
+        if ($request->has('categories')) {
+            $event->categories()->sync($request->input('categories'));
+        }
+
         if ($request->has('tags')) {
             $event->tags()->sync($request->input('tags'));
         }
 
-        return new EventResource($event);
+        return new EventResource(
+            $event->load(['categories', 'tags'])
+        );
     }
 
-    public function destroy(Event $event)
+    public function destroy(Event $event): Response
     {
         $event->delete();
 
-        return response()->json(null, 204);
+        return response()->noContent();
     }
 }

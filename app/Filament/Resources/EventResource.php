@@ -7,53 +7,58 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
 use Filament\Forms;
-use Filament\Forms\Components\Builder;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 final class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+
+    protected static ?string $navigationGroup = 'Event Management';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('Event Info')
+                Forms\Components\Section::make('Event Info')
                     ->description('Provide event information')
                     ->schema([
-                        TextInput::make('title')
-                            ->live()
-                            ->required(),
-                        TextInput::make('slug')
-                            ->required(),
-                        TextInput::make('user_id')
+                        Forms\Components\TextInput::make('title')
                             ->required()
-                            ->hidden()
-                            ->numeric(),
-                        Select::make('venue_id')
-                            ->relationship('venue', 'name')
-                            ->required(),
-                        Select::make('categories')
-                            ->relationship('categories', 'name')
-                            ->multiple()
-                            ->required(),
-                        Select::make('tags')
-                            ->relationship('tags', 'name')
-                            ->multiple()
-                            ->required(),
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (string $state, Forms\Set $set): void {
+                                $set('slug', Str::slug($state));
+                            }),
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
+                        Forms\Components\Hidden::make('user_id')
+                            ->default(fn () => auth()->id()),
                         Forms\Components\Textarea::make('description')
-                            ->required(),
-                        Select::make('status')
+                            ->required()
+                            ->maxLength(65535)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('address')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\FileUpload::make('feature_image')
+                            ->image()
+                            ->directory('events')
+                            ->maxSize(5120)
+                            ->columnSpanFull(),
+                        Forms\Components\DateTimePicker::make('start_date')
+                            ->required()
+                            ->native(false),
+                        Forms\Components\DateTimePicker::make('end_date')
+                            ->native(false),
+                        Forms\Components\Select::make('status')
                             ->options([
                                 'draft' => 'Draft',
                                 'published' => 'Published',
@@ -61,87 +66,19 @@ final class EventResource extends Resource
                             ])
                             ->required()
                             ->default('draft'),
-                    ])->columns(2),
-
-                Section::make('Content')
-                    ->schema([
-                        Builder::make('content')
-                            ->label('Event Content')
-                            ->addActionLabel('Add Content Block')
-                            ->blocks([
-                                Builder\Block::make('text')
-                                    ->schema([
-                                        Forms\Components\RichEditor::make('content')
-                                            ->required()
-                                            ->columnSpanFull(),
-                                    ]),
-                                Builder\Block::make('image_gallery')
-                                    ->schema([
-                                        FileUpload::make('images')
-                                            ->multiple()
-                                            ->required()
-                                            ->columnSpanFull(),
-                                    ]),
-                                Builder\Block::make('video')
-                                    ->schema([
-                                        FileUpload::make('video')
-                                            ->required()
-                                            ->columnSpanFull(),
-                                    ]),
-                            ]),
-
-                        Section::make('Event Dates')
-                            ->schema([
-                                Repeater::make('event_date')
-                                    ->schema([
-                                        Forms\Components\DateTimePicker::make('start_date')
-                                            ->required(),
-                                        Forms\Components\DateTimePicker::make('end_date')
-                                            ->required(),
-                                    ])
-                                    ->columns(2)
-                                    ->addActionLabel('Add Date')
-                                    ->collapsible()
-                                    ->cloneable(),
-                            ]),
-                    ])->columnSpan(2),
-
-                Section::make('Media & Actions')
-                    ->schema([
-                        FileUpload::make('feature_image')
-                            ->directory('events/features')
-                            ->image()
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('16:9'),
-
-                        Builder::make('action_content')
-                            ->label('Action Buttons')
-                            ->blocks([
-                                Builder\Block::make('button')
-                                    ->schema([
-                                        TextInput::make('label')
-                                            ->required(),
-                                        TextInput::make('url')
-                                            ->required()
-                                            ->url(),
-                                        Select::make('type')
-                                            ->options([
-                                                'primary' => 'Primary',
-                                                'secondary' => 'Secondary',
-                                            ])
-                                            ->default('primary'),
-                                    ]),
-                                Builder\Block::make('download')
-                                    ->schema([
-                                        TextInput::make('label')
-                                            ->required(),
-                                        FileUpload::make('file')
-                                            ->required(),
-                                    ]),
-                            ]),
+                        Forms\Components\Select::make('categories')
+                            ->relationship('categories', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->required(),
+                        Forms\Components\Select::make('tags')
+                            ->relationship('tags', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->required(),
                     ])
-                    ->columnSpan(1),
-            ])->columns(3);
+                    ->columns(2),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -151,8 +88,11 @@ final class EventResource extends Resource
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('venue.name')
+                Tables\Columns\TextColumn::make('address')
                     ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('start_date')
+                    ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -178,8 +118,6 @@ final class EventResource extends Resource
                         'published' => 'Published',
                         'archived' => 'Archived',
                     ]),
-                Tables\Filters\SelectFilter::make('venue')
-                    ->relationship('venue', 'name'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -15,11 +15,10 @@ return new class() extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->foreignId('venue_id')->constrained()->onDelete('cascade');
+            $table->string('address');
             $table->string('feature_image')->nullable();
-            $table->json('content')->nullable();
-            $table->json('event_date')->nullable();
-            $table->json('action_content');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date')->nullable();
             $table->string('status');
             $table->foreignUlid('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
