@@ -10,9 +10,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 final class Tag extends Model
 {
+    /** @use HasFactory<\Database\Factories\TagFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'is_active',
+        'position',
+    ];
+
+    protected $casts = [
+        'id' => 'string',
+        'is_active' => 'boolean',
+        'position' => 'integer',
+    ];
 
     /**
      * The Events that belong to the tag.
