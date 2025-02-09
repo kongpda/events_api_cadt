@@ -1,17 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Share;
 use Illuminate\Database\Seeder;
 
-class ShareSeeder extends Seeder
+final class ShareSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        //
+        Share::factory()
+            ->count(10)
+            ->create();
     }
 }
