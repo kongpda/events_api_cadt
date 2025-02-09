@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+final class OrganizerResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'description' => $this->description,
+            'address' => $this->address,
+            'website' => $this->website,
+            'social_media' => $this->social_media,
+            'logo' => $this->logo,
+            'is_verified' => $this->is_verified,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+}
