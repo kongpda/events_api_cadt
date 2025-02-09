@@ -15,7 +15,9 @@ use Illuminate\Http\Response;
 final class TicketTypeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List ticket types
+     *
+     * Display a listing of the ticket types.
      */
     public function index(): AnonymousResourceCollection
     {
@@ -25,7 +27,9 @@ final class TicketTypeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create ticket type.
+     *
+     * Create a new ticket type.
      */
     public function store(StoreTicketTypeRequest $request): TicketTypeResource
     {
@@ -35,7 +39,9 @@ final class TicketTypeController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show ticket type.
+     *
+     * Display the specified ticket type.
      */
     public function show(TicketType $ticketType): TicketTypeResource
     {
@@ -43,7 +49,9 @@ final class TicketTypeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update ticket type.
+     *
+     * Update the specified ticket type.
      */
     public function update(UpdateTicketTypeRequest $request, TicketType $ticketType): TicketTypeResource
     {
@@ -53,7 +61,9 @@ final class TicketTypeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Delete ticket type.
+     *
+     * Delete the specified ticket type.
      */
     public function destroy(TicketType $ticketType): Response
     {
