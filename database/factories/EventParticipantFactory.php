@@ -29,8 +29,17 @@ final class EventParticipantFactory extends Factory
         return [
             'event_id' => Event::factory(),
             'user_id' => User::factory(),
-            'status' => $this->faker->randomElement(ParticipationStatus::cases()),
-            'participation_type' => $this->faker->randomElement(ParticipationType::cases()),
+            'status' => $this->faker->randomElement([
+                ParticipationStatus::REGISTERED->value,
+                ParticipationStatus::ATTENDED->value,
+                ParticipationStatus::CANCELLED->value,
+                ParticipationStatus::WAITLISTED->value,
+                ParticipationStatus::DECLINED->value,
+            ]),
+            'participation_type' => $this->faker->randomElement([
+                ParticipationType::TICKET->value,
+                ParticipationType::FREE->value,
+            ]),
             'ticket_id' => Ticket::factory(),
             'check_in_time' => $this->faker->optional()->dateTime(),
             'joined_at' => $this->faker->dateTime(),

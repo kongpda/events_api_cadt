@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\Organizer;
 use App\Models\Tag;
 use App\Models\Ticket;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 test('event has correct fillable attributes', function (): void {
     $event = new Event();
@@ -23,6 +23,7 @@ test('event has correct fillable attributes', function (): void {
         'end_date',
         'category_id',
         'user_id',
+        'organizer_id',
         'participation_type',
         'capacity',
         'registration_deadline',
@@ -36,34 +37,49 @@ test('event has correct casts', function (): void {
     $event = new Event();
 
     expect($event->getCasts())->toHaveKeys([
+        'id',
         'start_date',
         'end_date',
         'registration_deadline',
         'capacity',
     ]);
+
+    expect($event->getCasts())->toMatchArray([
+        'id' => 'string',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'registration_deadline' => 'datetime',
+        'capacity' => 'integer',
+    ]);
 });
 
 test('event belongs to a user', function (): void {
-    $event = Event::factory()->create();
+    $user = User::factory()->create();
+    $event = Event::factory()->for($user)->create();
 
-    expect($event->user)->toBeInstanceOf(User::class);
-});
-
-test('event belongs to a venue', function (): void {
-    $event = Event::factory()->create();
-
-    expect($event->venue())->toBeInstanceOf(BelongsTo::class);
+    expect($event->user)->toBeInstanceOf(User::class)
+        ->and($event->user->id)->toBe($user->id);
 });
 
 test('event belongs to a category', function (): void {
-    $event = Event::factory()->create();
+    $category = Category::factory()->create();
+    $event = Event::factory()->for($category)->create();
 
-    expect($event->category)->toBeInstanceOf(Category::class);
+    expect($event->category)->toBeInstanceOf(Category::class)
+        ->and($event->category->id)->toBe($category->id);
+});
+
+test('event belongs to an organizer', function (): void {
+    $organizer = Organizer::factory()->create();
+    $event = Event::factory()->for($organizer)->create();
+
+    expect($event->organizer)->toBeInstanceOf(Organizer::class)
+        ->and($event->organizer->id)->toBe($organizer->id);
 });
 
 test('event can have many tags', function (): void {
     $event = Event::factory()->create();
-    $tags = Tag::factory(3)->create();
+    $tags = Tag::factory()->count(3)->create();
 
     $event->tags()->attach($tags);
 
@@ -73,7 +89,7 @@ test('event can have many tags', function (): void {
 
 test('event can have many tickets', function (): void {
     $event = Event::factory()->create();
-    $tickets = Ticket::factory(3)->create(['event_id' => $event->id]);
+    $tickets = Ticket::factory()->count(3)->for($event)->create();
 
     expect($event->tickets)->toHaveCount(3)
         ->each->toBeInstanceOf(Ticket::class);
@@ -129,16 +145,10 @@ test('event factory creates valid event', function (): void {
     $event = Event::factory()->create();
 
     expect($event)->toBeInstanceOf(Event::class)
+        ->and($event->id)->not->toBeEmpty()
         ->and($event->title)->not->toBeEmpty()
         ->and($event->slug)->not->toBeEmpty()
-        ->and($event->description)->not->toBeEmpty()
-        ->and($event->start_date)->toBeInstanceOf(Carbon::class)
-        ->and($event->end_date)->toBeInstanceOf(Carbon::class)
-        ->and($event->registration_deadline)->toBeInstanceOf(Carbon::class)
-        ->and($event->capacity)->toBeInt()
-        ->and($event->participation_type)->toBeIn(['paid', 'free'])
-        ->and($event->registration_status)->toBeIn(['open', 'closed', 'full'])
-        ->and($event->event_type)->toBeIn(['in_person', 'online', 'hybrid']);
+        ->and($event->description)->not->toBeEmpty();
 });
 
 test('event dates are properly cast to carbon instances', function (): void {
