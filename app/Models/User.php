@@ -9,6 +9,7 @@ namespace App\Models;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -52,6 +53,11 @@ final class User extends Authenticatable
             && $this->hasVerifiedEmail();
         // && $this->is_admin
         // && $this->hasRole(['super-admin', 'admin']);
+    }
+
+    public function eventParticipations(): HasMany
+    {
+        return $this->hasMany(EventParticipant::class);
     }
 
     /**
