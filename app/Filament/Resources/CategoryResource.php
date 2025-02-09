@@ -16,7 +16,7 @@ final class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Event Management';
 
@@ -24,18 +24,20 @@ final class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true),
-                    ])
-                    ->columns(2),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(100),
+                Forms\Components\TextInput::make('slug')
+                    ->required()
+                    ->maxLength(120)
+                    ->unique(ignoreRecord: true),
+                Forms\Components\Textarea::make('description')
+                    ->nullable(),
+                Forms\Components\Toggle::make('is_active')
+                    ->default(true),
+                Forms\Components\TextInput::make('position')
+                    ->numeric()
+                    ->default(0),
             ]);
     }
 
@@ -44,36 +46,27 @@ final class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('events_count')
-                    ->counts('events')
-                    ->label('Events')
+                    ->searchable(),
+                Tables\Columns\IconColumn::make('is_active')
+                    ->boolean(),
+                Tables\Columns\TextColumn::make('position')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
+            ->defaultSort('position')
             ->filters([
-                // Add filters if needed
+                Tables\Filters\TernaryFilter::make('is_active'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->requiresConfirmation(),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -81,7 +74,7 @@ final class CategoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // Add relations if needed
+
         ];
     }
 

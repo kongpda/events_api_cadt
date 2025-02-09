@@ -15,7 +15,10 @@ final class CategoryController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $categories = Category::all();
+        $categories = Category::query()
+            ->orderBy('position')
+            ->orderBy('name')
+            ->get();
 
         return CategoryResource::collection($categories);
     }
@@ -23,8 +26,11 @@ final class CategoryController extends Controller
     public function store(Request $request): CategoryResource
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories',
+            'name' => 'required|string|max:100',
+            'slug' => 'required|string|max:120|unique:categories',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'position' => 'integer',
         ]);
 
         $category = Category::query()->create($validatedData);
@@ -40,8 +46,11 @@ final class CategoryController extends Controller
     public function update(Request $request, Category $category): CategoryResource
     {
         $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|required|string|max:255|unique:categories,slug,' . $category->id,
+            'name' => 'sometimes|required|string|max:100',
+            'slug' => 'sometimes|required|string|max:120|unique:categories,slug,' . $category->id,
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'position' => 'integer',
         ]);
 
         $category->update($validatedData);

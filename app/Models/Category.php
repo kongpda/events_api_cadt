@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -11,8 +12,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 final class Category extends Model
 {
     use HasFactory;
+    use HasUlids;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'is_active',
+        'position',
+    ];
+
+    protected $casts = [
+        'id' => 'string',
+        'name' => 'string',
+        'slug' => 'string',
+        'description' => 'string',
+        'is_active' => 'boolean',
+        'position' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     /**
      * Get the events that belong to the category.
