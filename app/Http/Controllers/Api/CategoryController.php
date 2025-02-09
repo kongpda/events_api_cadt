@@ -13,6 +13,11 @@ use Illuminate\Http\Response;
 
 final class CategoryController extends Controller
 {
+    /**
+     * List categories
+     *
+     * Display a listing of the categories.
+     */
     public function index(): AnonymousResourceCollection
     {
         $categories = Category::query()
@@ -23,6 +28,11 @@ final class CategoryController extends Controller
         return CategoryResource::collection($categories);
     }
 
+    /**
+     * Create category.
+     *
+     * Create a new category.
+     */
     public function store(Request $request): CategoryResource
     {
         $validatedData = $request->validate([
@@ -38,6 +48,11 @@ final class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
+    /**
+     * Show category.
+     *
+     * Display the specified category.
+     */
     public function show(Category $category): CategoryResource
     {
         return new CategoryResource($category);
@@ -58,6 +73,11 @@ final class CategoryController extends Controller
         return new CategoryResource($category);
     }
 
+    /**
+     * Delete category.
+     *
+     * Delete the specified category.
+     */
     public function destroy(Category $category): Response
     {
         $category->delete();
