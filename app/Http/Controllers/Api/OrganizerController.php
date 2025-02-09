@@ -9,8 +9,9 @@ use App\Http\Resources\OrganizerResource;
 use App\Models\Organizer;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
 final class OrganizerController extends Controller
 {
@@ -19,7 +20,12 @@ final class OrganizerController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $organizers = Organizer::with('user')->paginate();
+        $organizers = Organizer::query()
+            ->when(
+                request()->boolean('verified'),
+                fn ($query) => $query->where('is_verified', true)
+            )
+            ->paginate();
 
         return OrganizerResource::collection($organizers);
     }
@@ -30,24 +36,20 @@ final class OrganizerController extends Controller
     public function store(Request $request): OrganizerResource
     {
         $validated = $request->validate([
-            'user_id' => 'required|ulid|exists:users,id',
-            'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:organizers,slug',
-            'email' => 'nullable|email|unique:organizers,email',
-            'phone' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'address' => 'nullable|string',
-            'website' => 'nullable|url',
-            'social_media' => 'nullable|url',
-            'logo' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'unique:organizers'],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
+            'website' => ['nullable', 'url'],
+            'social_media' => ['nullable', 'url'],
+            'logo' => ['nullable', 'string'],
         ]);
 
-        if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['user_id'] = auth()->id();
+        $validated['slug'] = Str::slug($validated['name']);
 
         $organizer = Organizer::create($validated);
-        $organizer->load('user');
 
         return new OrganizerResource($organizer);
     }
@@ -57,8 +59,6 @@ final class OrganizerController extends Controller
      */
     public function show(Organizer $organizer): OrganizerResource
     {
-        $organizer->load('user');
-
         return new OrganizerResource($organizer);
     }
 
@@ -67,25 +67,22 @@ final class OrganizerController extends Controller
      */
     public function update(Request $request, Organizer $organizer): OrganizerResource
     {
+        $this->authorize('update', $organizer);
+
         $validated = $request->validate([
-            'user_id' => 'sometimes|ulid|exists:users,id',
-            'name' => 'sometimes|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:organizers,slug,' . $organizer->id,
-            'email' => 'nullable|email|unique:organizers,email,' . $organizer->id,
-            'phone' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'address' => 'nullable|string',
-            'website' => 'nullable|url',
-            'social_media' => 'nullable|url',
-            'logo' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', Rule::unique('organizers')->ignore($organizer->id)],
+            'phone' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'address' => ['nullable', 'string'],
+            'website' => ['nullable', 'url'],
+            'social_media' => ['nullable', 'url'],
+            'logo' => ['nullable', 'string'],
         ]);
 
-        if (isset($validated['name']) && empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
-        }
+        $validated['slug'] = Str::slug($validated['name']);
 
         $organizer->update($validated);
-        $organizer->load('user');
 
         return new OrganizerResource($organizer);
     }
@@ -95,6 +92,8 @@ final class OrganizerController extends Controller
      */
     public function destroy(Organizer $organizer): Response
     {
+        $this->authorize('delete', $organizer);
+
         $organizer->delete();
 
         return response()->noContent();

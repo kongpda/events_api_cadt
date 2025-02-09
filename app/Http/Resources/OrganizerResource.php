@@ -18,8 +18,6 @@ final class OrganizerResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'user' => new UserResource($this->whenLoaded('user')),
             'name' => $this->name,
             'slug' => $this->slug,
             'email' => $this->email,
@@ -30,6 +28,7 @@ final class OrganizerResource extends JsonResource
             'social_media' => $this->social_media,
             'logo' => $this->logo,
             'is_verified' => $this->is_verified,
+            'user' => new UserResource($this->whenLoaded('user')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

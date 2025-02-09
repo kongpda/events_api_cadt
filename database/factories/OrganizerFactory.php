@@ -7,8 +7,10 @@ namespace Database\Factories;
 use App\Models\Organizer;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
+/**
+ * @extends Factory<Organizer>
+ */
 final class OrganizerFactory extends Factory
 {
     /**
@@ -25,15 +27,13 @@ final class OrganizerFactory extends Factory
      */
     public function definition(): array
     {
-        $name = fake()->company();
-
         return [
             'user_id' => User::factory(),
-            'name' => $name,
-            'slug' => Str::slug($name),
-            'email' => fake()->boolean(80) ? fake()->unique()->companyEmail() : null,
+            'name' => fake()->company(),
+            'slug' => fake()->unique()->slug(),
+            'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
-            'description' => fake()->paragraph(),
+            'description' => fake()->paragraphs(2, true),
             'address' => fake()->address(),
             'website' => fake()->url(),
             'social_media' => fake()->url(),
