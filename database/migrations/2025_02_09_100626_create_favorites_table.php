@@ -14,7 +14,7 @@ return new class() extends Migration
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table): void {
-            $table->ulid('id')->primary();
+            $table->id();
             $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('event_id')->constrained()->cascadeOnDelete();
             $table->timestamps();

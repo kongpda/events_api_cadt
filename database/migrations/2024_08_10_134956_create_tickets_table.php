@@ -17,7 +17,7 @@ return new class() extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('event_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignUlid('ticket_type_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('ticket_type_id')->constrained()->cascadeOnDelete();
 
             $table->string('status');
             $table->timestamp('purchase_date');

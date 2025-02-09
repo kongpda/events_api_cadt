@@ -12,7 +12,23 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 final class Share extends Model
 {
     /** @use HasFactory<\Database\Factories\ShareFactory> */
-    use HasFactory, HasUlids;
+    use HasFactory;
+
+    use HasUlids;
+
+    /**
+     * Indicates if the model's ID is auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The data type of the auto-incrementing ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
 
     protected $fillable = [
         'user_id',

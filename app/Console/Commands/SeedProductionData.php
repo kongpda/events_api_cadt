@@ -300,7 +300,7 @@ final class SeedProductionData extends Command
                 'title' => $title,
                 'slug' => Str::slug($title),
                 'description' => $description,
-                'address' => fake()->address(),
+                'address' => $venue->address,
                 'feature_image' => 'https://picsum.photos/800/600',
                 'start_date' => $startDate,
                 'end_date' => $startDate->copy()->addHours(rand(2, 48)),
@@ -308,24 +308,16 @@ final class SeedProductionData extends Command
                 'organizer_id' => $organizer->id,
                 'category_id' => $category->id,
                 'participation_type' => $participationTypes[array_rand($participationTypes)],
-                'capacity' => rand(50, 1000),
+                'capacity' => $venue->capacity,
                 'registration_deadline' => $startDate->copy()->subDays(rand(1, 7)),
                 'registration_status' => $registrationStatuses[array_rand($registrationStatuses)],
                 'event_type' => $eventTypes[array_rand($eventTypes)],
                 'online_url' => fake()->url(),
             ]);
 
-            // Attach random tags (1-5) with ULID for pivot table
-            $tagIds = $tags->random(rand(1, 5))->pluck('id');
-            foreach ($tagIds as $tagId) {
-                DB::table('event_tag')->insert([
-                    'id' => (string) Str::ulid(),
-                    'event_id' => $event->id,
-                    'tag_id' => $tagId,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
+            $event->tags()->attach(
+                $tags->random(rand(1, 5))->pluck('id')->toArray()
+            );
 
             $events[] = $event;
         }
@@ -446,8 +438,8 @@ final class SeedProductionData extends Command
                 Share::query()->create([
                     'user_id' => $user->id,
                     'event_id' => $event->id,
-                    'platform' => $selectedPlatforms,
-                    'share_url' => $shareUrls,
+                    'platform' => json_encode($selectedPlatforms),
+                    'share_url' => json_encode($shareUrls),
                 ]);
             }
         }

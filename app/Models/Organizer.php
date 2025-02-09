@@ -53,6 +53,7 @@ final class Organizer extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'id' => 'string',
         'is_verified' => 'boolean',
     ];
 

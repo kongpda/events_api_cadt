@@ -19,7 +19,7 @@ return new class() extends Migration
             $table->string('feature_image')->nullable();
             $table->timestamp('start_date');
             $table->timestamp('end_date');
-            $table->foreignUlid('category_id')->constrained('categories');
+            $table->foreignId('category_id')->constrained('categories');
             $table->foreignUlid('user_id')->constrained('users');
             $table->foreignUlid('organizer_id')->constrained('organizers');
             $table->enum('participation_type', ['paid', 'free']);
