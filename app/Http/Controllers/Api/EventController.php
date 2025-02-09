@@ -15,83 +15,93 @@ final class EventController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return EventResource::collection(
-            Event::with(['categories', 'tags'])->latest()->paginate(10)
-        );
+        $events = Event::with(['category', 'user', 'organizer', 'tags'])
+            ->latest()
+            ->paginate();
+
+        return EventResource::collection($events);
     }
 
     public function store(Request $request): EventResource
     {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|unique:events,slug',
+            'slug' => 'required|string|max:255|unique:events,slug',
             'description' => 'required|string|max:65535',
             'address' => 'required|string|max:255',
             'feature_image' => 'nullable|string|max:255',
             'start_date' => 'required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'status' => 'required|string|in:draft,published,archived',
+            'end_date' => 'required|date|after:start_date',
+            'category_id' => 'required|exists:categories,id',
             'user_id' => 'required|ulid|exists:users,id',
-            'categories' => 'required|array',
-            'categories.*' => 'exists:categories,id',
+            'organizer_id' => 'required|ulid|exists:organizers,id',
+            'participation_type' => 'required|string|in:paid,free',
+            'capacity' => 'required|integer|min:1',
+            'registration_deadline' => 'required|date|before:start_date',
+            'registration_status' => 'required|string|in:open,closed,full',
+            'event_type' => 'required|string|in:in_person,online,hybrid',
+            'online_url' => 'required_if:event_type,online,hybrid|nullable|url',
             'tags' => 'required|array',
             'tags.*' => 'exists:tags,id',
         ]);
 
-        $event = Event::query()->create($validatedData);
-
-        // Sync relationships
-        if ($request->has('categories')) {
-            $event->categories()->sync($request->input('categories'));
+        // Generate slug if not provided
+        if ( ! isset($validatedData['slug'])) {
+            $validatedData['slug'] = str()->slug($validatedData['title']);
         }
+
+        $event = Event::query()->create($validatedData);
 
         if ($request->has('tags')) {
             $event->tags()->sync($request->input('tags'));
         }
 
         return new EventResource(
-            $event->load(['categories', 'tags'])
+            $event->load(['category', 'tags'])
         );
     }
 
     public function show(Event $event): EventResource
     {
-        return new EventResource(
-            $event->load(['categories', 'tags'])
-        );
+        return new EventResource($event->load(['category', 'user', 'organizer', 'tags']));
     }
 
     public function update(Request $request, Event $event): EventResource
     {
         $validatedData = $request->validate([
             'title' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|required|string|unique:events,slug,' . $event->id,
+            'slug' => 'sometimes|required|string|max:255|unique:events,slug,' . $event->id,
             'description' => 'sometimes|required|string|max:65535',
             'address' => 'sometimes|required|string|max:255',
             'feature_image' => 'nullable|string|max:255',
             'start_date' => 'sometimes|required|date',
-            'end_date' => 'nullable|date|after:start_date',
-            'status' => 'sometimes|required|string|in:draft,published,archived',
+            'end_date' => 'sometimes|required|date|after:start_date',
+            'category_id' => 'sometimes|required|exists:categories,id',
             'user_id' => 'sometimes|required|ulid|exists:users,id',
-            'categories' => 'sometimes|required|array',
-            'categories.*' => 'exists:categories,id',
+            'organizer_id' => 'sometimes|required|ulid|exists:organizers,id',
+            'participation_type' => 'sometimes|required|string|in:paid,free',
+            'capacity' => 'sometimes|required|integer|min:1',
+            'registration_deadline' => 'sometimes|required|date|before:start_date',
+            'registration_status' => 'sometimes|required|string|in:open,closed,full',
+            'event_type' => 'sometimes|required|string|in:in_person,online,hybrid',
+            'online_url' => 'required_if:event_type,online,hybrid|nullable|url',
             'tags' => 'sometimes|required|array',
             'tags.*' => 'exists:tags,id',
         ]);
 
-        $event->update($validatedData);
-
-        // Sync relationships
-        if ($request->has('categories')) {
-            $event->categories()->sync($request->input('categories'));
+        // Generate slug if title is updated but slug is not provided
+        if (isset($validatedData['title']) && ! isset($validatedData['slug'])) {
+            $validatedData['slug'] = str()->slug($validatedData['title']);
         }
+
+        $event->update($validatedData);
 
         if ($request->has('tags')) {
             $event->tags()->sync($request->input('tags'));
         }
 
         return new EventResource(
-            $event->load(['categories', 'tags'])
+            $event->load(['category', 'tags'])
         );
     }
 
