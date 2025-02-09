@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EventResource\Pages;
+use App\Filament\Resources\EventResource\Pages\CreateEvent;
+use App\Filament\Resources\EventResource\Pages\EditEvent;
+use App\Filament\Resources\EventResource\Pages\ListEvents;
 use App\Models\Event;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
@@ -25,40 +39,40 @@ final class EventResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Event Info')
+                Section::make('Event Info')
                     ->description('Provide event information')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $state, Forms\Set $set): void {
+                            ->afterStateUpdated(function (string $state, Set $set): void {
                                 $set('slug', Str::slug($state));
                             }),
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
-                        Forms\Components\Hidden::make('user_id')
-                            ->default(fn () => auth()->id()),
-                        Forms\Components\Textarea::make('description')
+                        Hidden::make('user_id')
+                            ->default(fn() => auth()->id()),
+                        Textarea::make('description')
                             ->required()
                             ->maxLength(65535)
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('address')
+                        TextInput::make('address')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\FileUpload::make('feature_image')
+                        FileUpload::make('feature_image')
                             ->image()
                             ->directory('events')
                             ->maxSize(5120)
                             ->columnSpanFull(),
-                        Forms\Components\DateTimePicker::make('start_date')
+                        DateTimePicker::make('start_date')
                             ->required()
                             ->native(false),
-                        Forms\Components\DateTimePicker::make('end_date')
+                        DateTimePicker::make('end_date')
                             ->native(false),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->options([
                                 'draft' => 'Draft',
                                 'published' => 'Published',
@@ -66,12 +80,12 @@ final class EventResource extends Resource
                             ])
                             ->required()
                             ->default('draft'),
-                        Forms\Components\Select::make('categories')
+                        Select::make('categories')
                             ->relationship('categories', 'name')
                             ->multiple()
                             ->preload()
                             ->required(),
-                        Forms\Components\Select::make('tags')
+                        Select::make('tags')
                             ->relationship('tags', 'name')
                             ->multiple()
                             ->preload()
@@ -85,34 +99,39 @@ final class EventResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('address')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('start_date')
+                TextColumn::make('start_date')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'published' => 'success',
                         'draft' => 'warning',
                         'archived' => 'danger',
                     }),
-                Tables\Columns\ImageColumn::make('feature_image'),
-                Tables\Columns\TextColumn::make('created_at')
+                ImageColumn::make('feature_image'),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'draft' => 'Draft',
                         'published' => 'Published',
@@ -120,13 +139,14 @@ final class EventResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
@@ -137,9 +157,9 @@ final class EventResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListEvents::route('/'),
-            'create' => Pages\CreateEvent::route('/create'),
-            'edit' => Pages\EditEvent::route('/{record}/edit'),
+            'index' => ListEvents::route('/'),
+            'create' => CreateEvent::route('/create'),
+            'edit' => EditEvent::route('/{record}/edit'),
         ];
     }
 }

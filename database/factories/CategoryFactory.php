@@ -13,6 +13,8 @@ use Illuminate\Support\Str;
  */
 final class CategoryFactory extends Factory
 {
+    protected $model = Category::class;
+
     /**
      * Define the model's default state.
      *
@@ -20,11 +22,14 @@ final class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->unique()->words(2, true);
+        $name = fake()->unique()->words(2, true);
 
         return [
             'name' => $name,
             'slug' => Str::slug($name),
+            'description' => fake()->paragraph(),
+            'is_active' => fake()->boolean(80), // 80% chance of being active
+            'position' => fake()->numberBetween(0, 100),
         ];
     }
 }

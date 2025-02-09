@@ -29,9 +29,9 @@ if ( ! function_exists('formatEventDateTimeSchedule')) {
         $end_time = $end->format($format_time);
 
         if ($start_date === $end_date) {
-            return "{$start_date} : {$start_time} - {$end_time}";
+            return sprintf('%s : %s - %s', $start_date, $start_time, $end_time);
         }
 
-        return "Start: {$start_date} {$start_time} / End: {$end_date} {$end_time}";
+        return sprintf('Start: %s %s / End: %s %s', $start_date, $start_time, $end_date, $end_time);
     }
 }

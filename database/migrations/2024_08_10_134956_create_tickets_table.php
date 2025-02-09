@@ -13,11 +13,14 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('event_id')->constrained()->onDelete('cascade');
-            $table->foreignId('order_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('ticket_number')->unique();
-            $table->boolean('is_used')->default(false);
+            $table->ulid('id')->primary();
+            $table->foreignUlid('event_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('ticket_type_id')->constrained()->cascadeOnDelete();
+
+            $table->string('status');
+            $table->timestamp('purchase_date');
+            $table->decimal('price', 10, 2);
             $table->timestamps();
         });
     }

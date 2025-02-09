@@ -6,17 +6,18 @@ namespace Database\Factories;
 
 use App\Models\Category;
 use App\Models\Event;
-use App\Models\Tag;
+use App\Models\Organizer;
 use App\Models\User;
-use App\Models\Venue;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Event>
  */
 final class EventFactory extends Factory
 {
+    protected $model = Event::class;
+
     /**
      * Define the model's default state.
      *
@@ -24,42 +25,27 @@ final class EventFactory extends Factory
      */
     public function definition(): array
     {
-        $startDate = Carbon::instance($this->faker->dateTimeBetween('now', '+1 month'));
-        $endDate = Carbon::instance($this->faker->dateTimeBetween($startDate, $startDate->copy()->addMonth()));
+        $title = $this->faker->sentence(3);
+        $eventTypes = ['in_person', 'online', 'hybrid'];
+        $selectedType = $this->faker->randomElement($eventTypes);
 
         return [
-            'title' => $this->faker->sentence,
-            'slug' => $this->faker->slug,
-            'user_id' => User::factory(),
-            'venue_id' => Venue::factory(),
-            'category_id' => Category::factory(),
-            'tag_id' => Tag::factory(),
-            'description' => $this->faker->paragraph,
-            'content' => json_encode([
-                [
-                    'type' => 'Add Content',
-                    'data' => [
-                        'description' => $this->faker->paragraphs(3, true),
-                    ],
-                ],
-            ]),
-            'event_date' => [
-                [
-                    'start_date' => $startDate->format('d/m/Y H:i'),
-                    'end_date' => $endDate->format('d/m/Y H:i'),
-                ],
-            ],
-            //            'is_sell_tickets' => $this->faker->boolean,
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'description' => $this->faker->paragraphs(3, true),
+            'address' => $this->faker->address(),
             'feature_image' => $this->faker->imageUrl(),
-            'action_content' => json_encode([
-                [
-                    'type' => 'Link_Button',
-                    'data' => [
-                        'label' => 'Register Now',
-                        'url' => $this->faker->url,
-                    ],
-                ],
-            ]),
+            'start_date' => $this->faker->dateTimeBetween('now', '+2 months'),
+            'end_date' => $this->faker->dateTimeBetween('+2 months', '+4 months'),
+            'category_id' => Category::factory(),
+            'user_id' => User::factory(),
+            'organizer_id' => Organizer::factory(),
+            'participation_type' => $this->faker->randomElement(['paid', 'free']),
+            'capacity' => $this->faker->numberBetween(0, 1000),
+            'registration_deadline' => $this->faker->dateTimeBetween('now', '+1 month'),
+            'registration_status' => $this->faker->randomElement(['open', 'closed', 'full']),
+            'event_type' => $selectedType,
+            'online_url' => in_array($selectedType, ['online', 'hybrid']) ? $this->faker->url() : null,
         ];
     }
 }

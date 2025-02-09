@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\VenueResource\Pages;
 
 use App\Filament\Resources\VenueResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 final class EditVenue extends EditRecord
@@ -15,7 +15,7 @@ final class EditVenue extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

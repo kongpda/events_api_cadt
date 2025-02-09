@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Tag>
+ * @extends Factory<Tag>
  */
 final class TagFactory extends Factory
 {
@@ -16,10 +18,16 @@ final class TagFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
+        $name = fake()->unique()->words(2, true);
+
         return [
-            'name' => $this->faker->word,
+            'name' => $name,
+            'slug' => Str::slug($name),
+            'description' => fake()->sentence(),
+            'is_active' => fake()->boolean(80),
+            'position' => fake()->numberBetween(0, 100),
         ];
     }
 }

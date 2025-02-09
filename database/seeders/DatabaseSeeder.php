@@ -29,7 +29,7 @@ final class DatabaseSeeder extends Seeder
         $this->createUser();
     }
 
-    protected function createUser()
+    private function createUser()
     {
         return User::factory()->create([
             // 'id' => $this->userID,

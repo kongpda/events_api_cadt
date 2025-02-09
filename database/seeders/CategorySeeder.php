@@ -25,10 +25,13 @@ final class CategorySeeder extends Seeder
             'Circus',
         ];
 
-        foreach ($categories as $category) {
+        foreach ($categories as $position => $category) {
             Category::factory()->create([
                 'name' => $category,
                 'slug' => Str::slug($category),
+                'description' => fake()->paragraph(),
+                'is_active' => true,
+                'position' => $position,
             ]);
         }
     }

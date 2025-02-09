@@ -4,14 +4,22 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TagResource\Pages;
+use App\Filament\Resources\TagResource\Pages\CreateTag;
+use App\Filament\Resources\TagResource\Pages\EditTag;
+use App\Filament\Resources\TagResource\Pages\ListTags;
 use App\Models\Tag;
-use Filament\Forms;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
@@ -27,9 +35,9 @@ final class TagResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make()
+                Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
@@ -38,7 +46,7 @@ final class TagResource extends Resource
                                     $set('slug', Str::slug($state));
                                 }
                             }),
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
@@ -46,7 +54,7 @@ final class TagResource extends Resource
                             ->afterStateUpdated(function (Set $set): void {
                                 $set('is_slug_changed_manually', true);
                             }),
-                        Forms\Components\Hidden::make('is_slug_changed_manually')
+                        Hidden::make('is_slug_changed_manually')
                             ->default(false),
                     ])
                     ->columns(2),
@@ -57,21 +65,21 @@ final class TagResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('events_count')
+                TextColumn::make('events_count')
                     ->counts('events')
                     ->label('Events')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -80,13 +88,13 @@ final class TagResource extends Resource
                 // Add filters if needed
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+                EditAction::make(),
+                DeleteAction::make()
                     ->requiresConfirmation(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->requiresConfirmation(),
                 ]),
             ]);
@@ -102,9 +110,9 @@ final class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTags::route('/'),
-            'create' => Pages\CreateTag::route('/create'),
-            'edit' => Pages\EditTag::route('/{record}/edit'),
+            'index' => ListTags::route('/'),
+            'create' => CreateTag::route('/create'),
+            'edit' => EditTag::route('/{record}/edit'),
         ];
     }
 
