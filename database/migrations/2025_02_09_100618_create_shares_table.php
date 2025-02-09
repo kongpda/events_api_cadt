@@ -17,8 +17,8 @@ return new class() extends Migration
             $table->ulid('id')->primary();
             $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUlid('event_id')->constrained()->cascadeOnDelete();
-            $table->string('platform');
-            $table->string('share_url');
+            $table->json('platform');
+            $table->text('share_url');
             $table->timestamps();
 
             $table->index('user_id');
