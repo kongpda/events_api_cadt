@@ -26,7 +26,7 @@ final class TicketTypeFactory extends Factory
         return [
             'event_id' => Event::factory(),
             'user_id' => User::factory(),
-            'name' => fake()->words(3, true),
+            'name' => fake()->words(2, true),
             'price' => fake()->randomFloat(2, 10, 1000),
             'quantity' => fake()->numberBetween(1, 1000),
             'description' => fake()->sentence(),

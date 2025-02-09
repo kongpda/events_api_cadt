@@ -9,23 +9,25 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property-read TicketType $resource
+ * @mixin TicketType
  */
 final class TicketTypeResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->resource->id,
-            'event' => new EventResource($this->whenLoaded('event')),
-            'user' => new UserResource($this->whenLoaded('user')),
-            'name' => $this->resource->name,
-            'price' => $this->resource->price,
-            'quantity' => $this->resource->quantity,
-            'description' => $this->resource->description,
-            'status' => $this->resource->status,
-            'created_at' => $this->resource->created_at,
-            'updated_at' => $this->resource->updated_at,
+            'id' => $this->id,
+            'event_id' => $this->event_id,
+            'user_id' => $this->user_id,
+            'name' => $this->name,
+            'price' => $this->price,
+            'quantity' => $this->quantity,
+            'description' => $this->description,
+            'status' => $this->status,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'event' => EventResource::make($this->whenLoaded('event')),
+            'user' => UserResource::make($this->whenLoaded('user')),
         ];
     }
 }
