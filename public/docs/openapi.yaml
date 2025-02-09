@@ -14,18 +14,110 @@ paths:
       description: ''
       parameters: []
       responses:
-        500:
+        200:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: 'Server Error'
+                  data: []
+                  links:
+                    first: 'http://events_api.test/api/events?page=1'
+                    last: 'http://events_api.test/api/events?page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: null
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        active: false
+                      -
+                        url: 'http://events_api.test/api/events?page=1'
+                        label: '1'
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        active: false
+                    path: 'http://events_api.test/api/events'
+                    per_page: 15
+                    to: null
+                    total: 0
                 properties:
-                  message:
-                    type: string
-                    example: 'Server Error'
+                  data:
+                    type: array
+                    example: []
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://events_api.test/api/events?page=1'
+                      last:
+                        type: string
+                        example: 'http://events_api.test/api/events?page=1'
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: null
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: string
+                        example: null
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            active: false
+                          -
+                            url: 'http://events_api.test/api/events?page=1'
+                            label: '1'
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://events_api.test/api/events'
+                      per_page:
+                        type: integer
+                        example: 15
+                      to:
+                        type: string
+                        example: null
+                      total:
+                        type: integer
+                        example: 0
       tags:
         - Endpoints
       security: []
@@ -47,52 +139,52 @@ paths:
                 title:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: bkkrijcquvepkoima
+                  example: f
                   nullable: false
                 slug:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: zcyobt
+                  example: bmtuq
                   nullable: false
                 description:
                   type: string
                   description: 'Must not be greater than 65535 characters.'
-                  example: 'Mollitia aspernatur consequatur voluptatem consectetur.'
+                  example: 'Tempore aperiam ratione vel sit aliquid.'
                   nullable: false
                 address:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: htdvqopg
+                  example: vylqfudwbrtgwkt
                   nullable: false
                 feature_image:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: hrsqxevlq
+                  example: iochyepqbvsxwfhknrzlporfv
                   nullable: true
                 start_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2025-02-09T15:05:17'
+                  example: '2025-02-09T15:17:09'
                   nullable: false
                 end_date:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>start_date</code>.'
-                  example: '2112-01-11'
+                  example: '2123-08-24'
                   nullable: false
                 category_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the categories table.'
-                  example: tenetur
+                  example: beatae
                   nullable: false
                 user_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the users table.'
-                  example: magnam
+                  example: sint
                   nullable: false
                 organizer_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the organizers table.'
-                  example: non
+                  example: iste
                   nullable: false
                 participation_type:
                   type: string
@@ -105,17 +197,17 @@ paths:
                 capacity:
                   type: integer
                   description: 'Must be at least 1.'
-                  example: 40
+                  example: 51
                   nullable: false
                 registration_deadline:
                   type: string
                   description: 'Must be a valid date. Must be a date before <code>start_date</code>.'
-                  example: '2013-09-24'
+                  example: '2003-09-06'
                   nullable: false
                 registration_status:
                   type: string
                   description: ''
-                  example: closed
+                  example: open
                   nullable: false
                   enum:
                     - open
@@ -124,7 +216,7 @@ paths:
                 event_type:
                   type: string
                   description: ''
-                  example: hybrid
+                  example: online
                   nullable: false
                   enum:
                     - in_person
@@ -133,7 +225,7 @@ paths:
                 online_url:
                   type: string
                   description: 'This field is required when <code>event_type</code> is <code>online</code> or <code>hybrid</code>.  Must be a valid URL.'
-                  example: 'https://funk.com/incidunt-alias-est-excepturi-corporis.html'
+                  example: 'http://www.howell.info/eaque-nulla-minus-laboriosam-praesentium'
                   nullable: true
                 tags:
                   type: array
@@ -164,18 +256,18 @@ paths:
       description: ''
       parameters: []
       responses:
-        500:
+        404:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: 'Server Error'
+                  message: 'No query results for model [App\Models\Event] animi'
                 properties:
                   message:
                     type: string
-                    example: 'Server Error'
+                    example: 'No query results for model [App\Models\Event] animi'
       tags:
         - Endpoints
       security: []
@@ -197,7 +289,7 @@ paths:
                 title:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: xkonly
+                  example: ilmugodrfujlgaeyexxwl
                   nullable: false
                 slug:
                   type: string
@@ -207,42 +299,42 @@ paths:
                 description:
                   type: string
                   description: 'Must not be greater than 65535 characters.'
-                  example: 'Ipsam placeat porro nemo quis dolor sapiente dolor.'
+                  example: 'Quod est et vitae ut.'
                   nullable: false
                 address:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: ofpxgqvdgd
+                  example: jbbnkwo
                   nullable: false
                 feature_image:
                   type: string
                   description: 'Must not be greater than 255 characters.'
-                  example: hccfmcjasljix
+                  example: pulupuypwcukjqhulxip
                   nullable: true
                 start_date:
                   type: string
                   description: 'Must be a valid date.'
-                  example: '2025-02-09T15:05:17'
+                  example: '2025-02-09T15:17:09'
                   nullable: false
                 end_date:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>start_date</code>.'
-                  example: '2075-11-05'
+                  example: '2071-05-25'
                   nullable: false
                 category_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the categories table.'
-                  example: ullam
+                  example: culpa
                   nullable: false
                 user_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the users table.'
-                  example: ab
+                  example: voluptas
                   nullable: false
                 organizer_id:
                   type: string
                   description: 'The <code>id</code> of an existing record in the organizers table.'
-                  example: nisi
+                  example: maxime
                   nullable: false
                 participation_type:
                   type: string
@@ -255,12 +347,12 @@ paths:
                 capacity:
                   type: integer
                   description: 'Must be at least 1.'
-                  example: 65
+                  example: 2
                   nullable: false
                 registration_deadline:
                   type: string
                   description: 'Must be a valid date. Must be a date before <code>start_date</code>.'
-                  example: '2008-02-29'
+                  example: '2001-11-14'
                   nullable: false
                 registration_status:
                   type: string
@@ -274,7 +366,7 @@ paths:
                 event_type:
                   type: string
                   description: ''
-                  example: in_person
+                  example: online
                   nullable: false
                   enum:
                     - in_person
@@ -283,7 +375,7 @@ paths:
                 online_url:
                   type: string
                   description: 'This field is required when <code>event_type</code> is <code>online</code> or <code>hybrid</code>.  Must be a valid URL.'
-                  example: 'https://nicolas.com/sint-in-sed-fuga-fugiat-rerum.html'
+                  example: 'https://zemlak.com/delectus-vel-nobis-natus-ut-et-sed-adipisci-hic.html'
                   nullable: true
                 tags:
                   type: array
@@ -320,7 +412,7 @@ paths:
         in: path
         name: slug
         description: 'The slug of the event.'
-        example: premier-takeo-showcase
+        example: animi
         required: true
         schema:
           type: string
@@ -331,18 +423,18 @@ paths:
       description: ''
       parameters: []
       responses:
-        500:
+        200:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: 'Server Error'
+                  data: []
                 properties:
-                  message:
-                    type: string
-                    example: 'Server Error'
+                  data:
+                    type: array
+                    example: []
       tags:
         - Endpoints
       security: []
@@ -364,27 +456,27 @@ paths:
                 name:
                   type: string
                   description: 'Must not be greater than 100 characters.'
-                  example: wdcashgspxymckvwczr
+                  example: teiapbgm
                   nullable: false
                 slug:
                   type: string
                   description: 'Must not be greater than 120 characters.'
-                  example: aeukdmztmpfr
+                  example: jvplvetbprzlxmgvbbv
                   nullable: false
                 description:
                   type: string
                   description: ''
-                  example: 'Labore itaque sed in omnis dolorem.'
+                  example: 'Maiores nobis et dolores necessitatibus.'
                   nullable: true
                 is_active:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: false
                 position:
                   type: integer
                   description: ''
-                  example: 8
+                  example: 18
                   nullable: false
               required:
                 - name
@@ -397,18 +489,18 @@ paths:
       description: ''
       parameters: []
       responses:
-        500:
+        404:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  message: 'Server Error'
+                  message: 'No query results for model [App\Models\Category] optio'
                 properties:
                   message:
                     type: string
-                    example: 'Server Error'
+                    example: 'No query results for model [App\Models\Category] optio'
       tags:
         - Endpoints
       security: []
@@ -430,7 +522,7 @@ paths:
                 name:
                   type: string
                   description: 'Must not be greater than 100 characters.'
-                  example: dqodlgbplj
+                  example: cnalcayvvxlail
                   nullable: false
                 slug:
                   type: string
@@ -440,7 +532,7 @@ paths:
                 description:
                   type: string
                   description: ''
-                  example: 'Eos quia in asperiores quia quibusdam.'
+                  example: 'Et aperiam quisquam ea est.'
                   nullable: true
                 is_active:
                   type: boolean
@@ -450,7 +542,7 @@ paths:
                 position:
                   type: integer
                   description: ''
-                  example: 16
+                  example: 5
                   nullable: false
               required:
                 - name
@@ -469,7 +561,7 @@ paths:
         in: path
         name: slug
         description: 'The slug of the category.'
-        example: music
+        example: optio
         required: true
         schema:
           type: string

@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Laravel",
-        "_postman_id": "04a46818-5138-427a-8983-e3f73efa0e0a",
+        "_postman_id": "0b022894-1e71-4607-a861-d9982d4ee230",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -61,8 +61,8 @@
                                     "value": "*"
                                 }
                             ],
-                            "code": 500,
-                            "body": "{\n    \"message\": \"Server Error\"\n}",
+                            "code": 200,
+                            "body": "{\"data\":[],\"links\":{\"first\":\"http:\\\/\\\/events_api.test\\\/api\\\/events?page=1\",\"last\":\"http:\\\/\\\/events_api.test\\\/api\\\/events?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"active\":false},{\"url\":\"http:\\\/\\\/events_api.test\\\/api\\\/events?page=1\",\"label\":\"1\",\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"active\":false}],\"path\":\"http:\\\/\\\/events_api.test\\\/api\\\/events\",\"per_page\":15,\"to\":null,\"total\":0}}",
                             "name": ""
                         }
                     ]
@@ -89,7 +89,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"title\":\"bkkrijcquvepkoima\",\"slug\":\"zcyobt\",\"description\":\"Mollitia aspernatur consequatur voluptatem consectetur.\",\"address\":\"htdvqopg\",\"feature_image\":\"hrsqxevlq\",\"start_date\":\"2025-02-09T15:05:17\",\"end_date\":\"2112-01-11\",\"category_id\":\"tenetur\",\"user_id\":\"magnam\",\"organizer_id\":\"non\",\"participation_type\":\"paid\",\"capacity\":40,\"registration_deadline\":\"2013-09-24\",\"registration_status\":\"closed\",\"event_type\":\"hybrid\",\"online_url\":\"https:\\\/\\\/funk.com\\\/incidunt-alias-est-excepturi-corporis.html\"}"
+                            "raw": "{\"title\":\"f\",\"slug\":\"bmtuq\",\"description\":\"Tempore aperiam ratione vel sit aliquid.\",\"address\":\"vylqfudwbrtgwkt\",\"feature_image\":\"iochyepqbvsxwfhknrzlporfv\",\"start_date\":\"2025-02-09T15:17:09\",\"end_date\":\"2123-08-24\",\"category_id\":\"beatae\",\"user_id\":\"sint\",\"organizer_id\":\"iste\",\"participation_type\":\"paid\",\"capacity\":51,\"registration_deadline\":\"2003-09-06\",\"registration_status\":\"open\",\"event_type\":\"online\",\"online_url\":\"http:\\\/\\\/www.howell.info\\\/eaque-nulla-minus-laboriosam-praesentium\"}"
                         },
                         "description": "",
                         "auth": {
@@ -110,7 +110,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "premier-takeo-showcase",
+                                    "value": "animi",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -148,8 +148,8 @@
                                     "value": "*"
                                 }
                             ],
-                            "code": 500,
-                            "body": "{\n    \"message\": \"Server Error\"\n}",
+                            "code": 404,
+                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Event] animi\"\n}",
                             "name": ""
                         }
                     ]
@@ -166,7 +166,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "premier-takeo-showcase",
+                                    "value": "voluptatem",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -184,7 +184,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"title\":\"xkonly\",\"description\":\"Ipsam placeat porro nemo quis dolor sapiente dolor.\",\"address\":\"ofpxgqvdgd\",\"feature_image\":\"hccfmcjasljix\",\"start_date\":\"2025-02-09T15:05:17\",\"end_date\":\"2075-11-05\",\"category_id\":\"ullam\",\"user_id\":\"ab\",\"organizer_id\":\"nisi\",\"participation_type\":\"free\",\"capacity\":65,\"registration_deadline\":\"2008-02-29\",\"registration_status\":\"open\",\"event_type\":\"in_person\",\"online_url\":\"https:\\\/\\\/nicolas.com\\\/sint-in-sed-fuga-fugiat-rerum.html\"}"
+                            "raw": "{\"title\":\"ilmugodrfujlgaeyexxwl\",\"description\":\"Quod est et vitae ut.\",\"address\":\"jbbnkwo\",\"feature_image\":\"pulupuypwcukjqhulxip\",\"start_date\":\"2025-02-09T15:17:09\",\"end_date\":\"2071-05-25\",\"category_id\":\"culpa\",\"user_id\":\"voluptas\",\"organizer_id\":\"maxime\",\"participation_type\":\"free\",\"capacity\":2,\"registration_deadline\":\"2001-11-14\",\"registration_status\":\"open\",\"event_type\":\"online\",\"online_url\":\"https:\\\/\\\/zemlak.com\\\/delectus-vel-nobis-natus-ut-et-sed-adipisci-hic.html\"}"
                         },
                         "description": "",
                         "auth": {
@@ -205,7 +205,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "premier-takeo-showcase",
+                                    "value": "vero",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -271,8 +271,8 @@
                                     "value": "*"
                                 }
                             ],
-                            "code": 500,
-                            "body": "{\n    \"message\": \"Server Error\"\n}",
+                            "code": 200,
+                            "body": "{\"data\":[]}",
                             "name": ""
                         }
                     ]
@@ -299,7 +299,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"wdcashgspxymckvwczr\",\"slug\":\"aeukdmztmpfr\",\"description\":\"Labore itaque sed in omnis dolorem.\",\"is_active\":false,\"position\":8}"
+                            "raw": "{\"name\":\"teiapbgm\",\"slug\":\"jvplvetbprzlxmgvbbv\",\"description\":\"Maiores nobis et dolores necessitatibus.\",\"is_active\":true,\"position\":18}"
                         },
                         "description": "",
                         "auth": {
@@ -320,7 +320,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "music",
+                                    "value": "optio",
                                     "description": "The slug of the category."
                                 }
                             ]
@@ -358,8 +358,8 @@
                                     "value": "*"
                                 }
                             ],
-                            "code": 500,
-                            "body": "{\n    \"message\": \"Server Error\"\n}",
+                            "code": 404,
+                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Category] optio\"\n}",
                             "name": ""
                         }
                     ]
@@ -376,7 +376,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "music",
+                                    "value": "repellendus",
                                     "description": "The slug of the category."
                                 }
                             ]
@@ -394,7 +394,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"dqodlgbplj\",\"description\":\"Eos quia in asperiores quia quibusdam.\",\"is_active\":true,\"position\":16}"
+                            "raw": "{\"name\":\"cnalcayvvxlail\",\"description\":\"Et aperiam quisquam ea est.\",\"is_active\":true,\"position\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -415,7 +415,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "music",
+                                    "value": "eaque",
                                     "description": "The slug of the category."
                                 }
                             ]
