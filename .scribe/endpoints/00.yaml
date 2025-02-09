@@ -65,7 +65,7 @@ endpoints:
         name: title
         description: 'Must not be greater than 255 characters.'
         required: true
-        example: f
+        example: goyaqsgrtwgokghpr
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -75,7 +75,7 @@ endpoints:
         name: slug
         description: 'Must not be greater than 255 characters.'
         required: true
-        example: bmtuq
+        example: fqfqdciyauxelnhxgaar
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -85,7 +85,7 @@ endpoints:
         name: description
         description: 'Must not be greater than 65535 characters.'
         required: true
-        example: 'Tempore aperiam ratione vel sit aliquid.'
+        example: 'Debitis ut similique atque expedita.'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -95,7 +95,7 @@ endpoints:
         name: address
         description: 'Must not be greater than 255 characters.'
         required: true
-        example: vylqfudwbrtgwkt
+        example: sjx
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -105,7 +105,7 @@ endpoints:
         name: feature_image
         description: 'Must not be greater than 255 characters.'
         required: false
-        example: iochyepqbvsxwfhknrzlporfv
+        example: prrywsjvrwkrdwtoxdssx
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -115,7 +115,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date.'
         required: true
-        example: '2025-02-09T15:17:09'
+        example: '2025-02-09T15:38:40'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -125,7 +125,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date. Must be a date after <code>start_date</code>.'
         required: true
-        example: '2123-08-24'
+        example: '2061-11-06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -135,7 +135,7 @@ endpoints:
         name: category_id
         description: 'The <code>id</code> of an existing record in the categories table.'
         required: true
-        example: beatae
+        example: qui
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -145,7 +145,7 @@ endpoints:
         name: user_id
         description: 'The <code>id</code> of an existing record in the users table.'
         required: true
-        example: sint
+        example: libero
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -155,7 +155,7 @@ endpoints:
         name: organizer_id
         description: 'The <code>id</code> of an existing record in the organizers table.'
         required: true
-        example: iste
+        example: recusandae
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -177,7 +177,7 @@ endpoints:
         name: capacity
         description: 'Must be at least 1.'
         required: true
-        example: 51
+        example: 49
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -187,7 +187,7 @@ endpoints:
         name: registration_deadline
         description: 'Must be a valid date. Must be a date before <code>start_date</code>.'
         required: true
-        example: '2003-09-06'
+        example: '2015-04-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -197,7 +197,7 @@ endpoints:
         name: registration_status
         description: ''
         required: true
-        example: open
+        example: closed
         type: string
         enumValues:
           - open
@@ -210,7 +210,7 @@ endpoints:
         name: event_type
         description: ''
         required: true
-        example: online
+        example: hybrid
         type: string
         enumValues:
           - in_person
@@ -223,7 +223,7 @@ endpoints:
         name: online_url
         description: 'This field is required when <code>event_type</code> is <code>online</code> or <code>hybrid</code>.  Must be a valid URL.'
         required: false
-        example: 'http://www.howell.info/eaque-nulla-minus-laboriosam-praesentium'
+        example: 'http://www.haag.com/iure-quos-quibusdam-earum-nam-harum.html'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -240,22 +240,22 @@ endpoints:
         nullable: false
         custom: []
     cleanBodyParameters:
-      title: f
-      slug: bmtuq
-      description: 'Tempore aperiam ratione vel sit aliquid.'
-      address: vylqfudwbrtgwkt
-      feature_image: iochyepqbvsxwfhknrzlporfv
-      start_date: '2025-02-09T15:17:09'
-      end_date: '2123-08-24'
-      category_id: beatae
-      user_id: sint
-      organizer_id: iste
+      title: goyaqsgrtwgokghpr
+      slug: fqfqdciyauxelnhxgaar
+      description: 'Debitis ut similique atque expedita.'
+      address: sjx
+      feature_image: prrywsjvrwkrdwtoxdssx
+      start_date: '2025-02-09T15:38:40'
+      end_date: '2061-11-06'
+      category_id: qui
+      user_id: libero
+      organizer_id: recusandae
       participation_type: paid
-      capacity: 51
-      registration_deadline: '2003-09-06'
-      registration_status: open
-      event_type: online
-      online_url: 'http://www.howell.info/eaque-nulla-minus-laboriosam-praesentium'
+      capacity: 49
+      registration_deadline: '2015-04-08'
+      registration_status: closed
+      event_type: hybrid
+      online_url: 'http://www.haag.com/iure-quos-quibusdam-earum-nam-harum.html'
     fileParameters: []
     responses: []
     responseFields: []
@@ -285,14 +285,14 @@ endpoints:
         name: slug
         description: 'The slug of the event.'
         required: true
-        example: animi
+        example: voluptatem
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: animi
+      slug: voluptatem
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -303,7 +303,7 @@ endpoints:
         status: 404
         content: |-
           {
-              "message": "No query results for model [App\\Models\\Event] animi"
+              "message": "No query results for model [App\\Models\\Event] voluptatem"
           }
         headers:
           cache-control: 'no-cache, private'
@@ -339,14 +339,14 @@ endpoints:
         name: slug
         description: 'The slug of the event.'
         required: true
-        example: voluptatem
+        example: velit
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: voluptatem
+      slug: velit
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -354,7 +354,7 @@ endpoints:
         name: title
         description: 'Must not be greater than 255 characters.'
         required: true
-        example: ilmugodrfujlgaeyexxwl
+        example: yvakmqdlutfugdf
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -374,7 +374,7 @@ endpoints:
         name: description
         description: 'Must not be greater than 65535 characters.'
         required: true
-        example: 'Quod est et vitae ut.'
+        example: 'Quod rerum magni eligendi aut facilis sunt.'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -384,7 +384,7 @@ endpoints:
         name: address
         description: 'Must not be greater than 255 characters.'
         required: true
-        example: jbbnkwo
+        example: lxgamahiiclaizccogjjxw
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -394,7 +394,7 @@ endpoints:
         name: feature_image
         description: 'Must not be greater than 255 characters.'
         required: false
-        example: pulupuypwcukjqhulxip
+        example: evqltceaetr
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -404,7 +404,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date.'
         required: true
-        example: '2025-02-09T15:17:09'
+        example: '2025-02-09T15:38:40'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -414,7 +414,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date. Must be a date after <code>start_date</code>.'
         required: true
-        example: '2071-05-25'
+        example: '2087-04-21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -424,7 +424,7 @@ endpoints:
         name: category_id
         description: 'The <code>id</code> of an existing record in the categories table.'
         required: true
-        example: culpa
+        example: modi
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -434,7 +434,7 @@ endpoints:
         name: user_id
         description: 'The <code>id</code> of an existing record in the users table.'
         required: true
-        example: voluptas
+        example: voluptatem
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -444,7 +444,7 @@ endpoints:
         name: organizer_id
         description: 'The <code>id</code> of an existing record in the organizers table.'
         required: true
-        example: maxime
+        example: soluta
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -454,7 +454,7 @@ endpoints:
         name: participation_type
         description: ''
         required: true
-        example: free
+        example: paid
         type: string
         enumValues:
           - paid
@@ -466,7 +466,7 @@ endpoints:
         name: capacity
         description: 'Must be at least 1.'
         required: true
-        example: 2
+        example: 23
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -476,7 +476,7 @@ endpoints:
         name: registration_deadline
         description: 'Must be a valid date. Must be a date before <code>start_date</code>.'
         required: true
-        example: '2001-11-14'
+        example: '2018-03-21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -499,7 +499,7 @@ endpoints:
         name: event_type
         description: ''
         required: true
-        example: online
+        example: hybrid
         type: string
         enumValues:
           - in_person
@@ -512,7 +512,7 @@ endpoints:
         name: online_url
         description: 'This field is required when <code>event_type</code> is <code>online</code> or <code>hybrid</code>.  Must be a valid URL.'
         required: false
-        example: 'https://zemlak.com/delectus-vel-nobis-natus-ut-et-sed-adipisci-hic.html'
+        example: 'http://www.block.net/velit-saepe-sunt-enim-reiciendis-suscipit'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -529,21 +529,21 @@ endpoints:
         nullable: false
         custom: []
     cleanBodyParameters:
-      title: ilmugodrfujlgaeyexxwl
-      description: 'Quod est et vitae ut.'
-      address: jbbnkwo
-      feature_image: pulupuypwcukjqhulxip
-      start_date: '2025-02-09T15:17:09'
-      end_date: '2071-05-25'
-      category_id: culpa
-      user_id: voluptas
-      organizer_id: maxime
-      participation_type: free
-      capacity: 2
-      registration_deadline: '2001-11-14'
+      title: yvakmqdlutfugdf
+      description: 'Quod rerum magni eligendi aut facilis sunt.'
+      address: lxgamahiiclaizccogjjxw
+      feature_image: evqltceaetr
+      start_date: '2025-02-09T15:38:40'
+      end_date: '2087-04-21'
+      category_id: modi
+      user_id: voluptatem
+      organizer_id: soluta
+      participation_type: paid
+      capacity: 23
+      registration_deadline: '2018-03-21'
       registration_status: open
-      event_type: online
-      online_url: 'https://zemlak.com/delectus-vel-nobis-natus-ut-et-sed-adipisci-hic.html'
+      event_type: hybrid
+      online_url: 'http://www.block.net/velit-saepe-sunt-enim-reiciendis-suscipit'
     fileParameters: []
     responses: []
     responseFields: []
@@ -573,14 +573,14 @@ endpoints:
         name: slug
         description: 'The slug of the event.'
         required: true
-        example: vero
+        example: et
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: vero
+      slug: et
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -657,7 +657,7 @@ endpoints:
         name: name
         description: 'Must not be greater than 100 characters.'
         required: true
-        example: teiapbgm
+        example: pdnpwakbnihfrfrss
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -667,7 +667,7 @@ endpoints:
         name: slug
         description: 'Must not be greater than 120 characters.'
         required: true
-        example: jvplvetbprzlxmgvbbv
+        example: znlttoruhj
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -677,7 +677,7 @@ endpoints:
         name: description
         description: ''
         required: false
-        example: 'Maiores nobis et dolores necessitatibus.'
+        example: 'Eum modi neque dolore provident rerum eius.'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -687,7 +687,7 @@ endpoints:
         name: is_active
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -697,18 +697,18 @@ endpoints:
         name: position
         description: ''
         required: false
-        example: 18
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      name: teiapbgm
-      slug: jvplvetbprzlxmgvbbv
-      description: 'Maiores nobis et dolores necessitatibus.'
-      is_active: true
-      position: 18
+      name: pdnpwakbnihfrfrss
+      slug: znlttoruhj
+      description: 'Eum modi neque dolore provident rerum eius.'
+      is_active: false
+      position: 1
     fileParameters: []
     responses: []
     responseFields: []
@@ -738,14 +738,14 @@ endpoints:
         name: slug
         description: 'The slug of the category.'
         required: true
-        example: optio
+        example: fuga
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: optio
+      slug: fuga
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -756,7 +756,7 @@ endpoints:
         status: 404
         content: |-
           {
-              "message": "No query results for model [App\\Models\\Category] optio"
+              "message": "No query results for model [App\\Models\\Category] fuga"
           }
         headers:
           cache-control: 'no-cache, private'
@@ -792,14 +792,14 @@ endpoints:
         name: slug
         description: 'The slug of the category.'
         required: true
-        example: repellendus
+        example: voluptatum
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: repellendus
+      slug: voluptatum
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -807,7 +807,7 @@ endpoints:
         name: name
         description: 'Must not be greater than 100 characters.'
         required: true
-        example: cnalcayvvxlail
+        example: gzbfwrfnjtgyamtylgpe
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -827,7 +827,7 @@ endpoints:
         name: description
         description: ''
         required: false
-        example: 'Et aperiam quisquam ea est.'
+        example: 'Cupiditate minus non asperiores eos molestiae sed error fuga.'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -847,17 +847,17 @@ endpoints:
         name: position
         description: ''
         required: false
-        example: 5
+        example: 20
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanBodyParameters:
-      name: cnalcayvvxlail
-      description: 'Et aperiam quisquam ea est.'
+      name: gzbfwrfnjtgyamtylgpe
+      description: 'Cupiditate minus non asperiores eos molestiae sed error fuga.'
       is_active: true
-      position: 5
+      position: 20
     fileParameters: []
     responses: []
     responseFields: []
@@ -887,14 +887,14 @@ endpoints:
         name: slug
         description: 'The slug of the category.'
         required: true
-        example: eaque
+        example: aut
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      slug: eaque
+      slug: aut
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

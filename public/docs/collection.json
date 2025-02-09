@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Laravel",
-        "_postman_id": "0b022894-1e71-4607-a861-d9982d4ee230",
+        "_postman_id": "60760b17-7117-478c-9dce-d461002d6693",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -89,7 +89,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"title\":\"f\",\"slug\":\"bmtuq\",\"description\":\"Tempore aperiam ratione vel sit aliquid.\",\"address\":\"vylqfudwbrtgwkt\",\"feature_image\":\"iochyepqbvsxwfhknrzlporfv\",\"start_date\":\"2025-02-09T15:17:09\",\"end_date\":\"2123-08-24\",\"category_id\":\"beatae\",\"user_id\":\"sint\",\"organizer_id\":\"iste\",\"participation_type\":\"paid\",\"capacity\":51,\"registration_deadline\":\"2003-09-06\",\"registration_status\":\"open\",\"event_type\":\"online\",\"online_url\":\"http:\\\/\\\/www.howell.info\\\/eaque-nulla-minus-laboriosam-praesentium\"}"
+                            "raw": "{\"title\":\"goyaqsgrtwgokghpr\",\"slug\":\"fqfqdciyauxelnhxgaar\",\"description\":\"Debitis ut similique atque expedita.\",\"address\":\"sjx\",\"feature_image\":\"prrywsjvrwkrdwtoxdssx\",\"start_date\":\"2025-02-09T15:38:40\",\"end_date\":\"2061-11-06\",\"category_id\":\"qui\",\"user_id\":\"libero\",\"organizer_id\":\"recusandae\",\"participation_type\":\"paid\",\"capacity\":49,\"registration_deadline\":\"2015-04-08\",\"registration_status\":\"closed\",\"event_type\":\"hybrid\",\"online_url\":\"http:\\\/\\\/www.haag.com\\\/iure-quos-quibusdam-earum-nam-harum.html\"}"
                         },
                         "description": "",
                         "auth": {
@@ -110,7 +110,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "animi",
+                                    "value": "voluptatem",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -149,7 +149,7 @@
                                 }
                             ],
                             "code": 404,
-                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Event] animi\"\n}",
+                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Event] voluptatem\"\n}",
                             "name": ""
                         }
                     ]
@@ -166,7 +166,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "voluptatem",
+                                    "value": "velit",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -184,7 +184,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"title\":\"ilmugodrfujlgaeyexxwl\",\"description\":\"Quod est et vitae ut.\",\"address\":\"jbbnkwo\",\"feature_image\":\"pulupuypwcukjqhulxip\",\"start_date\":\"2025-02-09T15:17:09\",\"end_date\":\"2071-05-25\",\"category_id\":\"culpa\",\"user_id\":\"voluptas\",\"organizer_id\":\"maxime\",\"participation_type\":\"free\",\"capacity\":2,\"registration_deadline\":\"2001-11-14\",\"registration_status\":\"open\",\"event_type\":\"online\",\"online_url\":\"https:\\\/\\\/zemlak.com\\\/delectus-vel-nobis-natus-ut-et-sed-adipisci-hic.html\"}"
+                            "raw": "{\"title\":\"yvakmqdlutfugdf\",\"description\":\"Quod rerum magni eligendi aut facilis sunt.\",\"address\":\"lxgamahiiclaizccogjjxw\",\"feature_image\":\"evqltceaetr\",\"start_date\":\"2025-02-09T15:38:40\",\"end_date\":\"2087-04-21\",\"category_id\":\"modi\",\"user_id\":\"voluptatem\",\"organizer_id\":\"soluta\",\"participation_type\":\"paid\",\"capacity\":23,\"registration_deadline\":\"2018-03-21\",\"registration_status\":\"open\",\"event_type\":\"hybrid\",\"online_url\":\"http:\\\/\\\/www.block.net\\\/velit-saepe-sunt-enim-reiciendis-suscipit\"}"
                         },
                         "description": "",
                         "auth": {
@@ -205,7 +205,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "vero",
+                                    "value": "et",
                                     "description": "The slug of the event."
                                 }
                             ]
@@ -299,7 +299,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"teiapbgm\",\"slug\":\"jvplvetbprzlxmgvbbv\",\"description\":\"Maiores nobis et dolores necessitatibus.\",\"is_active\":true,\"position\":18}"
+                            "raw": "{\"name\":\"pdnpwakbnihfrfrss\",\"slug\":\"znlttoruhj\",\"description\":\"Eum modi neque dolore provident rerum eius.\",\"is_active\":false,\"position\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -320,7 +320,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "optio",
+                                    "value": "fuga",
                                     "description": "The slug of the category."
                                 }
                             ]
@@ -359,7 +359,7 @@
                                 }
                             ],
                             "code": 404,
-                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Category] optio\"\n}",
+                            "body": "{\n    \"message\": \"No query results for model [App\\\\Models\\\\Category] fuga\"\n}",
                             "name": ""
                         }
                     ]
@@ -376,7 +376,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "repellendus",
+                                    "value": "voluptatum",
                                     "description": "The slug of the category."
                                 }
                             ]
@@ -394,7 +394,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"cnalcayvvxlail\",\"description\":\"Et aperiam quisquam ea est.\",\"is_active\":true,\"position\":5}"
+                            "raw": "{\"name\":\"gzbfwrfnjtgyamtylgpe\",\"description\":\"Cupiditate minus non asperiores eos molestiae sed error fuga.\",\"is_active\":true,\"position\":20}"
                         },
                         "description": "",
                         "auth": {
@@ -415,7 +415,7 @@
                                 {
                                     "id": "slug",
                                     "key": "slug",
-                                    "value": "eaque",
+                                    "value": "aut",
                                     "description": "The slug of the category."
                                 }
                             ]
