@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use Database\Factories\UserFactory;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +15,11 @@ use Illuminate\Notifications\Notifiable;
 
 final class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
+    /** @use HasFactory<UserFactory> */
+    use HasFactory;
     use HasUlids;
+
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -79,6 +80,6 @@ final class User extends Authenticatable
         $validDomains = config('events_api.auth.valid_email_domains');
         ray($validDomains);
 
-        return collect($validDomains)->contains(fn ($domain) => str_ends_with($email, $domain));
+        return collect($validDomains)->contains(fn($domain): bool => str_ends_with($email, $domain));
     }
 }

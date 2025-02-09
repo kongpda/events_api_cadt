@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ShareFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class Share extends Model
 {
-    /** @use HasFactory<\Database\Factories\ShareFactory> */
+    /** @use HasFactory<ShareFactory> */
     use HasFactory;
 
     use HasUlids;
@@ -37,14 +38,6 @@ final class Share extends Model
         'share_url',
     ];
 
-    protected $casts = [
-        'id' => 'string',
-        'user_id' => 'string',
-        'event_id' => 'string',
-        'platform' => 'array',
-        'share_url' => 'array',
-    ];
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -53,5 +46,16 @@ final class Share extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'id' => 'string',
+            'user_id' => 'string',
+            'event_id' => 'string',
+            'platform' => 'array',
+            'share_url' => 'array',
+        ];
     }
 }

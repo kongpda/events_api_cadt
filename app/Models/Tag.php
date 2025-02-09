@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 final class Tag extends Model
 {
-    /** @use HasFactory<\Database\Factories\TagFactory> */
+    /** @use HasFactory<TagFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -19,11 +20,6 @@ final class Tag extends Model
         'description',
         'is_active',
         'position',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
-        'position' => 'integer',
     ];
 
     /**
@@ -37,5 +33,13 @@ final class Tag extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'position' => 'integer',
+        ];
     }
 }

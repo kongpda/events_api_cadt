@@ -95,7 +95,7 @@ test('can create an event', function (): void {
 test('can show an event', function (): void {
     $event = Event::factory()->create();
 
-    $response = $this->getJson("/api/events/{$event->slug}");
+    $response = $this->getJson('/api/events/' . $event->slug);
 
     $response->assertStatus(200)
         ->assertJson([
@@ -118,7 +118,7 @@ test('can update an event', function (): void {
         'tags' => $newTags->pluck('id')->toArray(),
     ];
 
-    $response = $this->putJson("/api/events/{$event->slug}", $payload);
+    $response = $this->putJson('/api/events/' . $event->slug, $payload);
 
     $response->assertStatus(200)
         ->assertJson([
@@ -139,7 +139,7 @@ test('can update an event', function (): void {
 test('can delete an event', function (): void {
     $event = Event::factory()->create();
 
-    $response = $this->deleteJson("/api/events/{$event->slug}");
+    $response = $this->deleteJson('/api/events/' . $event->slug);
 
     $response->assertStatus(204);
     $this->assertDatabaseMissing('events', ['id' => $event->id]);

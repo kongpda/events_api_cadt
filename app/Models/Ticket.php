@@ -21,11 +21,6 @@ final class Ticket extends Model
         'price',
     ];
 
-    protected $casts = [
-        'purchase_date' => 'datetime',
-        'price' => 'decimal:2',
-    ];
-
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
@@ -39,5 +34,13 @@ final class Ticket extends Model
     public function ticketType(): BelongsTo
     {
         return $this->belongsTo(TicketType::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'purchase_date' => 'datetime',
+            'price' => 'decimal:2',
+        ];
     }
 }

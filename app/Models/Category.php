@@ -20,16 +20,6 @@ final class Category extends Model
         'position',
     ];
 
-    protected $casts = [
-        'name' => 'string',
-        'slug' => 'string',
-        'description' => 'string',
-        'is_active' => 'boolean',
-        'position' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
     /**
      * Get the events that belong to the category.
      */
@@ -44,5 +34,18 @@ final class Category extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'name' => 'string',
+            'slug' => 'string',
+            'description' => 'string',
+            'is_active' => 'boolean',
+            'position' => 'integer',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
     }
 }

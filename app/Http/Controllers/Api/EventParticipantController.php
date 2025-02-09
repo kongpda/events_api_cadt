@@ -67,7 +67,7 @@ final class EventParticipantController extends Controller
     public function update(
         Request $request,
         Event $event,
-        EventParticipant $participant
+        EventParticipant $participant,
     ): EventParticipantResource {
         $validated = $request->validate([
             'status' => ['sometimes', 'string', 'in:' . implode(',', [

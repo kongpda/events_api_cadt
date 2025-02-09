@@ -54,20 +54,20 @@ final class SeedProductionData extends Command
         'Experience the beauty and grace of traditional Khmer dance, performed by the Royal Ballet of Cambodia. A UNESCO Intangible Cultural Heritage event.',
         'The premier real estate exhibition in Cambodia, featuring major developers, property investments, and industry insights.',
         'Join thousands of runners in this scenic race through the historic city of Siem Reap, supporting local community projects.',
-        'Connect with leading investors and business leaders to explore investment opportunities in Cambodia\'s growing economy.',
-        'A celebration of photography featuring exhibitions, workshops, and photo tours around Angkor\'s historic temples.',
+        "Connect with leading investors and business leaders to explore investment opportunities in Cambodia's growing economy.",
+        "A celebration of photography featuring exhibitions, workshops, and photo tours around Angkor's historic temples.",
         'The leading tourism conference in the Mekong region, focusing on sustainable tourism development and regional cooperation.',
         'Showcasing the best of Cambodian and international cinema, with special screenings, director talks, and workshops.',
-        'Inspiring talks and presentations from Cambodia\'s leading thinkers, innovators, and change-makers.',
+        "Inspiring talks and presentations from Cambodia's leading thinkers, innovators, and change-makers.",
         'A week-long celebration of architecture and design, featuring exhibitions, talks, and workshops from leading professionals.',
         'Transform the streets of Phnom Penh into an open-air gallery with local and international street artists.',
-        'Cambodia\'s largest technology conference, bringing together startups, tech companies, and digital innovators.',
+        "Cambodia's largest technology conference, bringing together startups, tech companies, and digital innovators.",
         'A unique literary festival celebrating Southeast Asian literature, featuring authors, workshops, and cultural events.',
         'The premier fashion event in Cambodia, showcasing local designers and international brands.',
         'Empowering young leaders from across ASEAN through workshops, networking, and skill-building sessions.',
         'A vibrant market featuring local artisans, craftspeople, and food vendors in the heart of Siem Reap.',
         'The largest gathering of startups, investors, and entrepreneurs in Cambodia.',
-        'One of Asia\'s premier destination marathons, running through the ancient temples of Angkor.',
+        "One of Asia's premier destination marathons, running through the ancient temples of Angkor.",
     ];
 
     private array $venues = [
@@ -146,7 +146,7 @@ final class SeedProductionData extends Command
                         'name' => 'Admin User',
                         'password' => bcrypt('password'),
                         'email_verified_at' => now(),
-                    ]
+                    ],
                 );
 
                 // Create some test users for favorites and shares
@@ -196,7 +196,7 @@ final class SeedProductionData extends Command
                 [
                     'name' => $name,
                     'description' => $description,
-                ]
+                ],
             );
         }
     }
@@ -229,7 +229,7 @@ final class SeedProductionData extends Command
                     'description' => $description,
                     'is_active' => true,
                     'position' => 0,
-                ]
+                ],
             );
         }
     }
@@ -247,7 +247,7 @@ final class SeedProductionData extends Command
                     'country' => $venueData['country'],
                     'postal_code' => $venueData['postal_code'],
                     'capacity' => $venueData['capacity'],
-                ]
+                ],
             );
             $venues[] = $venue;
         }
@@ -264,7 +264,7 @@ final class SeedProductionData extends Command
                 'slug' => 'herd-events-cambodia',
                 'email' => 'events@herdapp.com',
                 'phone' => '+855 93 666 888',
-                'description' => 'Cambodia\'s premier event management and ticketing platform. We specialize in organizing and promoting a wide range of events, from cultural festivals to business conferences, connecting event organizers with their audience across the country.',
+                'description' => "Cambodia's premier event management and ticketing platform. We specialize in organizing and promoting a wide range of events, from cultural festivals to business conferences, connecting event organizers with their audience across the country.",
                 'website' => 'https://herdapp.com',
                 'address' => '#11, Street 254, Sangkat Chaktomuk, Khan Daun Penh, Phnom Penh',
                 'social_media' => json_encode([
@@ -275,7 +275,7 @@ final class SeedProductionData extends Command
                 ]),
                 'logo' => 'https://herdapp.com/images/logo.png',
                 'is_verified' => true,
-            ]
+            ],
         );
     }
 
@@ -290,7 +290,7 @@ final class SeedProductionData extends Command
         $registrationStatuses = ['open', 'closed'];
 
         for ($i = 1; $i <= 20; $i++) {
-            $startDate = now()->addDays(rand(1, 365));
+            $startDate = now()->addDays(random_int(1, 365));
             $title = $this->eventTitles[$i - 1];
             $description = $this->eventDescriptions[$i - 1];
             $category = $categories->random();
@@ -303,20 +303,20 @@ final class SeedProductionData extends Command
                 'address' => $venue->address,
                 'feature_image' => 'https://picsum.photos/800/600',
                 'start_date' => $startDate,
-                'end_date' => $startDate->copy()->addHours(rand(2, 48)),
+                'end_date' => $startDate->copy()->addHours(random_int(2, 48)),
                 'user_id' => $user->id,
                 'organizer_id' => $organizer->id,
                 'category_id' => $category->id,
                 'participation_type' => $participationTypes[array_rand($participationTypes)],
                 'capacity' => $venue->capacity,
-                'registration_deadline' => $startDate->copy()->subDays(rand(1, 7)),
+                'registration_deadline' => $startDate->copy()->subDays(random_int(1, 7)),
                 'registration_status' => $registrationStatuses[array_rand($registrationStatuses)],
                 'event_type' => $eventTypes[array_rand($eventTypes)],
                 'online_url' => fake()->url(),
             ]);
 
             $event->tags()->attach(
-                $tags->random(rand(1, 5))->pluck('id')->toArray()
+                $tags->random(random_int(1, 5))->pluck('id')->toArray(),
             );
 
             $events[] = $event;
@@ -392,7 +392,7 @@ final class SeedProductionData extends Command
                     'name' => $userData['name'],
                     'password' => bcrypt('password'),
                     'email_verified_at' => now(),
-                ]
+                ],
             );
             $users[] = $user;
         }
@@ -404,7 +404,7 @@ final class SeedProductionData extends Command
     {
         foreach ($users as $user) {
             // Each user favorites 3-8 random events
-            $randomEvents = collect($events)->random(rand(3, 8));
+            $randomEvents = collect($events)->random(random_int(3, 8));
             foreach ($randomEvents as $event) {
                 Favorite::query()->firstOrCreate([
                     'user_id' => $user->id,
@@ -420,18 +420,18 @@ final class SeedProductionData extends Command
 
         foreach ($users as $user) {
             // Each user shares 2-5 random events
-            $randomEvents = collect($events)->random(rand(2, 5));
+            $randomEvents = collect($events)->random(random_int(2, 5));
             foreach ($randomEvents as $event) {
                 // Each share includes 1-3 random platforms
-                $selectedPlatforms = collect($platforms)->random(rand(1, 3))->all();
+                $selectedPlatforms = collect($platforms)->random(random_int(1, 3))->all();
                 $shareUrls = [];
                 foreach ($selectedPlatforms as $platform) {
                     $shareUrls[$platform] = match ($platform) {
-                        'facebook' => "https://facebook.com/sharer/sharer.php?u=https://herdapp.com/events/{$event->slug}",
-                        'twitter' => "https://twitter.com/intent/tweet?url=https://herdapp.com/events/{$event->slug}&text=" . urlencode($event->title),
-                        'telegram' => "https://t.me/share/url?url=https://herdapp.com/events/{$event->slug}&text=" . urlencode($event->title),
-                        'whatsapp' => 'https://wa.me/?text=' . urlencode("{$event->title} - https://herdapp.com/events/{$event->slug}"),
-                        'email' => 'mailto:?subject=' . urlencode($event->title) . '&body=' . urlencode("Check out this event: https://herdapp.com/events/{$event->slug}"),
+                        'facebook' => 'https://facebook.com/sharer/sharer.php?u=https://herdapp.com/events/' . $event->slug,
+                        'twitter' => sprintf('https://twitter.com/intent/tweet?url=https://herdapp.com/events/%s&text=', $event->slug) . urlencode((string) $event->title),
+                        'telegram' => sprintf('https://t.me/share/url?url=https://herdapp.com/events/%s&text=', $event->slug) . urlencode((string) $event->title),
+                        'whatsapp' => 'https://wa.me/?text=' . urlencode(sprintf('%s - https://herdapp.com/events/%s', $event->title, $event->slug)),
+                        'email' => 'mailto:?subject=' . urlencode((string) $event->title) . '&body=' . urlencode('Check out this event: https://herdapp.com/events/' . $event->slug),
                     };
                 }
 

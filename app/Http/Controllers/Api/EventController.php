@@ -67,7 +67,7 @@ final class EventController extends Controller
         }
 
         return new EventResource(
-            $event->load(['category', 'tags'])
+            $event->load(['category', 'tags']),
         );
     }
 
@@ -116,7 +116,7 @@ final class EventController extends Controller
         }
 
         return new EventResource(
-            $event->load(['category', 'tags'])
+            $event->load(['category', 'tags']),
         );
     }
 

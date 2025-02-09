@@ -50,31 +50,23 @@ final class Event extends Model
         'online_url',
     ];
 
-    protected $casts = [
-        'id' => 'string',
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-        'registration_deadline' => 'datetime',
-        'capacity' => 'integer',
-    ];
-
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
-    protected array $participationTypes = [
+    private array $participationTypes = [
         'paid' => 'Paid',
         'free' => 'Free',
     ];
 
-    protected array $registrationStatuses = [
+    private array $registrationStatuses = [
         'open' => 'Open',
         'closed' => 'Closed',
         'full' => 'Full',
     ];
 
-    protected array $eventTypes = [
+    private array $eventTypes = [
         'in_person' => 'In Person',
         'online' => 'Online',
         'hybrid' => 'Hybrid',
@@ -159,5 +151,16 @@ final class Event extends Model
     public function getEventTypes(): array
     {
         return $this->eventTypes;
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'id' => 'string',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
+            'registration_deadline' => 'datetime',
+            'capacity' => 'integer',
+        ];
     }
 }

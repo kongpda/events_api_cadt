@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Tag;
 use App\Models\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 test('event has correct fillable attributes', function (): void {
@@ -131,9 +132,9 @@ test('event factory creates valid event', function (): void {
         ->and($event->title)->not->toBeEmpty()
         ->and($event->slug)->not->toBeEmpty()
         ->and($event->description)->not->toBeEmpty()
-        ->and($event->start_date)->toBeInstanceOf(Carbon\Carbon::class)
-        ->and($event->end_date)->toBeInstanceOf(Carbon\Carbon::class)
-        ->and($event->registration_deadline)->toBeInstanceOf(Carbon\Carbon::class)
+        ->and($event->start_date)->toBeInstanceOf(Carbon::class)
+        ->and($event->end_date)->toBeInstanceOf(Carbon::class)
+        ->and($event->registration_deadline)->toBeInstanceOf(Carbon::class)
         ->and($event->capacity)->toBeInt()
         ->and($event->participation_type)->toBeIn(['paid', 'free'])
         ->and($event->registration_status)->toBeIn(['open', 'closed', 'full'])
@@ -143,7 +144,7 @@ test('event factory creates valid event', function (): void {
 test('event dates are properly cast to carbon instances', function (): void {
     $event = Event::factory()->create();
 
-    expect($event->start_date)->toBeInstanceOf(Carbon\Carbon::class)
-        ->and($event->end_date)->toBeInstanceOf(Carbon\Carbon::class)
-        ->and($event->registration_deadline)->toBeInstanceOf(Carbon\Carbon::class);
+    expect($event->start_date)->toBeInstanceOf(Carbon::class)
+        ->and($event->end_date)->toBeInstanceOf(Carbon::class)
+        ->and($event->registration_deadline)->toBeInstanceOf(Carbon::class);
 });

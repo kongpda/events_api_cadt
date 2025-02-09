@@ -25,7 +25,7 @@ final class OrganizerController extends Controller
         $organizers = Organizer::query()
             ->when(
                 request()->boolean('verified'),
-                fn ($query) => $query->where('is_verified', true)
+                fn($query) => $query->where('is_verified', true),
             )
             ->paginate();
 

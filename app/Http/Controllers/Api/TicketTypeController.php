@@ -22,7 +22,7 @@ final class TicketTypeController extends Controller
     public function index(): AnonymousResourceCollection
     {
         return TicketTypeResource::collection(
-            TicketType::with(['event', 'user'])->paginate()
+            TicketType::with(['event', 'user'])->paginate(),
         );
     }
 

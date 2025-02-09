@@ -27,11 +27,11 @@ final class TicketController extends Controller
             ->with(['event', 'user', 'ticketType'])
             ->when(
                 $request->filled('status'),
-                fn ($query) => $query->where('status', $request->input('status'))
+                fn($query) => $query->where('status', $request->input('status')),
             )
             ->when(
                 $request->filled('event_id'),
-                fn ($query) => $query->where('event_id', $request->input('event_id'))
+                fn($query) => $query->where('event_id', $request->input('event_id')),
             )
             ->latest()
             ->paginate();
@@ -55,7 +55,7 @@ final class TicketController extends Controller
             'price' => ['required', 'numeric', 'min:0', 'max:999999.99'],
         ]);
 
-        $ticket = DB::transaction(fn () => Ticket::create($validated));
+        $ticket = DB::transaction(fn() => Ticket::create($validated));
 
         return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
     }
@@ -86,7 +86,7 @@ final class TicketController extends Controller
             'price' => ['sometimes', 'numeric', 'min:0', 'max:999999.99'],
         ]);
 
-        $ticket = DB::transaction(function () use ($ticket, $validated) {
+        $ticket = DB::transaction(function () use ($ticket, $validated): Ticket {
             $ticket->update($validated);
 
             return $ticket;

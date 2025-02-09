@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\VenueResource\Pages;
+use App\Filament\Resources\VenueResource\Pages\CreateVenue;
+use App\Filament\Resources\VenueResource\Pages\EditVenue;
+use App\Filament\Resources\VenueResource\Pages\ListVenues;
 use App\Models\Venue;
-use Filament\Forms;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 final class VenueResource extends Resource
@@ -22,19 +27,19 @@ final class VenueResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required(),
-                Forms\Components\TextInput::make('address')
+                TextInput::make('address')
                     ->required(),
-                Forms\Components\TextInput::make('city')
+                TextInput::make('city')
                     ->required(),
-                Forms\Components\TextInput::make('state')
+                TextInput::make('state')
                     ->required(),
-                Forms\Components\TextInput::make('country')
+                TextInput::make('country')
                     ->required(),
-                Forms\Components\TextInput::make('postal_code')
+                TextInput::make('postal_code')
                     ->required(),
-                Forms\Components\TextInput::make('capacity')
+                TextInput::make('capacity')
                     ->required()
                     ->numeric(),
             ]);
@@ -44,26 +49,26 @@ final class VenueResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address')
+                TextColumn::make('address')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('city')
+                TextColumn::make('city')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('state')
+                TextColumn::make('state')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('country')
+                TextColumn::make('country')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('postal_code')
+                TextColumn::make('postal_code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('capacity')
+                TextColumn::make('capacity')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -72,11 +77,11 @@ final class VenueResource extends Resource
 
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -91,9 +96,9 @@ final class VenueResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListVenues::route('/'),
-            'create' => Pages\CreateVenue::route('/create'),
-            'edit' => Pages\EditVenue::route('/{record}/edit'),
+            'index' => ListVenues::route('/'),
+            'create' => CreateVenue::route('/create'),
+            'edit' => EditVenue::route('/{record}/edit'),
         ];
     }
 }

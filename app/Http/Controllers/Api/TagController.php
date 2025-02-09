@@ -25,7 +25,7 @@ final class TagController extends Controller
         $tags = Tag::with('events')
             ->when(
                 request()->boolean('active'),
-                fn ($query) => $query->where('is_active', true)
+                fn($query) => $query->where('is_active', true),
             )
             ->paginate();
 

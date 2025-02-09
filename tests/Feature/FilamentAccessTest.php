@@ -42,6 +42,6 @@ test('user with invalid email domain cannot access filament panel', function ():
         ->assertStatus(403);
 });
 
-test('guest cannot access filament panel', function () {
+test('guest cannot access filament panel', function (): void {
 get('/admin')->assertStatus(302)->assertRedirect('/login');
     });

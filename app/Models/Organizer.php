@@ -12,7 +12,8 @@ use Illuminate\Support\Str;
 
 final class Organizer extends Model
 {
-    use HasFactory, HasUlids;
+    use HasFactory;
+    use HasUlids;
 
     /**
      * Indicates if the IDs are auto-incrementing.
@@ -48,16 +49,6 @@ final class Organizer extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'id' => 'string',
-        'is_verified' => 'boolean',
-    ];
-
-    /**
      * Get the user that owns the organizer.
      */
     public function user(): BelongsTo
@@ -77,5 +68,18 @@ final class Organizer extends Model
                 $organizer->slug = Str::slug($organizer->name);
             }
         });
+    }
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'id' => 'string',
+            'is_verified' => 'boolean',
+        ];
     }
 }
