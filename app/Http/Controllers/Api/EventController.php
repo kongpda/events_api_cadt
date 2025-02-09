@@ -16,7 +16,7 @@ final class EventController extends Controller
     public function index(): AnonymousResourceCollection
     {
         return EventResource::collection(
-            Event::with(['categories', 'tags'])->latest()->paginate()
+            Event::with(['categories', 'tags'])->latest()->paginate(10)
         );
     }
 
