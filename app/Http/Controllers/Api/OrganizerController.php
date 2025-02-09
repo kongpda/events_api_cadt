@@ -16,7 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
 final class OrganizerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List organizers
+     *
+     * Display a listing of the organizers.
      */
     public function index(): AnonymousResourceCollection
     {
@@ -31,7 +33,9 @@ final class OrganizerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create organizer
+     *
+     * Create a new organizer.
      */
     public function store(Request $request): OrganizerResource
     {
@@ -55,7 +59,9 @@ final class OrganizerController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show organizer
+     *
+     * Display the specified organizer.
      */
     public function show(Organizer $organizer): OrganizerResource
     {
@@ -63,7 +69,9 @@ final class OrganizerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update organizer
+     *
+     * Update the specified organizer.
      */
     public function update(Request $request, Organizer $organizer): OrganizerResource
     {

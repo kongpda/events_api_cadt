@@ -15,6 +15,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class TagController extends Controller
 {
+    /**
+     * List tags
+     *
+     * Display a listing of the tags.
+     */
     public function index(): AnonymousResourceCollection
     {
         $tags = Tag::with('events')
@@ -27,6 +32,11 @@ final class TagController extends Controller
         return TagResource::collection($tags);
     }
 
+    /**
+     * Create tag
+     *
+     * Create a new tag.
+     */
     public function store(Request $request): TagResource
     {
         $validated = $request->validate([
@@ -44,11 +54,21 @@ final class TagController extends Controller
         return new TagResource($tag);
     }
 
+    /**
+     * Show tag
+     *
+     * Display the specified tag.
+     */
     public function show(Tag $tag): TagResource
     {
         return new TagResource($tag->load('events'));
     }
 
+    /**
+     * Update tag
+     *
+     * Update the specified tag.
+     */
     public function update(Request $request, Tag $tag): TagResource
     {
         $validated = $request->validate([
@@ -67,6 +87,11 @@ final class TagController extends Controller
         return new TagResource($tag);
     }
 
+    /**
+     * Delete tag
+     *
+     * Delete the specified tag.
+     */
     public function destroy(Tag $tag): JsonResponse
     {
         $tag->delete();

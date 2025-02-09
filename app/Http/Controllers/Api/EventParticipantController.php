@@ -18,6 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class EventParticipantController extends Controller
 {
+    /**
+     * List event participants
+     *
+     * Display a listing of the event participants.
+     */
     public function index(Event $event): AnonymousResourceCollection
     {
         $participants = $event->participants()
@@ -27,6 +32,11 @@ final class EventParticipantController extends Controller
         return EventParticipantResource::collection($participants);
     }
 
+    /**
+     * Create event participant
+     *
+     * Create a new event participant.
+     */
     public function store(Request $request): EventParticipantResource
     {
         $validated = $request->validate([
@@ -44,6 +54,11 @@ final class EventParticipantController extends Controller
         return new EventParticipantResource($participant);
     }
 
+    /**
+     * Show event participant
+     *
+     * Display the specified event participant.
+     */
     public function show(Event $event, EventParticipant $participant): EventParticipantResource
     {
         return new EventParticipantResource($participant->load(['user', 'ticketType']));
@@ -70,6 +85,11 @@ final class EventParticipantController extends Controller
         return new EventParticipantResource($participant->load(['user', 'ticketType']));
     }
 
+    /**
+     * Delete event participant
+     *
+     * Delete the specified event participant.
+     */
     public function destroy(Event $event, EventParticipant $participant): JsonResponse
     {
         $participant->delete();

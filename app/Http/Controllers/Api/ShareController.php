@@ -14,6 +14,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ShareController extends Controller
 {
+    /**
+     * List shares
+     *
+     * Display a listing of the shares.
+     */
     public function index(): AnonymousResourceCollection
     {
         $shares = Share::with(['user', 'event'])->paginate();
@@ -21,6 +26,11 @@ final class ShareController extends Controller
         return ShareResource::collection($shares);
     }
 
+    /**
+     * Create share
+     *
+     * Create a new share.
+     */
     public function store(Request $request): ShareResource
     {
         $validated = $request->validate([
@@ -37,11 +47,21 @@ final class ShareController extends Controller
         return new ShareResource($share->load(['user', 'event']));
     }
 
+    /**
+     * Show share
+     *
+     * Display the specified share.
+     */
     public function show(Share $share): ShareResource
     {
         return new ShareResource($share->load(['user', 'event']));
     }
 
+    /**
+     * Delete share
+     *
+     * Delete the specified share.
+     */
     public function destroy(Share $share): JsonResponse
     {
         $share->delete();

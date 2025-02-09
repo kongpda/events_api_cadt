@@ -16,6 +16,11 @@ use Illuminate\Validation\Rule;
 
 final class TicketController extends Controller
 {
+    /**
+     * List tickets
+     *
+     * Display a listing of the tickets.
+     */
     public function index(Request $request): AnonymousResourceCollection
     {
         $tickets = Ticket::query()
@@ -34,6 +39,11 @@ final class TicketController extends Controller
         return TicketResource::collection($tickets);
     }
 
+    /**
+     * Create ticket
+     *
+     * Create a new ticket.
+     */
     public function store(Request $request): TicketResource
     {
         $validated = $request->validate([
@@ -50,11 +60,21 @@ final class TicketController extends Controller
         return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
     }
 
+    /**
+     * Show ticket
+     *
+     * Display the specified ticket.
+     */
     public function show(Ticket $ticket): TicketResource
     {
         return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
     }
 
+    /**
+     * Update ticket
+     *
+     * Update the specified ticket.
+     */
     public function update(Request $request, Ticket $ticket): TicketResource
     {
         $validated = $request->validate([
@@ -75,6 +95,11 @@ final class TicketController extends Controller
         return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
     }
 
+    /**
+     * Delete ticket
+     *
+     * Delete the specified ticket.
+     */
     public function destroy(Ticket $ticket): JsonResponse
     {
         DB::transaction(function () use ($ticket): void {

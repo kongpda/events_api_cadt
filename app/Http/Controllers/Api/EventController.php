@@ -13,6 +13,11 @@ use Illuminate\Http\Response;
 
 final class EventController extends Controller
 {
+    /**
+     * List events
+     *
+     * Display a listing of the events.
+     */
     public function index(): AnonymousResourceCollection
     {
         $events = Event::with(['category', 'user', 'organizer', 'tags'])
@@ -22,6 +27,11 @@ final class EventController extends Controller
         return EventResource::collection($events);
     }
 
+    /**
+     * Create event.
+     *
+     * Create a new event.
+     */
     public function store(Request $request): EventResource
     {
         $validatedData = $request->validate([
@@ -61,6 +71,11 @@ final class EventController extends Controller
         );
     }
 
+    /**
+     * Show event.
+     *
+     * Display the specified event.
+     */
     public function show(Event $event): EventResource
     {
         return new EventResource($event->load(['category', 'user', 'organizer', 'tags']));
@@ -105,6 +120,11 @@ final class EventController extends Controller
         );
     }
 
+    /**
+     * Delete event.
+     *
+     * Delete the specified event.
+     */
     public function destroy(Event $event): Response
     {
         $event->delete();

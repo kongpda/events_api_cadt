@@ -13,6 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class FavoriteController extends Controller
 {
+    /**
+     * List favorites
+     *
+     * Display a listing of the favorites.
+     */
     public function index(): AnonymousResourceCollection
     {
         $favorites = auth()->user()->favorites()->with('event')->get();
@@ -20,6 +25,11 @@ final class FavoriteController extends Controller
         return FavoriteResource::collection($favorites);
     }
 
+    /**
+     * Create favorite
+     *
+     * Create a new favorite.
+     */
     public function store(Event $event): FavoriteResource
     {
         $favorite = auth()->user()->favorites()->create([
@@ -29,6 +39,11 @@ final class FavoriteController extends Controller
         return new FavoriteResource($favorite->load('event'));
     }
 
+    /**
+     * Delete favorite
+     *
+     * Delete the specified favorite.
+     */
     public function destroy(Event $event): JsonResponse
     {
         auth()->user()->favorites()->where('event_id', $event->id)->delete();
