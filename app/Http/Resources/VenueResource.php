@@ -17,22 +17,6 @@ use OpenApi\Annotations as OA;
  */
 final class VenueResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     *
-     * @OA\Property(property="id", type="integer", example=1)
-     * @OA\Property(property="name", type="string", example="Grand Hall")
-     * @OA\Property(property="address", type="string", example="123 Main Street")
-     * @OA\Property(property="city", type="string", example="Phnom Penh")
-     * @OA\Property(property="state", type="string", example="Phnom Penh")
-     * @OA\Property(property="country", type="string", example="Cambodia")
-     * @OA\Property(property="postal_code", type="string", example="12000")
-     * @OA\Property(property="capacity", type="integer", example=500)
-     * @OA\Property(property="created_at", type="string", format="date-time", example="2023-05-01T12:00:00")
-     * @OA\Property(property="updated_at", type="string", format="date-time", example="2023-05-02T14:30:00")
-     */
     public function toArray(Request $request): array
     {
         return [
