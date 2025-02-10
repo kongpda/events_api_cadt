@@ -19,13 +19,13 @@ Route::post('/auth/token', [AuthController::class, 'generateToken']);
 // Route::post('/auth/login', [AuthController::class, 'generateToken']);
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/reset-token', [AuthController::class, 'resetToken']);
     // Protected User API routes
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
 
     // Logout route
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 Route::apiResource('categories', CategoryController::class);
 
