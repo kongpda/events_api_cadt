@@ -12,7 +12,15 @@ use Illuminate\Validation\ValidationException;
 
 final class AuthController extends Controller
 {
-    // Method to handle user authentication and token generation
+    /**
+     * get token
+     *
+     * Authenticate user and generate API token
+     *
+     * @param  string  $email  The email address of the user
+     * @param  string  $password  The password of the user
+     * @param  string  $device_name  The name of the device requesting the token
+     */
     public function generateToken(Request $request)
     {
         ray($request->all());
@@ -44,7 +52,11 @@ final class AuthController extends Controller
         ], 200);
     }
 
-    // Method to handle user logout and token revocation
+    /**
+     * logout
+     *
+     * @param  string  $token  The token to be revoked
+     */
     public function logout(Request $request)
     {
         // Only revoke the current token instead of all tokens
@@ -53,7 +65,11 @@ final class AuthController extends Controller
         return response()->json(['message' => 'Token revoked successfully'], 200);
     }
 
-    // Method to reset/refresh the current token
+    /**
+     * Reset/Refresh the current token
+     *
+     * @param  string  $token  The token to be revoked
+     */
     public function resetToken(Request $request)
     {
         $user = $request->user();
