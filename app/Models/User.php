@@ -12,13 +12,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 final class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-    use HasUlids;
 
+    use HasUlids;
     use Notifiable;
 
     /**
@@ -80,6 +83,6 @@ final class User extends Authenticatable
         $validDomains = config('events_api.auth.valid_email_domains');
         ray($validDomains);
 
-        return collect($validDomains)->contains(fn($domain): bool => str_ends_with($email, $domain));
+        return collect($validDomains)->contains(fn ($domain): bool => str_ends_with($email, $domain));
     }
 }
