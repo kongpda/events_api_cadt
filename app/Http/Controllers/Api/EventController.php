@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -15,15 +14,10 @@ use Illuminate\Http\Response;
 
 final class EventController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Event::class, 'event');
-    }
-
     /**
      * Display a listing of the events.
+     *
+     * @unauthenticated
      */
     public function index(Request $request): AnonymousResourceCollection
     {
@@ -87,6 +81,8 @@ final class EventController extends Controller
 
     /**
      * Display the specified event.
+     *
+     * @unauthenticated
      */
     public function show(Event $event): EventResource
     {

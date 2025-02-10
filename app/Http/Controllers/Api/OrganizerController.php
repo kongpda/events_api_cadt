@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrganizerResource;
 use App\Models\Organizer;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -17,13 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class OrganizerController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Organizer::class, 'organizer');
-    }
-
     /**
      * Display a listing of the organizers.
      */

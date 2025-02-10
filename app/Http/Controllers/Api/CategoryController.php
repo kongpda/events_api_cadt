@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
@@ -38,22 +39,14 @@ final class CategoryController extends Controller
     /**
      * Store a newly created category.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'slug' => ['required', 'string', 'max:120', 'unique:categories'],
-            'description' => ['nullable', 'string'],
-            'is_active' => ['boolean'],
-            'position' => ['integer'],
-        ]);
-
-        $category = Category::create($validated);
+        $category = Category::create($request->validated());
 
         return response()->json([
             'message' => 'Category created successfully',
             'data' => new CategoryResource($category),
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -67,22 +60,14 @@ final class CategoryController extends Controller
     /**
      * Update the specified category.
      */
-    public function update(Request $request, Category $category): JsonResponse
+    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:100'],
-            'slug' => ['sometimes', 'required', 'string', 'max:120', 'unique:categories,slug,' . $category->id],
-            'description' => ['nullable', 'string'],
-            'is_active' => ['boolean'],
-            'position' => ['integer'],
-        ]);
-
-        $category->update($validated);
+        $category->update($request->validated());
 
         return response()->json([
             'message' => 'Category updated successfully',
             'data' => new CategoryResource($category),
-        ]);
+        ], Response::HTTP_OK);
     }
 
     /**

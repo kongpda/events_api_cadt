@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTicketTypeRequest;
-use App\Http\Requests\UpdateTicketTypeRequest;
+use App\Http\Requests\TicketType\StoreTicketTypeRequest;
+use App\Http\Requests\TicketType\UpdateTicketTypeRequest;
 use App\Http\Resources\TicketTypeResource;
 use App\Models\TicketType;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
