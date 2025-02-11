@@ -16,18 +16,30 @@ final class TicketTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'type' => 'ticket_type',
             'id' => $this->id,
-            'event_id' => $this->event_id,
-            'user_id' => $this->user_id,
-            'name' => $this->name,
-            'price' => $this->price,
-            'quantity' => $this->quantity,
-            'description' => $this->description,
-            'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'event' => EventResource::make($this->whenLoaded('event')),
-            'user' => UserResource::make($this->whenLoaded('user')),
+            'attributes' => [
+                'name' => $this->name,
+                'price' => $this->price,
+                'quantity' => $this->quantity,
+                'description' => $this->description,
+                'status' => $this->status,
+                'created_at' => $this->created_at->toIso8601String(),
+                'updated_at' => $this->updated_at->toIso8601String(),
+            ],
+            'relationships' => [
+                'event' => $this->when($this->relationLoaded('event'), fn () => [
+                    'type' => 'event',
+                    'id' => (string) $this->event_id,
+                ]),
+                'creator' => $this->when($this->relationLoaded('creator'), fn () => [
+                    'type' => 'user',
+                    'id' => (string) $this->created_by,
+                ]),
+            ],
+            'links' => [
+                'self' => route('ticket_types.show', $this->id),
+            ],
         ];
     }
 }

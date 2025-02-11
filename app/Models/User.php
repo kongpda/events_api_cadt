@@ -5,21 +5,34 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Observers\UserObserver;
 use Database\Factories\UserFactory;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Mpociot\Teamwork\Traits\UserHasTeams;
+use Spatie\Permission\Traits\HasRoles;
 
+#[ObservedBy([UserObserver::class])]
 final class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-    use HasUlids;
 
+    use HasRoles;
+    use HasUlids;
     use Notifiable;
+    use UserHasTeams;
 
     /**
      * The attributes that are mass assignable.
@@ -61,6 +74,17 @@ final class User extends Authenticatable
         return $this->hasMany(EventParticipant::class);
     }
 
+    public function favoriteEvents(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'event_favorites')
+            ->withTimestamps();
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -80,6 +104,6 @@ final class User extends Authenticatable
         $validDomains = config('events_api.auth.valid_email_domains');
         ray($validDomains);
 
-        return collect($validDomains)->contains(fn($domain): bool => str_ends_with($email, $domain));
+        return collect($validDomains)->contains(fn ($domain): bool => str_ends_with($email, $domain));
     }
 }

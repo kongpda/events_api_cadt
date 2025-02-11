@@ -12,15 +12,48 @@ final class TicketResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'event' => new EventResource($this->whenLoaded('event')),
-            'user' => new UserResource($this->whenLoaded('user')),
-            'ticket_type' => new TicketTypeResource($this->whenLoaded('ticketType')),
-            'status' => $this->status,
-            'purchase_date' => $this->purchase_date->toISOString(),
-            'price' => $this->price,
-            'created_at' => $this->created_at->toISOString(),
-            'updated_at' => $this->updated_at->toISOString(),
+            'type' => 'tickets',
+            'id' => (string) $this->id,
+            'attributes' => [
+                'status' => $this->status,
+                'purchase_date' => $this->purchase_date->toISOString(),
+                'price' => $this->price,
+                'created_at' => $this->created_at->toISOString(),
+                'updated_at' => $this->updated_at->toISOString(),
+            ],
+            'links' => [
+                'self' => route('tickets.show', $this->resource),
+                'related' => [
+                    'event' => route('events.show', $this->event_id),
+                    'user' => route('users.show', $this->user_id),
+                    'ticket_type' => route('ticket-types.show', $this->ticket_type_id),
+                ],
+            ],
+            'relationships' => [
+                'event' => [
+                    'data' => $this->when($this->relationLoaded('event'), fn () => [
+                        'type' => 'events',
+                        'id' => (string) $this->event->id,
+                    ]),
+                ],
+                'user' => [
+                    'data' => $this->when($this->relationLoaded('user'), fn () => [
+                        'type' => 'users',
+                        'id' => (string) $this->user->id,
+                    ]),
+                ],
+                'ticket_type' => [
+                    'data' => $this->when($this->relationLoaded('ticketType'), fn () => [
+                        'type' => 'ticket_types',
+                        'id' => (string) $this->ticketType->id,
+                    ]),
+                ],
+            ],
+            'included' => $this->when($request->includes ?? false, fn () => array_filter([
+                $this->whenLoaded('event', fn () => new EventResource($this->event)),
+                $this->whenLoaded('user', fn () => new UserResource($this->user)),
+                $this->whenLoaded('ticketType', fn () => new TicketTypeResource($this->ticketType)),
+            ])),
         ];
     }
 }

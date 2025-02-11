@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\ParticipationStatus;
-use App\Enums\ParticipationType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EventParticipant\StoreEventParticipantRequest;
+use App\Http\Requests\EventParticipant\UpdateEventParticipantRequest;
 use App\Http\Resources\EventParticipantResource;
 use App\Models\Event;
 use App\Models\EventParticipant;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Validation\Rules\Enum;
 use Symfony\Component\HttpFoundation\Response;
 
 final class EventParticipantController extends Controller
@@ -37,19 +35,9 @@ final class EventParticipantController extends Controller
      *
      * Create a new event participant.
      */
-    public function store(Request $request): EventParticipantResource
+    public function store(StoreEventParticipantRequest $request): EventParticipantResource
     {
-        $validated = $request->validate([
-            'event_id' => ['required', 'exists:events,id'],
-            'user_id' => ['required', 'exists:users,id'],
-            'status' => ['required', new Enum(ParticipationStatus::class)],
-            'participation_type' => ['required', new Enum(ParticipationType::class)],
-            'ticket_id' => ['nullable', 'exists:tickets,id'],
-            'check_in_time' => ['nullable', 'date'],
-            'joined_at' => ['required', 'date'],
-        ]);
-
-        $participant = EventParticipant::create($validated);
+        $participant = EventParticipant::create($request->validated());
 
         return new EventParticipantResource($participant);
     }
@@ -65,22 +53,11 @@ final class EventParticipantController extends Controller
     }
 
     public function update(
-        Request $request,
+        UpdateEventParticipantRequest $request,
         Event $event,
         EventParticipant $participant,
     ): EventParticipantResource {
-        $validated = $request->validate([
-            'status' => ['sometimes', 'string', 'in:' . implode(',', [
-                ParticipationStatus::REGISTERED->value,
-                ParticipationStatus::ATTENDED->value,
-                ParticipationStatus::CANCELLED->value,
-                ParticipationStatus::WAITLISTED->value,
-                ParticipationStatus::DECLINED->value,
-            ])],
-            'check_in_time' => ['nullable', 'date'],
-        ]);
-
-        $participant->update($validated);
+        $participant->update($request->validated());
 
         return new EventParticipantResource($participant->load(['user', 'ticketType']));
     }

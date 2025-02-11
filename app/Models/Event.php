@@ -107,20 +107,29 @@ final class Event extends Model
         return $this->belongsTo(Organizer::class);
     }
 
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'event_favorites')
+            ->withTimestamps();
+    }
+
+    public function isFavoritedBy(?User $user): bool
+    {
+        if ( ! $user) {
+            return false;
+        }
+
+        return $this->favoritedBy()
+            ->where('user_id', $user->id)
+            ->exists();
+    }
+
     /**
      * Scope a query to only include events with a specific status.
      */
     public function scopeStatus(Builder $query, string $status): Builder
     {
         return $query->where('status', $status);
-    }
-
-    /**
-     * Get the route key for the model.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'slug';
     }
 
     /**

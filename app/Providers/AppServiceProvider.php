@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use Carbon\CarbonImmutable;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Date;
@@ -30,6 +33,12 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configureUrl();
         $this->configureVite();
+
+        Scramble::afterOpenApiGenerated(function (OpenApi $openApi): void {
+            $openApi->secure(
+                SecurityScheme::http('bearer')
+            );
+        });
     }
 
     /**

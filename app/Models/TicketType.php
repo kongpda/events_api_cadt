@@ -16,7 +16,7 @@ final class TicketType extends Model
 
     protected $fillable = [
         'event_id',
-        'user_id',
+        'created_by',
         'name',
         'price',
         'quantity',
@@ -24,21 +24,19 @@ final class TicketType extends Model
         'status',
     ];
 
+    protected $casts = [
+        'price' => 'decimal:2',
+        'quantity' => 'integer',
+        'created_by' => 'integer',
+    ];
+
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
 
-    public function user(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'price' => 'decimal:2',
-            'quantity' => 'integer',
-        ];
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

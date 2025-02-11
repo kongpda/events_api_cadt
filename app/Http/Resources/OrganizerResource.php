@@ -17,20 +17,37 @@ final class OrganizerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'type' => 'organizer',
             'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'description' => $this->description,
-            'address' => $this->address,
-            'website' => $this->website,
-            'social_media' => $this->social_media,
-            'logo' => $this->logo,
-            'is_verified' => $this->is_verified,
-            'user' => new UserResource($this->whenLoaded('user')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'attributes' => [
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'email' => $this->email,
+                'phone' => $this->phone,
+                $this->mergeWhen($request->routeIs('organizers.show'), [
+                    'description' => $this->description,
+                    'address' => $this->address,
+                    'website' => $this->website,
+                    'social_media' => $this->social_media,
+                    'logo' => $this->logo,
+                    'is_verified' => $this->is_verified,
+                    'created_at' => $this->created_at,
+                    'updated_at' => $this->updated_at,
+                ]),
+            ],
+            'relationships' => [
+                $this->mergeWhen($request->routeIs('organizers.show'), [
+                    'user' => new UserResource($this->whenLoaded('user')),
+                    'event' => EventResource::collection($this->whenLoaded('events')),
+                ]),
+            ],
+            'links' => [
+                'self' => route('organizers.show', $this->id),
+                'events' => route('organizers.show', [
+                    'organizer' => $this->id,
+                    'include' => 'events',
+                ]),
+            ],
         ];
     }
 }

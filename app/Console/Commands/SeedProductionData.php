@@ -6,17 +6,18 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Event;
-use App\Models\Favorite;
 use App\Models\Organizer;
 use App\Models\Share;
 use App\Models\Tag;
 use App\Models\TicketType;
 use App\Models\User;
 use App\Models\Venue;
+use App\Support\Permissions\PermissionManager;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 final class SeedProductionData extends Command
 {
@@ -130,6 +131,9 @@ final class SeedProductionData extends Command
 
         try {
             DB::transaction(function (): void {
+                $this->createRolesAndPermissions();
+                $this->info('✓ Roles and permissions created');
+
                 $this->createCategories();
                 $this->info('✓ Categories created');
 
@@ -172,6 +176,40 @@ final class SeedProductionData extends Command
             $this->info('Production data seeding completed successfully!');
         } catch (Exception $exception) {
             $this->error('Error seeding data: ' . $exception->getMessage());
+        }
+    }
+
+    private function createRolesAndPermissions(): void
+    {
+        // Create permissions and roles
+        PermissionManager::createPermissions();
+        PermissionManager::createRoles();
+
+        // Assign super-admin role to the admin user
+        $adminUser = User::query()->where('email', 'admin@herdapp.com')->first();
+        if ($adminUser) {
+            $adminUser->assignRole('super-admin');
+        }
+
+        // Assign organizer role to test users
+        $testUsers = User::query()->whereIn('email', [
+            'john@example.com',
+            'jane@example.com',
+        ])->get();
+
+        foreach ($testUsers as $user) {
+            $user->assignRole('organizer');
+        }
+
+        // Assign regular user role to remaining test users
+        $regularUsers = User::query()->whereIn('email', [
+            'bob@example.com',
+            'alice@example.com',
+            'david@example.com',
+        ])->get();
+
+        foreach ($regularUsers as $user) {
+            $user->assignRole('user');
         }
     }
 
@@ -349,6 +387,7 @@ final class SeedProductionData extends Command
             foreach ($ticketTypes as $name => $details) {
                 TicketType::query()->create([
                     'event_id' => $event->id,
+                    'created_by' => $event->user_id,
                     'name' => $name,
                     'description' => $details['description'],
                     'price' => $details['price'],
@@ -366,22 +405,77 @@ final class SeedProductionData extends Command
             [
                 'name' => 'John Doe',
                 'email' => 'john@example.com',
+                'profile' => [
+                    'first_name' => 'John',
+                    'last_name' => 'Doe',
+                    'birth_date' => '1990-01-15',
+                    'phone' => '+855 12 345 678',
+                    'bio' => 'Tech enthusiast and event organizer',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/johndoe',
+                        'linkedin' => 'https://linkedin.com/in/johndoe',
+                    ],
+                ],
             ],
             [
                 'name' => 'Jane Smith',
                 'email' => 'jane@example.com',
+                'profile' => [
+                    'first_name' => 'Jane',
+                    'last_name' => 'Smith',
+                    'birth_date' => '1992-03-20',
+                    'phone' => '+855 12 345 679',
+                    'bio' => 'Digital marketing specialist and event planner',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/janesmith',
+                        'linkedin' => 'https://linkedin.com/in/janesmith',
+                    ],
+                ],
             ],
             [
                 'name' => 'Bob Wilson',
                 'email' => 'bob@example.com',
+                'profile' => [
+                    'first_name' => 'Bob',
+                    'last_name' => 'Wilson',
+                    'birth_date' => '1988-07-10',
+                    'phone' => '+855 12 345 680',
+                    'bio' => 'Community manager and event enthusiast',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/bobwilson',
+                        'linkedin' => 'https://linkedin.com/in/bobwilson',
+                    ],
+                ],
             ],
             [
                 'name' => 'Alice Brown',
                 'email' => 'alice@example.com',
+                'profile' => [
+                    'first_name' => 'Alice',
+                    'last_name' => 'Brown',
+                    'birth_date' => '1995-11-25',
+                    'phone' => '+855 12 345 681',
+                    'bio' => 'Event photographer and social media manager',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/alicebrown',
+                        'linkedin' => 'https://linkedin.com/in/alicebrown',
+                    ],
+                ],
             ],
             [
                 'name' => 'David Lee',
                 'email' => 'david@example.com',
+                'profile' => [
+                    'first_name' => 'David',
+                    'last_name' => 'Lee',
+                    'birth_date' => '1991-09-05',
+                    'phone' => '+855 12 345 682',
+                    'bio' => 'Event technology consultant',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/davidlee',
+                        'linkedin' => 'https://linkedin.com/in/davidlee',
+                    ],
+                ],
             ],
         ];
 
@@ -394,6 +488,14 @@ final class SeedProductionData extends Command
                     'email_verified_at' => now(),
                 ],
             );
+
+            // Update or create profile with specific data
+            if ($user->profile) {
+                $user->profile->update($userData['profile']);
+            } else {
+                $user->profile()->create($userData['profile']);
+            }
+
             $users[] = $user;
         }
 
@@ -405,11 +507,13 @@ final class SeedProductionData extends Command
         foreach ($users as $user) {
             // Each user favorites 3-8 random events
             $randomEvents = collect($events)->random(random_int(3, 8));
+
+            // Use the relationship instead of the Favorite model
             foreach ($randomEvents as $event) {
-                Favorite::query()->firstOrCreate([
-                    'user_id' => $user->id,
-                    'event_id' => $event->id,
-                ]);
+                $user->favoriteEvents()->syncWithoutDetaching([$event->id => [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]]);
             }
         }
     }
