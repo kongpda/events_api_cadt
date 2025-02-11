@@ -366,22 +366,77 @@ final class SeedProductionData extends Command
             [
                 'name' => 'John Doe',
                 'email' => 'john@example.com',
+                'profile' => [
+                    'first_name' => 'John',
+                    'last_name' => 'Doe',
+                    'birth_date' => '1990-01-15',
+                    'phone' => '+855 12 345 678',
+                    'bio' => 'Tech enthusiast and event organizer',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/johndoe',
+                        'linkedin' => 'https://linkedin.com/in/johndoe',
+                    ],
+                ],
             ],
             [
                 'name' => 'Jane Smith',
                 'email' => 'jane@example.com',
+                'profile' => [
+                    'first_name' => 'Jane',
+                    'last_name' => 'Smith',
+                    'birth_date' => '1992-03-20',
+                    'phone' => '+855 12 345 679',
+                    'bio' => 'Digital marketing specialist and event planner',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/janesmith',
+                        'linkedin' => 'https://linkedin.com/in/janesmith',
+                    ],
+                ],
             ],
             [
                 'name' => 'Bob Wilson',
                 'email' => 'bob@example.com',
+                'profile' => [
+                    'first_name' => 'Bob',
+                    'last_name' => 'Wilson',
+                    'birth_date' => '1988-07-10',
+                    'phone' => '+855 12 345 680',
+                    'bio' => 'Community manager and event enthusiast',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/bobwilson',
+                        'linkedin' => 'https://linkedin.com/in/bobwilson',
+                    ],
+                ],
             ],
             [
                 'name' => 'Alice Brown',
                 'email' => 'alice@example.com',
+                'profile' => [
+                    'first_name' => 'Alice',
+                    'last_name' => 'Brown',
+                    'birth_date' => '1995-11-25',
+                    'phone' => '+855 12 345 681',
+                    'bio' => 'Event photographer and social media manager',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/alicebrown',
+                        'linkedin' => 'https://linkedin.com/in/alicebrown',
+                    ],
+                ],
             ],
             [
                 'name' => 'David Lee',
                 'email' => 'david@example.com',
+                'profile' => [
+                    'first_name' => 'David',
+                    'last_name' => 'Lee',
+                    'birth_date' => '1991-09-05',
+                    'phone' => '+855 12 345 682',
+                    'bio' => 'Event technology consultant',
+                    'social_links' => [
+                        'twitter' => 'https://twitter.com/davidlee',
+                        'linkedin' => 'https://linkedin.com/in/davidlee',
+                    ],
+                ],
             ],
         ];
 
@@ -394,6 +449,14 @@ final class SeedProductionData extends Command
                     'email_verified_at' => now(),
                 ],
             );
+
+            // Update or create profile with specific data
+            if ($user->profile) {
+                $user->profile->update($userData['profile']);
+            } else {
+                $user->profile()->create($userData['profile']);
+            }
+
             $users[] = $user;
         }
 
