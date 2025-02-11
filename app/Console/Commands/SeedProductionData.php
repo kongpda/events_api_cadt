@@ -350,7 +350,7 @@ final class SeedProductionData extends Command
                 'registration_deadline' => $startDate->copy()->subDays(random_int(1, 7)),
                 'registration_status' => $registrationStatuses[array_rand($registrationStatuses)],
                 'event_type' => $eventTypes[array_rand($eventTypes)],
-                'online_url' => fake()->url(),
+                'online_url' => 'https://meet.google.com/event-' . Str::random(10),
             ]);
 
             $event->tags()->attach(
