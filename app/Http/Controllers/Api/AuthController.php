@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApiLoginRequest;
@@ -18,9 +18,6 @@ final class AuthController extends Controller
 {
     /**
      * Generate an API token for the user.
-     *
-     *
-     * @throws ValidationException
      */
     public function generateToken(ApiLoginRequest $request): JsonResponse
     {
@@ -52,8 +49,6 @@ final class AuthController extends Controller
 
     /**
      * Register a new user.
-     *
-     * @throws ValidationException
      */
     public function register(Request $request): JsonResponse
     {
