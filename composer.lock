@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "803570c1dcde0b9b5d6f823ef0c20186",
+    "content-hash": "57dd63e256037f1fbd8c8caa3d13ae35",
     "packages": [
         {
             "name": "amphp/amp",
@@ -5081,6 +5081,72 @@
                 }
             ],
             "time": "2024-12-05T17:15:07+00:00"
+        },
+        {
+            "name": "mpociot/teamwork",
+            "version": "9.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mpociot/teamwork.git",
+                "reference": "bda53ab045f08fe5adc6ae422f077d67d1fbf321"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mpociot/teamwork/zipball/bda53ab045f08fe5adc6ae422f077d67d1fbf321",
+                "reference": "bda53ab045f08fe5adc6ae422f077d67d1fbf321",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^9.0|^10.0|^11.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "doctrine/dbal": "^2.10|^3.5",
+                "illuminate/database": "^9.0|^10.0|^11.0",
+                "mockery/mockery": "^1.5.1",
+                "orchestra/testbench": "^7.0|^8.0|^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Teamwork": "Mpociot\\Teamwork\\Facades\\Teamwork"
+                    },
+                    "providers": [
+                        "Mpociot\\Teamwork\\TeamworkServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Mpociot\\Teamwork\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marcel Pociot",
+                    "email": "m.pociot@gmail.com"
+                },
+                {
+                    "name": "Oliver Kaufmann",
+                    "email": "okaufmann91@gmail.com"
+                }
+            ],
+            "description": "User to Team associations for the Laravel 5 Framework",
+            "homepage": "http://github.com/mpociot/teamwork",
+            "keywords": [
+                "Invite",
+                "Teams"
+            ],
+            "support": {
+                "issues": "https://github.com/mpociot/teamwork/issues",
+                "source": "https://github.com/mpociot/teamwork"
+            },
+            "time": "2024-06-18T11:45:47+00:00"
         },
         {
             "name": "myclabs/deep-copy",

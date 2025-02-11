@@ -18,9 +18,5 @@ final class UserObserver
             'last_name' => explode(' ', $user->name)[1] ?? '',
             'status' => UserStatus::ACTIVE->value,
         ]);
-
-        if ( ! $user->hasAnyRole()) {
-            $user->assignRole('member');
-        }
     }
 }
