@@ -9,20 +9,12 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 final class CategoryController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function __construct()
-    {
-        $this->authorizeResource(Category::class, 'category');
-    }
-
     /**
      * Display a listing of the categories.
      */
@@ -54,7 +46,12 @@ final class CategoryController extends Controller
      */
     public function show(Category $category): CategoryResource
     {
-        return new CategoryResource($category);
+        $category->load(['events' => function ($query): void {
+            $query->with('favoritedBy', 'organizer');
+        }]);
+        ray($category);
+
+        return CategoryResource::make($category);
     }
 
     /**

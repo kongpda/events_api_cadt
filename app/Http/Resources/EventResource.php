@@ -19,7 +19,7 @@ final class EventResource extends JsonResource
                 'feature_image' => $this->feature_image,
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
-                $this->mergeWhen($request->is('api/events/{event}'), [
+                $this->mergeWhen($request->routeIs('events.show'), [
                     'slug' => $this->slug,
                     'description' => $this->description,
                     'address' => $this->address,
@@ -35,7 +35,7 @@ final class EventResource extends JsonResource
                 'is_favorited' => $request->user() ? $this->isFavoritedBy($request->user()) : false,
             ],
             'relationships' => [
-                $this->mergeWhen($request->is('api/events/{event}'), [
+                $this->mergeWhen($request->routeIs('events.show'), [
                     'category' => new CategoryResource($this->whenLoaded('category')),
                     'user' => new UserResource($this->whenLoaded('user')),
                     'organizer' => new OrganizerResource($this->whenLoaded('organizer')),

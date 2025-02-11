@@ -20,10 +20,6 @@ Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 // Route::post('/users', [UserController::class, 'store']); // Allow public registration
 
-// Public category routes
-Route::get('categories', [CategoryController::class, 'index']);
-Route::get('categories/{category}', [CategoryController::class, 'show']);
-
 Route::middleware(['auth:sanctum'])->group(function (): void {
     // Protected Auth routes
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -36,6 +32,8 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     // Protected Category routes
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
     Route::post('categories', [CategoryController::class, 'store']);
     Route::put('categories/{category}', [CategoryController::class, 'update']);
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);

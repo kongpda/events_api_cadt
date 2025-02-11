@@ -119,7 +119,9 @@ final class Event extends Model
             return false;
         }
 
-        return $this->favoritedBy->contains('id', $user->id);
+        return $this->favoritedBy()
+            ->where('user_id', $user->id)
+            ->exists();
     }
 
     /**
