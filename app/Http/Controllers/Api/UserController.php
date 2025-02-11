@@ -15,11 +15,6 @@ use Illuminate\Validation\Rules\Password;
 
 final class UserController extends Controller
 {
-    public function __construct()
-    {
-        $this->authorizeResource(User::class, 'user');
-    }
-
     /**
      * Display a listing of users.
      */
