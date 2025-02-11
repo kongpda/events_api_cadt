@@ -5,8 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\EventFavoriteController;
 use App\Http\Controllers\Api\EventParticipantController;
-use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\OrganizerController;
 use App\Http\Controllers\Api\ShareController;
 use App\Http\Controllers\Api\TagController;
@@ -23,10 +23,6 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 // Public category routes
 Route::get('categories', [CategoryController::class, 'index']);
 Route::get('categories/{category}', [CategoryController::class, 'show']);
-
-// Public event routes
-Route::get('events', [EventController::class, 'index']);
-Route::get('events/{event}', [EventController::class, 'show']);
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
     // Protected Auth routes
@@ -45,15 +41,19 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
     // Protected Event routes
+    Route::get('events', [EventController::class, 'index']);
+    Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::post('events', [EventController::class, 'store']);
     Route::put('events/{event}', [EventController::class, 'update']);
     Route::delete('events/{event}', [EventController::class, 'destroy']);
 
+    // Protected Event Favorite routes
+    Route::get('event-favorites', [EventFavoriteController::class, 'index']);
+    Route::post('events/{event}/toggle-favorite', [EventFavoriteController::class, 'toggle'])
+        ->name('events.favorite');
+
     // Protected Event Participant routes (all operations)
     Route::apiResource('event-participants', EventParticipantController::class);
-
-    // Protected Favorite routes (all operations)
-    Route::apiResource('favorites', FavoriteController::class);
 
     // Protected Organizer routes (all operations)
     Route::apiResource('organizers', OrganizerController::class);
@@ -69,4 +69,5 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
 
     // Protected Ticket Type routes (all operations)
     Route::apiResource('ticket-types', TicketTypeController::class);
+
 });

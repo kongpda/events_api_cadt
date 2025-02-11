@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Event;
-use App\Models\Favorite;
 use App\Models\Organizer;
 use App\Models\Share;
 use App\Models\Tag;
@@ -405,11 +404,13 @@ final class SeedProductionData extends Command
         foreach ($users as $user) {
             // Each user favorites 3-8 random events
             $randomEvents = collect($events)->random(random_int(3, 8));
+
+            // Use the relationship instead of the Favorite model
             foreach ($randomEvents as $event) {
-                Favorite::query()->firstOrCreate([
-                    'user_id' => $user->id,
-                    'event_id' => $event->id,
-                ]);
+                $user->favoriteEvents()->syncWithoutDetaching([$event->id => [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]]);
             }
         }
     }

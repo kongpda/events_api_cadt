@@ -16,17 +16,21 @@ final class EventController extends Controller
 {
     /**
      * Display a listing of the events.
-     *
-     * @unauthenticated
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $events = Event::with(['category', 'user', 'organizer', 'tags'])
+        $events = Event::query()
+            ->with(['category', 'user', 'organizer', 'tags', 'favoritedBy'])
             ->when($request->filled('category_id'), function ($query) use ($request): void {
                 $query->where('category_id', $request->input('category_id'));
             })
             ->when($request->filled('organizer_id'), function ($query) use ($request): void {
                 $query->where('organizer_id', $request->input('organizer_id'));
+            })
+            ->when($request->user(), function ($query) use ($request): void {
+                $query->withExists(['favoritedBy as is_favorited' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
             })
             ->latest()
             ->paginate();
@@ -81,12 +85,18 @@ final class EventController extends Controller
 
     /**
      * Display the specified event.
-     *
-     * @unauthenticated
      */
     public function show(Event $event): EventResource
     {
-        return new EventResource($event->load(['category', 'user', 'organizer', 'tags']));
+        $event->load(['category', 'user', 'organizer', 'tags']);
+
+        if (auth()->check()) {
+            $event->loadExists(['favoritedBy as is_favorited' => function ($query): void {
+                $query->where('user_id', auth()->id());
+            }]);
+        }
+
+        return new EventResource($event);
     }
 
     /**
