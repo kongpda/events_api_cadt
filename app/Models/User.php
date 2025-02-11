@@ -61,8 +61,6 @@ final class User extends Authenticatable
             return false;
         }
 
-        ray($this->email);
-
         return $this->emailDomainIsValid($this->email)
             && $this->hasVerifiedEmail();
         // && $this->is_admin
@@ -102,7 +100,6 @@ final class User extends Authenticatable
     {
         /** @var array<string> $validDomains */
         $validDomains = config('events_api.auth.valid_email_domains');
-        ray($validDomains);
 
         return collect($validDomains)->contains(fn ($domain): bool => str_ends_with($email, $domain));
     }
