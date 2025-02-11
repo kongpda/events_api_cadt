@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ApiLoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -20,13 +21,11 @@ final class AuthController extends Controller
      *
      * @throws ValidationException
      */
-    public function generateToken(Request $request): JsonResponse
+    public function generateToken(ApiLoginRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-            'device_name' => ['required', 'string'],
-        ]);
+        ray($request->all());
+        $validated = $request->validated();
+        ray($validated);
 
         $user = User::where('email', $validated['email'])->first();
 
@@ -39,7 +38,11 @@ final class AuthController extends Controller
         // Delete existing tokens for this device name
         $user->tokens()->where('name', $validated['device_name'])->delete();
 
-        $token = $user->createToken($validated['device_name'])->plainTextToken;
+        $token = $user->createToken(
+            name: $validated['device_name'],
+            abilities: ['*'],
+            expiresAt: now()->addDays(10),
+        )->plainTextToken;
 
         return response()->json([
             'token' => $token,
