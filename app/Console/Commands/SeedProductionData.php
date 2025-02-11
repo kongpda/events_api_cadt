@@ -12,10 +12,12 @@ use App\Models\Tag;
 use App\Models\TicketType;
 use App\Models\User;
 use App\Models\Venue;
+use App\Support\Permissions\PermissionManager;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 final class SeedProductionData extends Command
 {
@@ -129,6 +131,9 @@ final class SeedProductionData extends Command
 
         try {
             DB::transaction(function (): void {
+                $this->createRolesAndPermissions();
+                $this->info('✓ Roles and permissions created');
+
                 $this->createCategories();
                 $this->info('✓ Categories created');
 
@@ -171,6 +176,40 @@ final class SeedProductionData extends Command
             $this->info('Production data seeding completed successfully!');
         } catch (Exception $exception) {
             $this->error('Error seeding data: ' . $exception->getMessage());
+        }
+    }
+
+    private function createRolesAndPermissions(): void
+    {
+        // Create permissions and roles
+        PermissionManager::createPermissions();
+        PermissionManager::createRoles();
+
+        // Assign super-admin role to the admin user
+        $adminUser = User::query()->where('email', 'admin@herdapp.com')->first();
+        if ($adminUser) {
+            $adminUser->assignRole('super-admin');
+        }
+
+        // Assign organizer role to test users
+        $testUsers = User::query()->whereIn('email', [
+            'john@example.com',
+            'jane@example.com',
+        ])->get();
+
+        foreach ($testUsers as $user) {
+            $user->assignRole('organizer');
+        }
+
+        // Assign regular user role to remaining test users
+        $regularUsers = User::query()->whereIn('email', [
+            'bob@example.com',
+            'alice@example.com',
+            'david@example.com',
+        ])->get();
+
+        foreach ($regularUsers as $user) {
+            $user->assignRole('user');
         }
     }
 
