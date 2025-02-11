@@ -41,7 +41,7 @@ final class OrganizerPolicy
      */
     public function update(User $user, Organizer $organizer): bool
     {
-        return $user->id === $organizer->user_id || $user->isAdmin();
+        return $user->id === $organizer->user_id;
     }
 
     /**
@@ -49,6 +49,6 @@ final class OrganizerPolicy
      */
     public function delete(User $user, Organizer $organizer): bool
     {
-        return $user->id === $organizer->user_id || $user->isAdmin();
+        return $user->id === $organizer->user_id;
     }
 }

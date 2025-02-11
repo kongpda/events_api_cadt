@@ -54,7 +54,13 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::apiResource('event-participants', EventParticipantController::class);
 
     // Protected Organizer routes (all operations)
-    Route::apiResource('organizers', OrganizerController::class);
+    Route::apiResource('organizers', OrganizerController::class)->names([
+        'index' => 'organizers.index',
+        'show' => 'organizers.show',
+        'store' => 'organizers.store',
+        'update' => 'organizers.update',
+        'destroy' => 'organizers.destroy',
+    ]);
 
     // Protected Share routes (all operations)
     Route::apiResource('shares', ShareController::class);

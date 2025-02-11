@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Organizer\StoreOrganizerRequest;
+use App\Http\Requests\Organizer\UpdateOrganizerRequest;
 use App\Http\Resources\OrganizerResource;
 use App\Models\Organizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
 final class OrganizerController extends Controller
@@ -22,10 +23,16 @@ final class OrganizerController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $organizers = Organizer::query()
+            ->with(['user'])
             ->when(
                 $request->boolean('verified'),
-                fn ($query) => $query->where('is_verified', true),
+                fn ($query) => $query->where('is_verified', true)
             )
+            ->when(
+                $request->has('include') && in_array('events', explode(',', $request->input('include'))),
+                fn ($query) => $query->with(['events' => fn ($q) => $q->latest()])
+            )
+            ->latest()
             ->paginate();
 
         return OrganizerResource::collection($organizers);
@@ -34,62 +41,48 @@ final class OrganizerController extends Controller
     /**
      * Store a newly created organizer.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreOrganizerRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'unique:organizers'],
-            'phone' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'address' => ['nullable', 'string'],
-            'website' => ['nullable', 'url'],
-            'social_media' => ['nullable', 'url'],
-            'logo' => ['nullable', 'string'],
-        ]);
-
+        $validated = $request->validated();
         $validated['user_id'] = $request->user()->id;
         $validated['slug'] = Str::slug($validated['name']);
 
         $organizer = Organizer::create($validated);
+        $organizer->load(['user']);
 
-        return response()->json([
-            'message' => 'Organizer created successfully',
-            'data' => new OrganizerResource($organizer),
-        ], 201);
+        return (new OrganizerResource($organizer))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
     /**
      * Display the specified organizer.
      */
-    public function show(Organizer $organizer): OrganizerResource
+    public function show(Request $request, Organizer $organizer): OrganizerResource
     {
+        $organizer->load(['user']);
+
+        if ($request->has('include') && in_array('events', explode(',', $request->input('include')))) {
+            $organizer->load(['events' => fn ($query) => $query->latest()]);
+        }
+
         return new OrganizerResource($organizer);
     }
 
     /**
      * Update the specified organizer.
      */
-    public function update(Request $request, Organizer $organizer): JsonResponse
+    public function update(UpdateOrganizerRequest $request, Organizer $organizer): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', Rule::unique('organizers')->ignore($organizer->id)],
-            'phone' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'address' => ['nullable', 'string'],
-            'website' => ['nullable', 'url'],
-            'social_media' => ['nullable', 'url'],
-            'logo' => ['nullable', 'string'],
-        ]);
-
+        $validated = $request->validated();
         $validated['slug'] = Str::slug($validated['name']);
 
         $organizer->update($validated);
+        $organizer->load(['user']);
 
-        return response()->json([
-            'message' => 'Organizer updated successfully',
-            'data' => new OrganizerResource($organizer),
-        ]);
+        return (new OrganizerResource($organizer))
+            ->response()
+            ->setStatusCode(Response::HTTP_OK);
     }
 
     /**
@@ -97,6 +90,8 @@ final class OrganizerController extends Controller
      */
     public function destroy(Organizer $organizer): Response
     {
+        $this->authorize('delete', $organizer);
+
         $organizer->delete();
 
         return response()->noContent();
