@@ -17,29 +17,37 @@ use OpenApi\Annotations as OA;
  */
 final class TagResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     *
-     * @OA\Property(property="id", type="integer", example=1)
-     * @OA\Property(property="name", type="string", example="Music Festival")
-     * @OA\Property(property="slug", type="string", example="music-festival")
-     * @OA\Property(property="created_at", type="string", format="date-time", example="2023-05-01T12:00:00")
-     * @OA\Property(property="updated_at", type="string", format="date-time", example="2023-05-02T14:30:00")
-     */
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'description' => $this->description,
-            'is_active' => $this->is_active,
-            'position' => $this->position,
-            'events' => EventResource::collection($this->whenLoaded('events')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'type' => 'tags',
+            'id' => (string) $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'description' => $this->description,
+                'is_active' => (bool) $this->is_active,
+                'position' => (int) $this->position,
+                'created_at' => $this->created_at?->toIso8601String(),
+                'updated_at' => $this->updated_at?->toIso8601String(),
+            ],
+            'relationships' => [
+                'events' => [
+                    'data' => $this->when($this->relationLoaded('events'), fn () => $this->events->map(fn ($event) => [
+                        'type' => 'events',
+                        'id' => (string) $event->id,
+                    ])->all()),
+                ],
+            ],
+            'included' => [
+                $this->when(
+                    $this->relationLoaded('events'),
+                    fn () => EventResource::collection($this->events)
+                ),
+            ],
+            'links' => [
+                'self' => route('tags.show', $this->resource),
+            ],
         ];
     }
 }

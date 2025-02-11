@@ -36,8 +36,10 @@ final class OrganizerResource extends JsonResource
                 ]),
             ],
             'relationships' => [
-                'user' => new UserResource($this->whenLoaded('user')),
-                'events' => EventResource::collection($this->whenLoaded('events')),
+                $this->mergeWhen($request->routeIs('organizers.show'), [
+                    'user' => new UserResource($this->whenLoaded('user')),
+                    'event' => EventResource::collection($this->whenLoaded('events')),
+                ]),
             ],
             'links' => [
                 'self' => route('organizers.show', $this->id),

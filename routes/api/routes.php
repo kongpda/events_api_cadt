@@ -63,15 +63,35 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     ]);
 
     // Protected Share routes (all operations)
-    Route::apiResource('shares', ShareController::class);
+    Route::apiResource('shares', ShareController::class)->names([
+        'index' => 'shares.index',
+        'show' => 'shares.show',
+    ]);
 
     // Protected Tag routes (all operations)
-    Route::apiResource('tags', TagController::class);
+    Route::apiResource('tags', TagController::class)->names([
+        'index' => 'tags.index',
+        'show' => 'tags.show',
+        'store' => 'tags.store',
+        'update' => 'tags.update',
+        'destroy' => 'tags.destroy',
+    ]);
 
     // Protected Ticket routes (all operations)
-    Route::apiResource('tickets', TicketController::class);
+    Route::apiResource('tickets', TicketController::class)->names([
+        'index' => 'tickets.index',
+        'show' => 'tickets.show',
+        'store' => 'tickets.store',
+        'update' => 'tickets.update',
+        'destroy' => 'tickets.destroy',
+    ]);
 
     // Protected Ticket Type routes (all operations)
-    Route::apiResource('ticket-types', TicketTypeController::class);
-
+    Route::apiResource('ticket-types', TicketTypeController::class)->names([
+        'index' => 'ticket_types.index',
+        'show' => 'ticket_types.show',
+        'store' => 'ticket_types.store',
+        'update' => 'ticket_types.update',
+        'destroy' => 'ticket_types.destroy',
+    ]);
 });

@@ -348,6 +348,7 @@ final class SeedProductionData extends Command
             foreach ($ticketTypes as $name => $details) {
                 TicketType::query()->create([
                     'event_id' => $event->id,
+                    'created_by' => $event->user_id,
                     'name' => $name,
                     'description' => $details['description'],
                     'price' => $details['price'],

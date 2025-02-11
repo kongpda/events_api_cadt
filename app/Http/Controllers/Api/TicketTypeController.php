@@ -22,7 +22,7 @@ final class TicketTypeController extends Controller
     public function index(): AnonymousResourceCollection
     {
         return TicketTypeResource::collection(
-            TicketType::with(['event', 'user'])->paginate(),
+            TicketType::with(['event', 'creator'])->paginate(),
         );
     }
 
@@ -33,9 +33,12 @@ final class TicketTypeController extends Controller
      */
     public function store(StoreTicketTypeRequest $request): TicketTypeResource
     {
-        $ticketType = TicketType::create($request->validated());
+        $ticketType = TicketType::create([
+            ...$request->validated(),
+            'created_by' => $request->user()->id,
+        ]);
 
-        return TicketTypeResource::make($ticketType->load(['event', 'user']));
+        return TicketTypeResource::make($ticketType->load(['event', 'creator']));
     }
 
     /**
@@ -45,7 +48,7 @@ final class TicketTypeController extends Controller
      */
     public function show(TicketType $ticketType): TicketTypeResource
     {
-        return TicketTypeResource::make($ticketType->load(['event', 'user']));
+        return TicketTypeResource::make($ticketType->load(['event', 'creator']));
     }
 
     /**
@@ -57,7 +60,7 @@ final class TicketTypeController extends Controller
     {
         $ticketType->update($request->validated());
 
-        return TicketTypeResource::make($ticketType->load(['event', 'user']));
+        return TicketTypeResource::make($ticketType->load(['event', 'creator']));
     }
 
     /**
