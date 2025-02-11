@@ -49,7 +49,6 @@ final class CategoryController extends Controller
         $category->load(['events' => function ($query): void {
             $query->with('favoritedBy', 'organizer');
         }]);
-        ray($category);
 
         return CategoryResource::make($category);
     }

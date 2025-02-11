@@ -19,13 +19,12 @@ final class AuthController extends Controller
     /**
      * Generate an API token for the user.
      *
+     *
      * @throws ValidationException
      */
     public function generateToken(ApiLoginRequest $request): JsonResponse
     {
-        ray($request->all());
         $validated = $request->validated();
-        ray($validated);
 
         $user = User::where('email', $validated['email'])->first();
 
