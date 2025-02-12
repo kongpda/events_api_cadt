@@ -83,6 +83,11 @@ final class User extends Authenticatable
         return $this->hasOne(UserProfile::class);
     }
 
+    public function socialProviders(): HasMany
+    {
+        return $this->hasMany(SocialProvider::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
