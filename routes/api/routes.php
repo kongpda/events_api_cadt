@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\EventFavoriteController;
 use App\Http\Controllers\Api\EventParticipantController;
 use App\Http\Controllers\Api\OrganizerController;
 use App\Http\Controllers\Api\ShareController;
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketTypeController;
@@ -19,6 +20,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 // Route::post('/users', [UserController::class, 'store']); // Allow public registration
+Route::prefix('auth')->group(function (): void {
+    Route::get('google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
+    Route::get('google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+});
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
     // Protected Auth routes
