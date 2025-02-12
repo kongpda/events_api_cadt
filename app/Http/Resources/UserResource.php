@@ -28,6 +28,9 @@ final class UserResource extends JsonResource
                     ])->all()),
                 ],
             ],
+            'links' => [
+                'self' => route('users.show', $this->id),
+            ],
         ];
     }
 }

@@ -46,7 +46,7 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     // Protected Event Favorite routes
-    Route::get('event-favorites', [EventFavoriteController::class, 'index'])->name('event-favorites.index');
+    Route::get('event-favorites', [EventFavoriteController::class, 'index'])->name('events.favorites');
     Route::post('events/{event}/toggle-favorite', [EventFavoriteController::class, 'toggle'])
         ->name('events.favorite');
 
