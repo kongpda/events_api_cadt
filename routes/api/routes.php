@@ -20,16 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 // Route::post('/users', [UserController::class, 'store']); // Allow public registration
-Route::prefix('auth')->group(function (): void {
-    Route::post('/google/login', [SocialAuthController::class, 'handleGoogleLogin'])
-        ->name('auth.google.login');
-
-    // Keep these for web-based OAuth flow if needed
-    Route::get('/google/redirect', [SocialAuthController::class, 'redirectToGoogle'])
-        ->name('auth.google.redirect');
-    Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])
-        ->name('auth.google.callback');
-});
+Route::post('auth/google/login', [SocialAuthController::class, 'handleGoogleLogin']);
+Route::get('auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
     // Protected Auth routes
