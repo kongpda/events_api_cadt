@@ -27,7 +27,7 @@ final class CategoryResource extends JsonResource
             ],
             'relationship' => [
                 $this->mergeWhen($request->routeIs('categories.show'), [
-                    'event' => EventResource::collection($this->whenLoaded('events')),
+                    'events' => EventResource::collection($this->whenLoaded('events')),
                 ]),
             ],
             'links' => [

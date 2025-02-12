@@ -107,7 +107,7 @@ final class Event extends Model
         return $this->belongsTo(Organizer::class);
     }
 
-    public function favoritedBy(): BelongsToMany
+    public function favorites(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'event_favorites')
             ->withTimestamps();
@@ -119,7 +119,7 @@ final class Event extends Model
             return false;
         }
 
-        return $this->favoritedBy()
+        return $this->favorites()
             ->where('user_id', $user->id)
             ->exists();
     }
@@ -160,6 +160,16 @@ final class Event extends Model
     public function getEventTypes(): array
     {
         return $this->eventTypes;
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('start_date', '>=', now());
+    }
+
+    public function scopePast($query)
+    {
+        return $query->where('start_date', '<', now());
     }
 
     protected function casts(): array

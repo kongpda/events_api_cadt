@@ -27,8 +27,8 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
 
     // Protected User routes - only for authenticated users
     // Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{user}', [UserController::class, 'show']);
-    Route::put('/users/{user}', [UserController::class, 'update']);
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     // Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     // Protected Category routes
@@ -39,14 +39,14 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
     // Protected Event routes
-    Route::get('events', [EventController::class, 'index']);
+    Route::get('events', [EventController::class, 'index'])->name('events.index');
     Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
-    Route::post('events', [EventController::class, 'store']);
-    Route::put('events/{event}', [EventController::class, 'update']);
-    Route::delete('events/{event}', [EventController::class, 'destroy']);
+    Route::post('events', [EventController::class, 'store'])->name('events.store');
+    Route::put('events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     // Protected Event Favorite routes
-    Route::get('event-favorites', [EventFavoriteController::class, 'index']);
+    Route::get('event-favorites', [EventFavoriteController::class, 'index'])->name('event-favorites.index');
     Route::post('events/{event}/toggle-favorite', [EventFavoriteController::class, 'toggle'])
         ->name('events.favorite');
 

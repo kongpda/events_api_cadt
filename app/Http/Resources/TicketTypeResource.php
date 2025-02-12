@@ -16,7 +16,7 @@ final class TicketTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type' => 'ticket_type',
+            'type' => 'ticket_types',
             'id' => $this->id,
             'attributes' => [
                 'name' => $this->name,
@@ -28,12 +28,12 @@ final class TicketTypeResource extends JsonResource
                 'updated_at' => $this->updated_at->toIso8601String(),
             ],
             'relationships' => [
-                'event' => $this->when($this->relationLoaded('event'), fn () => [
-                    'type' => 'event',
+                'events' => $this->when($this->relationLoaded('events'), fn () => [
+                    'type' => 'events',
                     'id' => (string) $this->event_id,
                 ]),
                 'creator' => $this->when($this->relationLoaded('creator'), fn () => [
-                    'type' => 'user',
+                    'type' => 'users',
                     'id' => (string) $this->created_by,
                 ]),
             ],

@@ -26,11 +26,11 @@ final class TicketResource extends JsonResource
                 'related' => [
                     'event' => route('events.show', $this->event_id),
                     'user' => route('users.show', $this->user_id),
-                    'ticket_type' => route('ticket-types.show', $this->ticket_type_id),
+                    'ticket_type' => route('ticket_types.show', $this->ticket_type_id),
                 ],
             ],
             'relationships' => [
-                'event' => [
+                'events' => [
                     'data' => $this->when($this->relationLoaded('event'), fn () => [
                         'type' => 'events',
                         'id' => (string) $this->event->id,
@@ -42,7 +42,7 @@ final class TicketResource extends JsonResource
                         'id' => (string) $this->user->id,
                     ]),
                 ],
-                'ticket_type' => [
+                'ticket_types' => [
                     'data' => $this->when($this->relationLoaded('ticketType'), fn () => [
                         'type' => 'ticket_types',
                         'id' => (string) $this->ticketType->id,

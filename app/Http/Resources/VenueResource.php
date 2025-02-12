@@ -20,16 +20,30 @@ final class VenueResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'type' => 'venues',
             'id' => $this->id,
-            'name' => $this->name,
-            'address' => $this->address,
-            'city' => $this->city,
-            'state' => $this->state,
-            'country' => $this->country,
-            'postal_code' => $this->postal_code,
-            'capacity' => $this->capacity,
-            'created_at' => $this->created_at?->toDateTimeString(),
-            'updated_at' => $this->updated_at?->toDateTimeString(),
+            'attributes' => [
+                'name' => $this->name,
+                'address' => $this->address,
+                'city' => $this->city,
+                'state' => $this->state,
+                'country' => $this->country,
+                'postal_code' => $this->postal_code,
+                'capacity' => $this->capacity,
+                'created_at' => $this->created_at?->toDateTimeString(),
+                'updated_at' => $this->updated_at?->toDateTimeString(),
+            ],
+            'relationships' => [
+                'events' => [
+                    $this->when($this->relationLoaded('events'), fn () => $this->events->map(fn ($event) => [
+                        'type' => 'events',
+                        'id' => $event->id,
+                    ])->all()),
+                ],
+            ],
+            'links' => [
+                'self' => '',
+            ],
         ];
     }
 }
