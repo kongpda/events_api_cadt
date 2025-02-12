@@ -21,9 +21,10 @@ Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 // Route::post('/users', [UserController::class, 'store']); // Allow public registration
 Route::prefix('auth')->group(function (): void {
+    Route::post('google/login', [SocialAuthController::class, 'handleGoogleLogin']);
+
     Route::get('google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
-    Route::post('google/login', [SocialAuthController::class, 'handleGoogleLogin']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
