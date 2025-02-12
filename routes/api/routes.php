@@ -23,6 +23,7 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::prefix('auth')->group(function (): void {
     Route::get('google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+    Route::post('google/login', [SocialAuthController::class, 'handleGoogleLogin']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
