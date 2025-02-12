@@ -21,16 +21,8 @@ final class TicketResource extends JsonResource
                 'created_at' => $this->created_at->toISOString(),
                 'updated_at' => $this->updated_at->toISOString(),
             ],
-            'links' => [
-                'self' => route('tickets.show', $this->resource),
-                'related' => [
-                    'event' => route('events.show', $this->event_id),
-                    'user' => route('users.show', $this->user_id),
-                    'ticket_type' => route('ticket-types.show', $this->ticket_type_id),
-                ],
-            ],
             'relationships' => [
-                'event' => [
+                'events' => [
                     'data' => $this->when($this->relationLoaded('event'), fn () => [
                         'type' => 'events',
                         'id' => (string) $this->event->id,
@@ -42,7 +34,7 @@ final class TicketResource extends JsonResource
                         'id' => (string) $this->user->id,
                     ]),
                 ],
-                'ticket_type' => [
+                'ticket_types' => [
                     'data' => $this->when($this->relationLoaded('ticketType'), fn () => [
                         'type' => 'ticket_types',
                         'id' => (string) $this->ticketType->id,
@@ -54,6 +46,12 @@ final class TicketResource extends JsonResource
                 $this->whenLoaded('user', fn () => new UserResource($this->user)),
                 $this->whenLoaded('ticketType', fn () => new TicketTypeResource($this->ticketType)),
             ])),
+            'links' => [
+                'self' => route('tickets.show', $this->resource),
+                'event' => route('events.show', $this->event_id),
+                'user' => route('users.show', $this->user_id),
+                'ticket_type' => route('ticket_types.show', $this->ticket_type_id),
+            ],
         ];
     }
 }

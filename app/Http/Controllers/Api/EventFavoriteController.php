@@ -19,7 +19,13 @@ final class EventFavoriteController extends Controller
     {
         $favorites = auth()->user()
             ->favoriteEvents()
-            ->with(['category', 'user', 'organizer', 'tags', 'favoritedBy'])
+            ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
+            ->withCount('favorites')
+            ->when(auth()->check(), function ($query): void {
+                $query->withExists(['favorites as is_favorited' => function ($query): void {
+                    $query->where('user_id', auth()->id());
+                }]);
+            })
             ->latest()
             ->paginate();
 

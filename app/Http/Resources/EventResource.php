@@ -12,7 +12,7 @@ final class EventResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type' => 'event',
+            'type' => 'events',
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
@@ -32,6 +32,7 @@ final class EventResource extends JsonResource
                     'created_at' => $this->created_at,
                     'updated_at' => $this->updated_at,
                 ]),
+                'favorites_count' => $this->favorites_count,
                 'is_favorited' => $request->user() ? $this->isFavoritedBy($request->user()) : false,
             ],
             'relationships' => [
@@ -40,6 +41,7 @@ final class EventResource extends JsonResource
                     'user' => new UserResource($this->whenLoaded('user')),
                     'organizer' => new OrganizerResource($this->whenLoaded('organizer')),
                     'tags' => TagResource::collection($this->whenLoaded('tags')),
+                    'participants' => EventParticipantResource::collection($this->whenLoaded('participants')),
                 ]),
             ],
             'links' => [

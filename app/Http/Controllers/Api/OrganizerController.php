@@ -24,13 +24,18 @@ final class OrganizerController extends Controller
     {
         $organizers = Organizer::query()
             ->with(['user'])
+            ->withCount([
+                'events',
+                'events as upcoming_events_count' => fn ($query) => $query->upcoming(),
+                'events as past_events_count' => fn ($query) => $query->past(),
+            ])
             ->when(
                 $request->boolean('verified'),
                 fn ($query) => $query->where('is_verified', true)
             )
             ->when(
                 $request->has('include') && in_array('events', explode(',', $request->input('include'))),
-                fn ($query) => $query->with(['events' => fn ($q) => $q->latest()])
+                fn ($query) => $query->with(['events' => fn ($q) => $q->withCount('favorites')->latest()])
             )
             ->latest()
             ->paginate();
@@ -48,7 +53,7 @@ final class OrganizerController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         $organizer = Organizer::create($validated);
-        $organizer->load(['user']);
+        $organizer->loadCount('events')->load(['user']);
 
         return (new OrganizerResource($organizer))
             ->response()
@@ -60,10 +65,19 @@ final class OrganizerController extends Controller
      */
     public function show(Request $request, Organizer $organizer): OrganizerResource
     {
-        $organizer->load(['user']);
+        $organizer->loadCount([
+            'events',
+            'events as upcoming_events_count' => fn ($query) => $query->upcoming(),
+            'events as past_events_count' => fn ($query) => $query->past(),
+        ])->load(['user']);
 
         if ($request->has('include') && in_array('events', explode(',', $request->input('include')))) {
-            $organizer->load(['events' => fn ($query) => $query->latest()]);
+            $events = $organizer->events()
+                ->withCount('favorites')
+                ->latest()
+                ->paginate($request->input('per_page', 15));
+
+            $organizer->setRelation('events', $events);
         }
 
         return new OrganizerResource($organizer);
@@ -78,7 +92,7 @@ final class OrganizerController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         $organizer->update($validated);
-        $organizer->load(['user']);
+        $organizer->loadCount('events')->load(['user']);
 
         return (new OrganizerResource($organizer))
             ->response()
@@ -90,7 +104,6 @@ final class OrganizerController extends Controller
      */
     public function destroy(Organizer $organizer): Response
     {
-        $this->authorize('delete', $organizer);
 
         $organizer->delete();
 

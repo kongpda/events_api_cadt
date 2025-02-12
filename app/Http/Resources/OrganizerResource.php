@@ -17,7 +17,7 @@ final class OrganizerResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'type' => 'organizer',
+            'type' => 'organizers',
             'id' => $this->id,
             'attributes' => [
                 'name' => $this->name,
@@ -33,12 +33,15 @@ final class OrganizerResource extends JsonResource
                     'is_verified' => $this->is_verified,
                     'created_at' => $this->created_at,
                     'updated_at' => $this->updated_at,
+                    'events_count' => $this->events_count ?? 0,
+                    'upcoming_events_count' => $this->upcoming_events_count ?? 0,
+                    'past_events_count' => $this->past_events_count ?? 0,
                 ]),
             ],
             'relationships' => [
                 $this->mergeWhen($request->routeIs('organizers.show'), [
                     'user' => new UserResource($this->whenLoaded('user')),
-                    'event' => EventResource::collection($this->whenLoaded('events')),
+                    'events' => EventResource::collection($this->whenLoaded('events')),
                 ]),
             ],
             'links' => [

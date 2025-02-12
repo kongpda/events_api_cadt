@@ -23,7 +23,7 @@ final class ShareResource extends JsonResource
             'relationships' => [
                 $this->mergeWhen($request->routeIs('shares.show'), [
                     'user' => new UserResource($this->whenLoaded('user')),
-                    'event' => EventResource::collection($this->whenLoaded('events')),
+                    'events' => EventResource::collection($this->whenLoaded('events')),
                 ]),
             ],
             'included' => [

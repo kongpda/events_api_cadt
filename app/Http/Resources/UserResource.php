@@ -12,9 +12,25 @@ final class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'type' => 'users',
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
+            'attributes' => [
+                'name' => $this->name,
+                'email' => $this->email,
+                'created_at' => $this->created_at,
+                'updated_at' => $this->updated_at,
+            ],
+            'relationships' => [
+                'events' => [
+                    $this->when($this->relationLoaded('events'), fn () => $this->events->map(fn ($event) => [
+                        'type' => 'events',
+                        'id' => $event->id,
+                    ])->all()),
+                ],
+            ],
+            'links' => [
+                'self' => route('users.show', $this->id),
+            ],
         ];
     }
 }

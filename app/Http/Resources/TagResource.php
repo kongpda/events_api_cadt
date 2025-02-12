@@ -33,17 +33,11 @@ final class TagResource extends JsonResource
             ],
             'relationships' => [
                 'events' => [
-                    'data' => $this->when($this->relationLoaded('events'), fn () => $this->events->map(fn ($event) => [
+                    $this->when($this->relationLoaded('events'), fn () => $this->events->map(fn ($event) => [
                         'type' => 'events',
                         'id' => (string) $event->id,
                     ])->all()),
                 ],
-            ],
-            'included' => [
-                $this->when(
-                    $this->relationLoaded('events'),
-                    fn () => EventResource::collection($this->events)
-                ),
             ],
             'links' => [
                 'self' => route('tags.show', $this->resource),
