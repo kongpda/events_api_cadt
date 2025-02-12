@@ -33,10 +33,10 @@ final class OrganizerResource extends JsonResource
                     'is_verified' => $this->is_verified,
                     'created_at' => $this->created_at,
                     'updated_at' => $this->updated_at,
+                    'events_count' => $this->events_count ?? 0,
+                    'upcoming_events_count' => $this->upcoming_events_count ?? 0,
+                    'past_events_count' => $this->past_events_count ?? 0,
                 ]),
-                'events_count' => $this->events_count ?? 0,
-                'upcoming_events_count' => $this->upcoming_events_count ?? 0,
-                'past_events_count' => $this->past_events_count ?? 0,
             ],
             'relationships' => [
                 $this->mergeWhen($request->routeIs('organizers.show'), [
