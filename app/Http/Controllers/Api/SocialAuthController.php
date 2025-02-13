@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\SocialAuthException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SocialAuthRequest;
 use App\Http\Resources\UserResource;
@@ -11,6 +12,7 @@ use App\Services\Auth\SocialAuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 final class SocialAuthController extends Controller
@@ -29,42 +31,27 @@ final class SocialAuthController extends Controller
         try {
             $validated = $request->validated();
 
-            $socialUser = Socialite::driver($validated['provider'])
-                ->stateless()
-                ->userFromToken($validated['access_token']);
+            $socialUser = $this->getSocialUser($validated['provider'], $validated['access_token']);
 
-            if ($socialUser->getEmail() !== $validated['email']) {
-                throw new Exception('Email verification failed');
-            }
+            $this->validateSocialEmail($socialUser->getEmail(), $validated['email']);
 
             $user = $this->socialAuthService->findOrCreateUser($socialUser, [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'photo_url' => $validated['photo_url'] ?? null,
-                'provider_id' => $validated['provider_id'],
+                'provider_user_id' => $validated['provider_user_id'],
                 'access_token' => $validated['access_token'],
             ], $validated['provider']);
 
-            // Delete existing tokens for this device name
-            $user->tokens()->where('name', $validated['device_name'])->delete();
-
-            $token = $user->createToken(
-                name: $validated['device_name'],
-                abilities: ['*'],
-                expiresAt: now()->addDays(30),
-            )->plainTextToken;
-
-            return response()->json([
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'user' => new UserResource($user),
-            ]);
+            return $this->generateAuthResponse($user, $validated['device_name']);
 
         } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Authentication failed',
+            Log::error('Social auth failed', [
                 'error' => $e->getMessage(),
-            ], 401);
+                'provider' => $request->provider ?? 'unknown',
+            ]);
+
+            return $this->handleAuthError($e);
         }
     }
 
@@ -99,37 +86,66 @@ final class SocialAuthController extends Controller
     {
         try {
             if ($request->has('error')) {
-                throw new Exception($request->error_description ?? 'Google authentication failed');
+                throw new SocialAuthException($request->error_description ?? 'Google authentication failed');
             }
 
-            $googleUser = Socialite::driver('google')
-                ->stateless()
-                ->user();
+            $googleUser = $this->getSocialUser('google');
 
             $user = $this->socialAuthService->findOrCreateUser($googleUser, [
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'photo_url' => $googleUser->getAvatar(),
-                'provider_id' => $googleUser->getId(),
+                'provider_user_id' => $googleUser->getId(),
             ]);
 
-            $token = $user->createToken(
-                name: $request->device_name ?? 'default_device',
-                abilities: ['*'],
-                expiresAt: now()->addDays(30),
-            )->plainTextToken;
-
-            return response()->json([
-                'token' => $token,
-                'token_type' => 'Bearer',
-                'user' => new UserResource($user),
-            ]);
+            return $this->generateAuthResponse($user, $request->device_name ?? 'default_device');
 
         } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Authentication failed',
-                'error' => $e->getMessage(),
-            ], 401);
+            Log::error('Google auth callback failed', ['error' => $e->getMessage()]);
+
+            return $this->handleAuthError($e);
         }
+    }
+
+    private function getSocialUser(string $provider, ?string $token = null): \Laravel\Socialite\Two\User
+    {
+        $socialite = Socialite::driver($provider)->stateless();
+
+        return $token
+            ? $socialite->userFromToken($token)
+            : $socialite->user();
+    }
+
+    private function validateSocialEmail(?string $socialEmail, string $providedEmail): void
+    {
+        if ($socialEmail !== $providedEmail) {
+            throw new SocialAuthException('Email verification failed: emails do not match');
+        }
+    }
+
+    private function generateAuthResponse($user, string $deviceName): JsonResponse
+    {
+        // Delete existing tokens for this device name
+        $user->tokens()->where('name', $deviceName)->delete();
+
+        $token = $user->createToken(
+            name: $deviceName,
+            abilities: ['*'],
+            expiresAt: now()->addDays(30),
+        )->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'user' => new UserResource($user),
+        ]);
+    }
+
+    private function handleAuthError(Exception $e): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Authentication failed',
+            'error' => $e->getMessage(),
+        ], 401);
     }
 }
