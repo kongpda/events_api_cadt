@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\GoogleAuthRequest;
+use App\Http\Requests\Auth\SocialAuthRequest;
 use App\Http\Resources\UserResource;
-use App\Services\Auth\GoogleAuthService;
+use App\Services\Auth\SocialAuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,33 +16,34 @@ use Laravel\Socialite\Facades\Socialite;
 final class SocialAuthController extends Controller
 {
     public function __construct(
-        private readonly GoogleAuthService $googleAuthService
+        private readonly SocialAuthService $socialAuthService
     ) {}
 
     /**
-     * Handle Google login/registration from Flutter.
+     * Handle social login/registration from mobile app.
      *
      * @unauthenticated
      */
-    public function handleGoogleLogin(GoogleAuthRequest $request): JsonResponse
+    public function handleSocialLogin(SocialAuthRequest $request): JsonResponse
     {
         try {
             $validated = $request->validated();
 
-            $googleUser = Socialite::driver('google')
+            $socialUser = Socialite::driver($validated['provider'])
                 ->stateless()
                 ->userFromToken($validated['access_token']);
 
-            if ($googleUser->getEmail() !== $validated['email']) {
+            if ($socialUser->getEmail() !== $validated['email']) {
                 throw new Exception('Email verification failed');
             }
 
-            $user = $this->googleAuthService->findOrCreateUser($googleUser, [
+            $user = $this->socialAuthService->findOrCreateUser($socialUser, [
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'photo_url' => $validated['photo_url'] ?? null,
                 'provider_id' => $validated['provider_id'],
-            ]);
+                'access_token' => $validated['access_token'],
+            ], $validated['provider']);
 
             // Delete existing tokens for this device name
             $user->tokens()->where('name', $validated['device_name'])->delete();
@@ -105,7 +106,7 @@ final class SocialAuthController extends Controller
                 ->stateless()
                 ->user();
 
-            $user = $this->googleAuthService->findOrCreateUser($googleUser, [
+            $user = $this->socialAuthService->findOrCreateUser($googleUser, [
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'photo_url' => $googleUser->getAvatar(),
