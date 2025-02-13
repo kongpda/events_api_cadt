@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
+use App\Models\SocialProvider;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -32,25 +33,31 @@ final class SocialAuthService
                 ]);
             }
 
-            // Update or create the social provider entry
-            $user->socialProviders()->updateOrCreate(
-                [
-                    'user_id' => $user->id,
-                    'provider_slug' => $provider,
-                ],
-                [
-                    'provider_user_id' => $userData['provider_user_id'],
-                    'nickname' => $userData['nickname'] ?? null,
-                    'name' => $userData['name'],
-                    'email' => $userData['email'],
-                    'avatar' => $userData['photo_url'] ?? null,
-                    'token' => $userData['access_token'] ?? null,
-                    'provider_data' => is_string($socialUser) ? $socialUser : json_encode($socialUser),
-                    'token_expires_at' => isset($socialUser->expiresIn)
-                        ? now()->addSeconds($socialUser->expiresIn)
-                        : null,
-                ]
-            );
+            // Find existing social provider
+            $socialProvider = SocialProvider::where('user_id', $user->id)
+                ->where('provider_slug', $provider)
+                ->first();
+
+            $socialProviderData = [
+                'user_id' => $user->id,
+                'provider_slug' => $provider,
+                'provider_user_id' => $userData['provider_user_id'],
+                'nickname' => $userData['nickname'] ?? null,
+                'name' => $userData['name'],
+                'email' => $userData['email'],
+                'avatar' => $userData['photo_url'] ?? null,
+                'token' => $userData['access_token'] ?? null,
+                'provider_data' => is_string($socialUser) ? $socialUser : json_encode($socialUser),
+                'token_expires_at' => isset($socialUser->expiresIn)
+                    ? now()->addSeconds($socialUser->expiresIn)
+                    : null,
+            ];
+
+            if ($socialProvider) {
+                $socialProvider->update($socialProviderData);
+            } else {
+                $user->socialProviders()->create($socialProviderData);
+            }
 
             return $user;
         });
