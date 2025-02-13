@@ -20,11 +20,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
-// Google Authentication Routes - should be public
-Route::prefix('auth/google')->group(function (): void {
-    Route::post('/', [SocialAuthController::class, 'handleGoogleLogin']);
-    Route::get('/redirect', [SocialAuthController::class, 'redirectToGoogle']);
-    Route::get('/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+// Social Authentication Routes - should be public
+Route::prefix('auth')->group(function (): void {
+    // Generic social auth endpoint for mobile apps
+    Route::post('/social-login', [SocialAuthController::class, 'handleSocialLogin']);
+
+    // Provider specific web routes
+    Route::prefix('google')->group(function (): void {
+        Route::get('/redirect', [SocialAuthController::class, 'redirectToGoogle']);
+        Route::get('/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+    });
 });
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
