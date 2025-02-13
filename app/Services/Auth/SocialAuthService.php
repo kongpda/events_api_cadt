@@ -13,7 +13,7 @@ final class SocialAuthService
         // First try to find user through social provider
         $user = User::whereHas('socialProviders', function ($query) use ($userData, $provider): void {
             $query->where('provider_slug', $provider)
-                ->where('provider_user_id', $userData['provider_id']);
+                ->where('provider_user_id', $userData['provider_user_id']);
         })->first();
 
         // If not found, try to find by email
@@ -34,7 +34,7 @@ final class SocialAuthService
         $user->socialProviders()->updateOrCreate(
             [
                 'provider_slug' => $provider,
-                'provider_user_id' => $userData['provider_id'],
+                'provider_user_id' => $userData['provider_user_id'],
             ],
             [
                 'nickname' => null,
