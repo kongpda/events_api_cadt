@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\GoogleAuthRequest;
 use App\Http\Resources\UserResource;
-use App\Services\GoogleAuthService;
+use App\Services\Auth\GoogleAuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,19 +24,25 @@ final class SocialAuthController extends Controller
      *
      * @unauthenticated
      */
-    public function handleGoogleLogin(Request $request): JsonResponse
+    public function handleGoogleLogin(GoogleAuthRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'access_token' => ['required', 'string'],
-                'device_name' => ['required', 'string'],
-            ]);
+            $validated = $request->validated();
 
             $googleUser = Socialite::driver('google')
                 ->stateless()
                 ->userFromToken($validated['access_token']);
 
-            $user = $this->googleAuthService->findOrCreateUser($googleUser);
+            if ($googleUser->getEmail() !== $validated['email']) {
+                throw new Exception('Email verification failed');
+            }
+
+            $user = $this->googleAuthService->findOrCreateUser($googleUser, [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'photo_url' => $validated['photo_url'] ?? null,
+                'provider_id' => $validated['provider_id'],
+            ]);
 
             // Delete existing tokens for this device name
             $user->tokens()->where('name', $validated['device_name'])->delete();
@@ -65,39 +72,63 @@ final class SocialAuthController extends Controller
      *
      * @unauthenticated
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(): JsonResponse
     {
-        return Socialite::driver('google')
-            ->stateless()
-            ->redirect();
+        try {
+            $url = Socialite::driver('google')
+                ->stateless()
+                ->redirect()
+                ->getTargetUrl();
+
+            return response()->json(['url' => $url]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Failed to generate Google auth URL',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
-     * Handle Google callback from Flutter.
+     * Handle Google callback.
      *
      * @unauthenticated
      */
-    public function handleGoogleCallback(): JsonResponse
+    public function handleGoogleCallback(Request $request): JsonResponse
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            if ($request->has('error')) {
+                throw new Exception($request->error_description ?? 'Google authentication failed');
+            }
 
-            $user = $this->googleAuthService->findOrCreateUser($googleUser);
+            $googleUser = Socialite::driver('google')
+                ->stateless()
+                ->user();
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $user = $this->googleAuthService->findOrCreateUser($googleUser, [
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'photo_url' => $googleUser->getAvatar(),
+                'provider_id' => $googleUser->getId(),
+            ]);
+
+            $token = $user->createToken(
+                name: $request->device_name ?? 'default_device',
+                abilities: ['*'],
+                expiresAt: now()->addDays(30),
+            )->plainTextToken;
 
             return response()->json([
-                'status' => 'success',
                 'token' => $token,
+                'token_type' => 'Bearer',
                 'user' => new UserResource($user),
             ]);
 
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'error',
                 'message' => 'Authentication failed',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 401);
         }
     }
 }
