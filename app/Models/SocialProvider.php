@@ -31,11 +31,11 @@ final class SocialProvider extends Model
     protected $table = 'social_provider_user';
 
     /**
-     * The primary keys for the model.
+     * The primary key for the model.
      *
-     * @var array<string>
+     * @var string
      */
-    protected $primaryKey = ['user_id', 'provider_slug'];
+    protected $primaryKey = 'user_id';
 
     /**
      * The attributes that are mass assignable.
@@ -67,10 +67,49 @@ final class SocialProvider extends Model
     ];
 
     /**
+     * Get the value indicating whether the IDs are incrementing.
+     */
+    public function getIncrementing(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Get the auto-incrementing key type.
+     */
+    public function getKeyType(): string
+    {
+        return 'string';
+    }
+
+    /**
      * Get the user that owns the social provider.
      */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the composite key for the model.
+     */
+    public function getCompositeKey(): array
+    {
+        return [
+            'user_id' => $this->user_id,
+            'provider_slug' => $this->provider_slug,
+        ];
+    }
+
+    /**
+     * Set the keys for a save update query.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    protected function setKeysForSaveQuery($query)
+    {
+        return $query->where('user_id', $this->user_id)
+            ->where('provider_slug', $this->provider_slug);
     }
 }
