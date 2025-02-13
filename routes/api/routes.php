@@ -19,10 +19,8 @@ use Illuminate\Support\Facades\Route;
 // Public authentication routes
 Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
-// Route::post('/users', [UserController::class, 'store']); // Allow public registration
-Route::middleware(['api'])->group(function (): void {
-    Route::post('/auth/google/login', [SocialAuthController::class, 'handleGoogleLogin']);
-});
+
+Route::post('auth/google', [SocialAuthController::class, 'handleGoogleLogin']);
 Route::get('auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 

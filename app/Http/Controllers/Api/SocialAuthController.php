@@ -18,6 +18,8 @@ final class SocialAuthController extends Controller
 {
     /**
      * Handle Google login/registration from Flutter.
+     *
+     * @unauthenticated
      */
     public function handleGoogleLogin(Request $request): JsonResponse
     {
@@ -86,6 +88,11 @@ final class SocialAuthController extends Controller
         }
     }
 
+    /**
+     * Redirect to Google for authentication.
+     *
+     * @unauthenticated
+     */
     public function redirectToGoogle()
     {
         return Socialite::driver('google')
@@ -93,6 +100,11 @@ final class SocialAuthController extends Controller
             ->redirect();
     }
 
+    /**
+     * Handle Google callback from Flutter.
+     *
+     * @unauthenticated
+     */
     public function handleGoogleCallback()
     {
         try {
