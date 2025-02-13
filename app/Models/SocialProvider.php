@@ -9,13 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class SocialProvider extends Model
 {
-    public $incrementing = false;
+    public $timestamps = true;
 
     protected $table = 'social_provider_user';
 
-    protected $primaryKey = ['user_id', 'provider_slug'];
-
     protected $fillable = [
+        'user_id',
         'provider_slug',
         'provider_user_id',
         'nickname',
