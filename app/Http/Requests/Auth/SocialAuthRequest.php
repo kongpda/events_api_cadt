@@ -20,9 +20,13 @@ final class SocialAuthRequest extends FormRequest
             'email' => ['required', 'email'],
             'photo_url' => ['nullable', 'url'],
             'provider_user_id' => ['required', 'string'],
-            'provider' => ['required', 'string', 'in:google,facebook,github'], // add supported providers
-            'access_token' => ['required', 'string'],
+            'provider' => ['required', 'string', 'in:google,facebook,github'], // This will map to provider_slug
+            'access_token' => ['required', 'string'], // This will map to token
             'device_name' => ['required', 'string'],
+            'nickname' => ['nullable', 'string'], // Add this to match DB schema
+            'refresh_token' => ['nullable', 'string'], // Add this to match DB schema
+            'token_expires_at' => ['nullable', 'date'], // Add this to match DB schema
+            'provider_data' => ['nullable', 'array'], // Add this to match DB schema
         ];
     }
 
@@ -38,6 +42,7 @@ final class SocialAuthRequest extends FormRequest
             'provider.required' => 'Social provider is required',
             'provider.in' => 'Invalid social provider',
             'provider_user_id.required' => 'Provider User ID is required',
+            // Add new validation messages if needed
         ];
     }
 }
