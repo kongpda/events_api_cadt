@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/token', [AuthController::class, 'generateToken']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
-Route::post('auth/google', [SocialAuthController::class, 'handleGoogleLogin']);
+Route::middleware(['api'])->group(function (): void {
+    Route::post('/auth/google', [SocialAuthController::class, 'handleGoogleLogin']);
+});
 Route::get('auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 

@@ -6,16 +6,18 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Services\GoogleAuthService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 final class SocialAuthController extends Controller
 {
+    public function __construct(
+        private readonly GoogleAuthService $googleAuthService
+    ) {}
+
     /**
      * Handle Google login/registration from Flutter.
      *
@@ -29,45 +31,15 @@ final class SocialAuthController extends Controller
                 'device_name' => ['required', 'string'],
             ]);
 
-            // Get user info from Google using the access token
             $googleUser = Socialite::driver('google')
                 ->stateless()
                 ->userFromToken($validated['access_token']);
 
-            // Find existing user or create new one
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
-                    'name' => $googleUser->getName(),
-                    'email_verified_at' => now(),
-                    'password' => Hash::make(Str::random(16)),
-                ]
-            );
-
-            // Update or create social provider record
-            $user->socialProviders()->updateOrCreate(
-                [
-                    'provider_slug' => 'google',
-                    'provider_user_id' => $googleUser->getId(),
-                ],
-                [
-                    'nickname' => $googleUser->getNickname(),
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'avatar' => $googleUser->getAvatar(),
-                    'provider_data' => $googleUser->getRaw(),
-                    'token' => $googleUser->token,
-                    'refresh_token' => $googleUser->refreshToken,
-                    'token_expires_at' => $googleUser->expiresIn
-                        ? now()->addSeconds($googleUser->expiresIn)
-                        : null,
-                ]
-            );
+            $user = $this->googleAuthService->findOrCreateUser($googleUser);
 
             // Delete existing tokens for this device name
             $user->tokens()->where('name', $validated['device_name'])->delete();
 
-            // Create new token
             $token = $user->createToken(
                 name: $validated['device_name'],
                 abilities: ['*'],
@@ -105,40 +77,12 @@ final class SocialAuthController extends Controller
      *
      * @unauthenticated
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(): JsonResponse
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
-            // Find or create user
-            $user = User::firstOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
-                    'name' => $googleUser->getName(),
-                    'email_verified_at' => now(),
-                    'password' => Hash::make(Str::random(16)),
-                ]
-            );
-
-            // Update or create social provider record
-            $user->socialProviders()->updateOrCreate(
-                [
-                    'provider_slug' => 'google',
-                    'provider_user_id' => $googleUser->getId(),
-                ],
-                [
-                    'nickname' => $googleUser->getNickname(),
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'avatar' => $googleUser->getAvatar(),
-                    'provider_data' => $googleUser->getRaw(),
-                    'token' => $googleUser->token,
-                    'refresh_token' => $googleUser->refreshToken,
-                    'token_expires_at' => $googleUser->expiresIn
-                        ? now()->addSeconds($googleUser->expiresIn)
-                        : null,
-                ]
-            );
+            $user = $this->googleAuthService->findOrCreateUser($googleUser);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
