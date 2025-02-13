@@ -111,9 +111,15 @@ final class SocialAuthController extends Controller
     {
         $socialite = Socialite::driver($provider)->stateless();
 
-        return $token
+        $socialUser = $token
             ? $socialite->userFromToken($token)
             : $socialite->user();
+
+        if ( ! $socialUser->getId()) {
+            throw new SocialAuthException('Unable to retrieve provider user ID');
+        }
+
+        return $socialUser;
     }
 
     private function validateSocialEmail(?string $socialEmail, string $providedEmail): void
@@ -125,20 +131,28 @@ final class SocialAuthController extends Controller
 
     private function generateAuthResponse($user, string $deviceName): JsonResponse
     {
-        // Delete existing tokens for this device name
-        $user->tokens()->where('name', $deviceName)->delete();
+        try {
+            // Delete existing tokens for this device name
+            $user->tokens()->where('name', $deviceName)->delete();
 
-        $token = $user->createToken(
-            name: $deviceName,
-            abilities: ['*'],
-            expiresAt: now()->addDays(30),
-        )->plainTextToken;
+            $token = $user->createToken(
+                name: $deviceName,
+                abilities: ['*'],
+                expiresAt: now()->addDays(30),
+            )->plainTextToken;
 
-        return response()->json([
-            'token' => $token,
-            'token_type' => 'Bearer',
-            'user' => new UserResource($user),
-        ]);
+            return response()->json([
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'user' => new UserResource($user),
+            ]);
+        } catch (Exception $e) {
+            Log::error('Failed to generate auth response', [
+                'error' => $e->getMessage(),
+                'user_id' => $user->id ?? null,
+            ]);
+            throw new SocialAuthException('Failed to create authentication token');
+        }
     }
 
     private function handleAuthError(Exception $e): JsonResponse

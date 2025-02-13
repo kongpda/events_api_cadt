@@ -37,12 +37,14 @@ final class SocialAuthService
                 'provider_user_id' => $userData['provider_user_id'],
             ],
             [
-                'nickname' => null,
+                'provider_slug' => $provider,
+                'provider_user_id' => $userData['provider_user_id'],
+                'nickname' => $userData['nickname'] ?? null,
                 'name' => $userData['name'],
                 'email' => $userData['email'],
                 'avatar' => $userData['photo_url'] ?? null,
                 'token' => $userData['access_token'] ?? null,
-                'provider_data' => json_encode($socialUser),
+                'provider_data' => is_string($socialUser) ? $socialUser : json_encode($socialUser),
                 'token_expires_at' => isset($socialUser->expiresIn)
                     ? now()->addSeconds($socialUser->expiresIn)
                     : null,
