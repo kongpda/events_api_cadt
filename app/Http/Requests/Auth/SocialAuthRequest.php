@@ -19,7 +19,7 @@ final class SocialAuthRequest extends FormRequest
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
             'photo_url' => ['nullable', 'url'],
-            'provider_id' => ['required', 'string'],
+            'provider_user_id' => ['required', 'string'],
             'provider' => ['required', 'string', 'in:google,facebook,github'], // add supported providers
             'access_token' => ['required', 'string'],
             'device_name' => ['required', 'string'],
@@ -37,7 +37,7 @@ final class SocialAuthRequest extends FormRequest
             'photo_url.url' => 'Please provide a valid URL for the photo',
             'provider.required' => 'Social provider is required',
             'provider.in' => 'Invalid social provider',
-            'provider_id.required' => 'Provider ID is required',
+            'provider_user_id.required' => 'Provider User ID is required',
         ];
     }
 }
