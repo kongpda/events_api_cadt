@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Event\StoreEventRequest;
+use App\Http\Requests\Event\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
@@ -42,41 +44,18 @@ final class EventController extends Controller
     /**
      * Store a newly created event.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreEventRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:events,slug'],
-            'description' => ['required', 'string', 'max:65535'],
-            'address' => ['required', 'string', 'max:255'],
-            'feature_image' => ['nullable', 'string', 'max:255'],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after:start_date'],
-            'category_id' => ['required', 'exists:categories,id'],
-            'organizer_id' => ['required', 'ulid', 'exists:organizers,id'],
-            'participation_type' => ['required', 'string', 'in:paid,free'],
-            'capacity' => ['required', 'integer', 'min:1'],
-            'registration_deadline' => ['required', 'date', 'before:start_date'],
-            'registration_status' => ['required', 'string', 'in:open,closed,full'],
-            'event_type' => ['required', 'string', 'in:in_person,online,hybrid'],
-            'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
-            'tags' => ['required', 'array'],
-            'tags.*' => ['exists:tags,id'],
+        $validated = $request->validated();
+        $tags = collect($validated['tags']);
+        unset($validated['tags']);
+
+        $event = Event::create([
+            ...$validated,
+            'user_id' => $request->user()->id,
         ]);
 
-        // Generate slug if not provided
-        if ( ! isset($validated['slug'])) {
-            $validated['slug'] = str()->slug($validated['title']);
-        }
-
-        // Set the authenticated user as the creator
-        $validated['user_id'] = $request->user()->id;
-
-        $event = Event::create($validated);
-
-        if ($request->has('tags')) {
-            $event->tags()->sync($request->input('tags'));
-        }
+        $event->tags()->sync($tags);
 
         return response()->json([
             'message' => 'Event created successfully',
@@ -104,37 +83,16 @@ final class EventController extends Controller
     /**
      * Update the specified event.
      */
-    public function update(Request $request, Event $event): JsonResponse
+    public function update(UpdateEventRequest $request, Event $event): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'slug' => ['sometimes', 'required', 'string', 'max:255', 'unique:events,slug,' . $event->id],
-            'description' => ['sometimes', 'required', 'string', 'max:65535'],
-            'address' => ['sometimes', 'required', 'string', 'max:255'],
-            'feature_image' => ['nullable', 'string', 'max:255'],
-            'start_date' => ['sometimes', 'required', 'date'],
-            'end_date' => ['sometimes', 'required', 'date', 'after:start_date'],
-            'category_id' => ['sometimes', 'required', 'exists:categories,id'],
-            'organizer_id' => ['sometimes', 'required', 'ulid', 'exists:organizers,id'],
-            'participation_type' => ['sometimes', 'required', 'string', 'in:paid,free'],
-            'capacity' => ['sometimes', 'required', 'integer', 'min:1'],
-            'registration_deadline' => ['sometimes', 'required', 'date', 'before:start_date'],
-            'registration_status' => ['sometimes', 'required', 'string', 'in:open,closed,full'],
-            'event_type' => ['sometimes', 'required', 'string', 'in:in_person,online,hybrid'],
-            'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
-            'tags' => ['sometimes', 'required', 'array'],
-            'tags.*' => ['exists:tags,id'],
-        ]);
-
-        // Generate slug if title is updated but slug is not provided
-        if (isset($validated['title']) && ! isset($validated['slug'])) {
-            $validated['slug'] = str()->slug($validated['title']);
-        }
+        $validated = $request->validated();
+        $tags = collect($validated['tags'] ?? []);
+        unset($validated['tags']);
 
         $event->update($validated);
 
         if ($request->has('tags')) {
-            $event->tags()->sync($request->input('tags'));
+            $event->tags()->sync($tags);
         }
 
         return response()->json([
