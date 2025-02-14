@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Event;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,11 +28,11 @@ final class UpdateEventRequest extends FormRequest
             'organizer_id' => ['sometimes', 'required', 'ulid', 'exists:organizers,id'],
             'participation_type' => ['sometimes', 'required', 'string', 'in:paid,free'],
             'capacity' => ['sometimes', 'required', 'integer', 'min:1'],
-            'registration_deadline' => ['sometimes', 'required', 'date', 'before:start_date'],
+            'registration_deadline' => ['sometimes', 'required', 'date', 'before:end_date'],
             'registration_status' => ['sometimes', 'required', 'string', 'in:open,closed,full'],
             'event_type' => ['sometimes', 'required', 'string', 'in:in_person,online,hybrid'],
-            'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
-            'tags' => ['sometimes', 'required', 'array'],
+            'online_url' => ['sometimes', 'required_if:event_type,online,hybrid', 'nullable', 'url'],
+            'tags' => ['sometimes', 'array'],
             'tags.*' => ['exists:tags,id'],
         ];
     }

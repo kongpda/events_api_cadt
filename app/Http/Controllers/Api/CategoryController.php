@@ -47,7 +47,7 @@ final class CategoryController extends Controller
     public function show(Category $category): CategoryResource
     {
         $category->load(['events' => function ($query): void {
-            $query->with('favoritedBy', 'organizer');
+            $query->with('favorites', 'organizer');
         }]);
 
         return CategoryResource::make($category);

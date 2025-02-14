@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Event;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,11 +27,11 @@ final class StoreEventRequest extends FormRequest
             'organizer_id' => ['required', 'ulid', 'exists:organizers,id'],
             'participation_type' => ['required', 'string', 'in:paid,free'],
             'capacity' => ['required', 'integer', 'min:1'],
-            'registration_deadline' => ['required', 'date', 'before:start_date'],
+            'registration_deadline' => ['required', 'date', 'before:end_date'],
             'registration_status' => ['required', 'string', 'in:open,closed,full'],
             'event_type' => ['required', 'string', 'in:in_person,online,hybrid'],
             'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
-            'tags' => ['required', 'array'],
+            'tags' => ['sometimes', 'array'],
             'tags.*' => ['exists:tags,id'],
         ];
     }
