@@ -21,7 +21,7 @@ final class UpdateEventRequest extends FormRequest
             'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('events')->ignore($this->event)],
             'description' => ['sometimes', 'required', 'string', 'max:65535'],
             'address' => ['sometimes', 'required', 'string', 'max:255'],
-            'feature_image' => ['nullable', 'string', 'max:255'],
+            'feature_image' => ['image', 'required', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // 2MB max
             'start_date' => ['sometimes', 'required', 'date'],
             'end_date' => ['sometimes', 'required', 'date', 'after:start_date'],
             'category_id' => ['sometimes', 'required', 'exists:categories,id'],
