@@ -16,8 +16,7 @@ final class EventResource extends JsonResource
             'id' => $this->id,
             'attributes' => [
                 'title' => $this->title,
-                'feature_image' => $this->feature_image,
-                'feature_image_url' => $this->feature_image_url,
+                'feature_image' => $this->feature_image_url,
                 'start_date' => $this->start_date,
                 'end_date' => $this->end_date,
                 $this->mergeWhen($request->routeIs('events.show'), [
