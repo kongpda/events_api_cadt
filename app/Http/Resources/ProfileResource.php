@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 final class ProfileResource extends JsonResource
 {
@@ -26,7 +27,7 @@ final class ProfileResource extends JsonResource
                 ),
                 'birth_date' => $this->birth_date?->format('Y-m-d'),
                 'phone' => $this->phone,
-                'avatar' => $this->avatar,
+                'avatar' => $this->avatar ? url(Storage::url($this->avatar)) : null,
                 'status' => $this->status,
                 'bio' => $this->bio,
                 'address' => $this->address,

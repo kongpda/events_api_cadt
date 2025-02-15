@@ -68,8 +68,13 @@ final class UserProfileService
             $avatar->getClientOriginalExtension()
         );
 
-        // Store new avatar
-        $avatar->storeAs('public', $filename);
+        // Store new avatar with public visibility
+        Storage::disk('public')->putFileAs(
+            '',
+            $avatar,
+            $filename,
+            ['visibility' => 'public']
+        );
 
         // Update profile
         $profile->update(['avatar' => $filename]);
@@ -150,10 +155,14 @@ final class UserProfileService
         if (filter_var($providerData['avatar'], FILTER_VALIDATE_URL)) {
             $filename = 'avatars/' . uniqid() . '.jpg';
 
-            // Download and store the avatar
+            // Download and store the avatar with public visibility
             $response = Http::get($providerData['avatar']);
             if ($response->successful()) {
-                Storage::put('public/' . $filename, $response->body());
+                Storage::disk('public')->put(
+                    $filename,
+                    $response->body(),
+                    ['visibility' => 'public']
+                );
 
                 return $filename;
             }
