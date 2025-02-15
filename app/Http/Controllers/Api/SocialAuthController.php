@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\AuthProvider;
 use App\Exceptions\SocialAuthException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SocialAuthRequest;
@@ -14,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User as SocialiteUser;
 
 final class SocialAuthController extends Controller
 {
@@ -30,18 +32,13 @@ final class SocialAuthController extends Controller
     {
         try {
             $validated = $request->validated();
+            $provider = AuthProvider::from($validated['provider']);
 
-            $socialUser = $this->getSocialUser($validated['provider'], $validated['access_token']);
-
+            $socialUser = $this->getSocialUser($provider->value, $validated['access_token']);
             $this->validateSocialEmail($socialUser->getEmail(), $validated['email']);
 
-            $user = $this->socialAuthService->findOrCreateUser($socialUser, [
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'photo_url' => $validated['photo_url'] ?? null,
-                'provider_user_id' => $validated['provider_user_id'],
-                'access_token' => $validated['access_token'],
-            ], $validated['provider']);
+            $userData = $this->prepareSocialUserData($socialUser, $validated);
+            $user = $this->socialAuthService->findOrCreateUser($socialUser, $userData, $provider->value);
 
             return $this->generateAuthResponse($user, $validated['device_name']);
 
@@ -49,6 +46,7 @@ final class SocialAuthController extends Controller
             Log::error('Social auth failed', [
                 'error' => $e->getMessage(),
                 'provider' => $request->provider ?? 'unknown',
+                'email' => $request->email ?? 'unknown',
             ]);
 
             return $this->handleAuthError($e);
@@ -63,13 +61,17 @@ final class SocialAuthController extends Controller
     public function redirectToGoogle(): JsonResponse
     {
         try {
-            $url = Socialite::driver('google')
+            $url = Socialite::driver(AuthProvider::GOOGLE->value)
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl();
 
             return response()->json(['url' => $url]);
         } catch (Exception $e) {
+            Log::error('Failed to generate Google auth URL', [
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'message' => 'Failed to generate Google auth URL',
                 'error' => $e->getMessage(),
@@ -89,25 +91,34 @@ final class SocialAuthController extends Controller
                 throw new SocialAuthException($request->error_description ?? 'Google authentication failed');
             }
 
-            $googleUser = $this->getSocialUser('google');
+            $socialUser = $this->getSocialUser(AuthProvider::GOOGLE->value);
+            $userData = $this->prepareSocialUserData($socialUser);
 
-            $user = $this->socialAuthService->findOrCreateUser($googleUser, [
-                'name' => $googleUser->getName(),
-                'email' => $googleUser->getEmail(),
-                'photo_url' => $googleUser->getAvatar(),
-                'provider_user_id' => $googleUser->getId(),
-            ]);
+            $user = $this->socialAuthService->findOrCreateUser(
+                $socialUser,
+                $userData,
+                AuthProvider::GOOGLE->value
+            );
 
-            return $this->generateAuthResponse($user, $request->device_name ?? 'default_device');
+            return $this->generateAuthResponse(
+                $user,
+                $request->device_name ?? 'default_device'
+            );
 
         } catch (Exception $e) {
-            Log::error('Google auth callback failed', ['error' => $e->getMessage()]);
+            Log::error('Google auth callback failed', [
+                'error' => $e->getMessage(),
+                'code' => $request->code ?? 'no_code',
+            ]);
 
             return $this->handleAuthError($e);
         }
     }
 
-    private function getSocialUser(string $provider, ?string $token = null): \Laravel\Socialite\Two\User
+    /**
+     * Get social user from provider
+     */
+    private function getSocialUser(string $provider, ?string $token = null): SocialiteUser
     {
         $socialite = Socialite::driver($provider)->stateless();
 
@@ -120,6 +131,25 @@ final class SocialAuthController extends Controller
         }
 
         return $socialUser;
+    }
+
+    /**
+     * Prepare user data from social provider
+     */
+    private function prepareSocialUserData(SocialiteUser $socialUser, ?array $validated = null): array
+    {
+        return [
+            'name' => $validated['name'] ?? $socialUser->getName(),
+            'email' => $validated['email'] ?? $socialUser->getEmail(),
+            'photo_url' => $validated['photo_url'] ?? $socialUser->getAvatar(),
+            'provider_user_id' => $validated['provider_user_id'] ?? $socialUser->getId(),
+            'access_token' => $validated['access_token'] ?? $socialUser->token,
+            'nickname' => $socialUser->getNickname(),
+            'provider_data' => [
+                'given_name' => $socialUser->user['given_name'] ?? null,
+                'family_name' => $socialUser->user['family_name'] ?? null,
+            ],
+        ];
     }
 
     private function validateSocialEmail(?string $socialEmail, string $providedEmail): void
@@ -144,7 +174,7 @@ final class SocialAuthController extends Controller
             return response()->json([
                 'token' => $token,
                 'token_type' => 'Bearer',
-                'user' => new UserResource($user),
+                'user' => new UserResource($user->load('profile')),
             ]);
         } catch (Exception $e) {
             Log::error('Failed to generate auth response', [
@@ -157,9 +187,11 @@ final class SocialAuthController extends Controller
 
     private function handleAuthError(Exception $e): JsonResponse
     {
+        $statusCode = $e instanceof SocialAuthException ? 401 : 500;
+
         return response()->json([
             'message' => 'Authentication failed',
             'error' => $e->getMessage(),
-        ], 401);
+        ], $statusCode);
     }
 }

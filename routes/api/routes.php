@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketTypeController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Public authentication routes
@@ -41,6 +42,10 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    // profile routes
+    Route::apiResource('profiles', UserProfileController::class);
+    Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar']);
+
     // Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     // Protected Category routes

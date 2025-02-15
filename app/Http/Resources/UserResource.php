@@ -27,6 +27,8 @@ final class UserResource extends JsonResource
                         'id' => $event->id,
                     ])->all()),
                 ],
+                'profile' => ProfileResource::make($this->whenLoaded('profile')),
+
             ],
             'links' => [
                 'self' => route('users.show', $this->id),
