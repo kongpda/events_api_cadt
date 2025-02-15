@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 final class Event extends Model
 {
@@ -181,5 +183,14 @@ final class Event extends Model
             'registration_deadline' => 'datetime',
             'capacity' => 'integer',
         ];
+    }
+
+    protected function featureImageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->feature_image
+                ? Storage::disk('public')->url($this->feature_image)
+                : null
+        );
     }
 }

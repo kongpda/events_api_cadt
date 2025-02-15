@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\UploadImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Event\StoreEventRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -16,6 +18,11 @@ use Illuminate\Http\Response;
 
 final class EventController extends Controller
 {
+    public function __construct(
+        private readonly UploadImage $uploadImage,
+        private readonly ImageService $imageService
+    ) {}
+
     /**
      * Display a listing of the events.
      */
@@ -47,15 +54,24 @@ final class EventController extends Controller
     public function store(StoreEventRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $tags = collect($validated['tags']);
+        $tags = collect($validated['tags'] ?? []);
         unset($validated['tags']);
+
+        if ($request->hasFile('feature_image')) {
+            $validated['feature_image'] = $this->imageService->upload(
+                file: $request->file('feature_image'),
+                path: 'events/features'
+            );
+        }
 
         $event = Event::create([
             ...$validated,
             'user_id' => $request->user()->id,
         ]);
 
-        $event->tags()->sync($tags);
+        if ( ! empty($tags)) {
+            $event->tags()->sync($tags);
+        }
 
         return response()->json([
             'message' => 'Event created successfully',
@@ -88,6 +104,14 @@ final class EventController extends Controller
         $validated = $request->validated();
         $tags = collect($validated['tags'] ?? []);
         unset($validated['tags']);
+
+        if ($request->hasFile('feature_image')) {
+            $validated['feature_image'] = $this->imageService->upload(
+                file: $request->file('feature_image'),
+                path: 'events/features',
+                oldImage: $event->feature_image
+            );
+        }
 
         $event->update($validated);
 
