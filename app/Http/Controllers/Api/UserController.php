@@ -20,7 +20,7 @@ final class UserController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $users = User::paginate();
+        $users = User::with('profile')->paginate();
 
         return UserResource::collection($users);
     }
@@ -53,7 +53,7 @@ final class UserController extends Controller
      */
     public function show(User $user): UserResource
     {
-        return new UserResource($user);
+        return new UserResource($user->load('profile'));
     }
 
     /**
