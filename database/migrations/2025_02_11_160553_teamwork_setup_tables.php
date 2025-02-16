@@ -18,7 +18,7 @@ final class TeamworkSetupTables extends Migration
 
         Schema::create(Config::get('teamwork.teams_table'), function (Blueprint $table): void {
             $table->increments('id')->unsigned();
-            $table->integer('owner_id')->unsigned()->nullable();
+            $table->ulid('owner_id')->nullable();
             $table->string('name');
             $table->timestamps();
         });

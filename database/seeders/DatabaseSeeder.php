@@ -29,13 +29,17 @@ final class DatabaseSeeder extends Seeder
         $this->createUser();
     }
 
-    private function createUser()
+    private function createUser(): void
     {
-        return User::factory()->create([
+        $user = User::factory()->create([
             // 'id' => $this->userID,
             'name' => 'da',
             'email' => 'da@khable.com',
             // 'is_admin' => true,
+        ]);
+
+        $user->createOwnedTeam([
+            'name' => 'Admin Team',
         ]);
     }
 }

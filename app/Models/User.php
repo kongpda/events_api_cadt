@@ -67,6 +67,11 @@ final class User extends Authenticatable
         // && $this->hasRole(['super-admin', 'admin']);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['admin', 'super-admin']);
+    }
+
     public function eventParticipations(): HasMany
     {
         return $this->hasMany(EventParticipant::class);
