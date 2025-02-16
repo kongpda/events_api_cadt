@@ -54,7 +54,7 @@ final class EventResource extends Resource
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Hidden::make('user_id')
-                            ->default(fn() => auth()->id()),
+                            ->default(fn () => auth()->id()),
                         Textarea::make('description')
                             ->required()
                             ->maxLength(65535)
@@ -80,9 +80,8 @@ final class EventResource extends Resource
                             ])
                             ->required()
                             ->default('draft'),
-                        Select::make('categories')
-                            ->relationship('categories', 'name')
-                            ->multiple()
+                        Select::make('category_id')
+                            ->relationship('category', 'name')
                             ->preload()
                             ->required(),
                         Select::make('tags')
@@ -115,12 +114,12 @@ final class EventResource extends Resource
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'published' => 'success',
                         'draft' => 'warning',
                         'archived' => 'danger',
                     }),
-                ImageColumn::make('feature_image'),
+                // ImageColumn::make('feature_image'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
