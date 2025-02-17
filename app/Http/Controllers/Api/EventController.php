@@ -24,6 +24,8 @@ final class EventController extends Controller
     ) {}
 
     /**
+     * All Event Lists
+     *
      * Display a listing of the events.
      */
     public function index(Request $request): AnonymousResourceCollection
@@ -49,6 +51,8 @@ final class EventController extends Controller
     }
 
     /**
+     * Create a new event
+     *
      * Store a newly created event.
      */
     public function store(StoreEventRequest $request): JsonResponse
@@ -80,6 +84,8 @@ final class EventController extends Controller
     }
 
     /**
+     * Show event details
+     *
      * Display the specified event.
      */
     public function show(Event $event): EventResource
@@ -97,6 +103,8 @@ final class EventController extends Controller
     }
 
     /**
+     * Update event details
+     *
      * Update the specified event.
      */
     public function update(UpdateEventRequest $request, Event $event): JsonResponse
@@ -126,9 +134,9 @@ final class EventController extends Controller
     }
 
     /**
-     * Remove the specified event.
+     * Delete event
      *
-     * @BearerAuth
+     * Remove the specified event by id.
      */
     public function destroy(Event $event): Response
     {
@@ -138,6 +146,8 @@ final class EventController extends Controller
     }
 
     /**
+     * User Events
+     *
      * Display a listing of the user's events.
      */
     public function userEvents(Request $request): AnonymousResourceCollection
@@ -162,11 +172,14 @@ final class EventController extends Controller
     }
 
     /**
+     * Organizer Events
+     *
      * Display a listing of the organizer's events.
      */
     public function organizerEvents(Request $request): AnonymousResourceCollection
     {
         $organizerId = $request->user()->organizer?->id;
+        ray($organizerId);
 
         $events = Event::query()
             ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
@@ -182,6 +195,38 @@ final class EventController extends Controller
             })
             ->latest()
             ->paginate();
+
+        return EventResource::collection($events);
+    }
+
+    /**
+     * Feature Events
+     *
+     * Display a listing of featured events.
+     */
+    public function featured(Request $request): AnonymousResourceCollection
+    {
+        ray('featured');
+        $events = Event::query()
+            ->with(['category', 'user', 'organizer', 'tags', 'featuredEvent'])
+            ->withCount('favorites')
+            ->whereHas('featuredEvent', function ($query): void {
+                $query->active();
+            })
+            ->when($request->user(), function ($query) use ($request): void {
+                $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
+            })
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+        ray($events);
+
+        // Return empty collection if no featured events found
+        if ($events->isEmpty()) {
+            return EventResource::collection(collect());
+        }
 
         return EventResource::collection($events);
     }
