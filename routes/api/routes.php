@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::post('events', [EventController::class, 'store'])->name('events.store');
     Route::put('events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::get('organizer/events', [EventController::class, 'organizerEvents']);
 
     // Protected Event Favorite routes
     Route::get('event-favorites', [EventFavoriteController::class, 'index'])->name('events.favorites');

@@ -93,6 +93,11 @@ final class User extends Authenticatable
         return $this->hasMany(SocialProvider::class);
     }
 
+    public function organizer()
+    {
+        return $this->hasOne(Organizer::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

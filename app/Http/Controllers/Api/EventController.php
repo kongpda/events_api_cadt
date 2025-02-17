@@ -142,10 +142,36 @@ final class EventController extends Controller
      */
     public function userEvents(Request $request): AnonymousResourceCollection
     {
+
         $events = Event::query()
             ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
             ->withCount('favorites')
             ->where('user_id', $request->user()->id)
+            ->when($request->filled('category_id'), function ($query) use ($request): void {
+                $query->where('category_id', $request->input('category_id'));
+            })
+            ->when($request->user(), function ($query) use ($request): void {
+                $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
+            })
+            ->latest()
+            ->paginate();
+
+        return EventResource::collection($events);
+    }
+
+    /**
+     * Display a listing of the organizer's events.
+     */
+    public function organizerEvents(Request $request): AnonymousResourceCollection
+    {
+        $organizerId = $request->user()->organizer?->id;
+
+        $events = Event::query()
+            ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
+            ->withCount('favorites')
+            ->where('organizer_id', $organizerId)
             ->when($request->filled('category_id'), function ($query) use ($request): void {
                 $query->where('category_id', $request->input('category_id'));
             })
