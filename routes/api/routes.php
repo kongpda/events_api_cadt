@@ -42,6 +42,8 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::get('user/events', [EventController::class, 'userEvents'])->name('user.events');
+
     // profile routes
     Route::apiResource('profiles', UserProfileController::class);
     Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar']);
