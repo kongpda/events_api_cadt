@@ -179,7 +179,6 @@ final class EventController extends Controller
     public function organizerEvents(Request $request): AnonymousResourceCollection
     {
         $organizerId = $request->user()->organizer?->id;
-        ray($organizerId);
 
         $events = Event::query()
             ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
@@ -206,7 +205,6 @@ final class EventController extends Controller
      */
     public function featured(Request $request): AnonymousResourceCollection
     {
-        ray('featured');
         $events = Event::query()
             ->with(['category', 'user', 'organizer', 'tags', 'featuredEvent'])
             ->withCount('favorites')
@@ -221,7 +219,6 @@ final class EventController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        ray($events);
 
         // Return empty collection if no featured events found
         if ($events->isEmpty()) {
