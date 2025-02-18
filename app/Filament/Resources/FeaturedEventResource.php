@@ -60,6 +60,7 @@ final class FeaturedEventResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderable('order')
             ->columns([
                 TextColumn::make('event.title')
                     ->searchable()
@@ -72,6 +73,8 @@ final class FeaturedEventResource extends Resource
                 TextColumn::make('active_until')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('Create By'),
             ])
             ->defaultSort('order')
             ->actions([
