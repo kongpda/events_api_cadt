@@ -22,7 +22,7 @@ final class EventResource extends JsonResource
                 $this->mergeWhen($request->routeIs('events.show'), [
                     'slug' => $this->slug,
                     'description' => $this->description,
-                    'address' => $this->address,
+                    'location' => $this->location,
                     'participation_type' => $this->participation_type,
                     'capacity' => $this->capacity,
                     'registration_deadline' => $this->registration_deadline,

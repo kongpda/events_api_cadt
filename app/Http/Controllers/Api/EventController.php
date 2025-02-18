@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\AuthorizeOrganizerAction;
 use App\Actions\UploadImage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Event\StoreEventRequest;
@@ -20,7 +21,8 @@ final class EventController extends Controller
 {
     public function __construct(
         private readonly UploadImage $uploadImage,
-        private readonly ImageService $imageService
+        private readonly ImageService $imageService,
+        private readonly AuthorizeOrganizerAction $authorizeOrganizer
     ) {}
 
     /**
@@ -109,6 +111,12 @@ final class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event): JsonResponse
     {
+        if ( ! $this->authorizeOrganizer->execute($request->user(), $event)) {
+            return response()->json([
+                'message' => 'You are not authorized to update this event.',
+            ], 403);
+        }
+
         $validated = $request->validated();
         $tags = collect($validated['tags'] ?? []);
         unset($validated['tags']);

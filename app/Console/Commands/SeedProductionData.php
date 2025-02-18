@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\EventStatus;
 use App\Models\Category;
 use App\Models\Event;
 use App\Models\FeaturedEvent;
@@ -351,13 +352,14 @@ final class SeedProductionData extends Command
                 'title' => $title,
                 'slug' => Str::slug($title),
                 'description' => $description,
-                'address' => $venue->address,
+                'location' => $venue->address,
                 'feature_image' => null,
                 'start_date' => $startDate,
                 'end_date' => $startDate->copy()->addHours(random_int(2, 48)),
                 'user_id' => $user->id,
                 'organizer_id' => $organizer->id,
                 'category_id' => $category->id,
+                'status' => EventStatus::PUBLISHED->value,
                 'participation_type' => $participationTypes[array_rand($participationTypes)],
                 'capacity' => $venue->capacity,
                 'registration_deadline' => $startDate->copy()->subDays(random_int(1, 7)),

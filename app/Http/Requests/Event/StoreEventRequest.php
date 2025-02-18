@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Event;
 
+use App\Enums\EventStatus;
+use App\Enums\EventType;
+use App\Enums\ParticipationType;
+use App\Enums\RegistrationStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use RuntimeException;
 
 final class StoreEventRequest extends FormRequest
 {
@@ -19,18 +25,19 @@ final class StoreEventRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', 'unique:events,slug'],
             'description' => ['required', 'string', 'max:65535'],
-            'address' => ['required', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
             'feature_image' => ['image', 'required', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'category_id' => ['required', 'exists:categories,id'],
-            'organizer_id' => ['required', 'ulid', 'exists:organizers,id'],
-            'participation_type' => ['required', 'string', 'in:paid,free'],
-            'capacity' => ['required', 'integer', 'min:1'],
-            'registration_deadline' => ['required', 'date', 'before:end_date'],
-            'registration_status' => ['required', 'string', 'in:open,closed,full'],
-            'event_type' => ['required', 'string', 'in:in_person,online,hybrid'],
+            'organizer_id' => ['required', 'exists:organizers,id'],
+            'participation_type' => ['required', 'string', Rule::enum(ParticipationType::class)],
+            'capacity' => ['required', 'integer', 'min:0'],
+            'registration_deadline' => ['nullable', 'date', 'before:start_date'],
+            'registration_status' => ['required', 'string', Rule::enum(RegistrationStatus::class)],
+            'event_type' => ['required', 'string', Rule::enum(EventType::class)],
             'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
+            'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)],
             'tags' => ['sometimes', 'array'],
             'tags.*' => ['exists:tags,id'],
         ];
@@ -43,5 +50,27 @@ final class StoreEventRequest extends FormRequest
                 'slug' => str()->slug($this->input('title')),
             ]);
         }
+
+        if ($this->missing('status')) {
+            $this->merge([
+                'status' => EventStatus::DRAFT->value,
+            ]);
+        }
+
+        if ($this->missing('capacity')) {
+            $this->merge([
+                'capacity' => 0,
+            ]);
+        }
+
+        $organizerId = auth()->user()->organizer?->id;
+        if ( ! $organizerId) {
+            throw new RuntimeException('User must be associated with an organizer to create events.');
+        }
+
+        $this->merge([
+            'organizer_id' => $organizerId,
+            'user_id' => auth()->id(),
+        ]);
     }
 }
