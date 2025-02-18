@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -9,7 +11,7 @@ return [
     | This is the Auth model used by Teamwork.
     |
     */
-    'user_model' => config('auth.providers.users.model', App\User::class),
+    'user_model' => config('auth.providers.users.model', App\Models\User::class),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,7 +32,7 @@ return [
     | the team if it is in a different namespace.
     |
     */
-    'team_model' => Mpociot\Teamwork\TeamworkTeam::class,
+    'team_model' => App\Models\Team::class,
 
     /*
     |--------------------------------------------------------------------------

@@ -34,6 +34,8 @@ final class EventResource extends JsonResource
                 ]),
                 'favorites_count' => $this->favorites_count,
                 'is_favorited' => $request->user() ? $this->isFavoritedBy($request->user()) : false,
+                'is_featured' => $this->whenLoaded('featuredEvent', fn () => true, false),
+                'featured_order' => $this->whenLoaded('featuredEvent', fn () => $this->featuredEvent->order),
             ],
             'relationships' => [
                 $this->mergeWhen($request->routeIs('events.show'), [

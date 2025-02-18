@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\FeaturedEvent;
 use App\Models\Organizer;
 use App\Models\Share;
 use App\Models\Tag;
@@ -143,8 +144,8 @@ final class SeedProductionData extends Command
                 $venues = $this->createVenues();
                 $this->info('✓ Venues created');
 
-                // Get or create a test user for relationships
-                $user = User::query()->firstOrCreate(
+                // Get or create admin user
+                $adminUser = User::query()->firstOrCreate(
                     ['email' => 'admin@herdapp.com'],
                     [
                         'name' => 'Admin User',
@@ -153,14 +154,23 @@ final class SeedProductionData extends Command
                     ],
                 );
 
-                // Create some test users for favorites and shares
-                $testUsers = $this->createTestUsers();
-                $this->info('✓ Test users created');
+                // Create admin team and set as current team
+                $adminTeam = $adminUser->ownedTeams()->firstOrCreate([
+                    'name' => 'Herd Admin Team',
+                ]);
+                $adminUser->switchTeam($adminTeam);
+                $this->info('✓ Admin team created');
 
-                $organizer = $this->createOrganizer($user);
+                // Create test users and their teams
+                $testUsers = $this->createTestUsers();
+                $this->info('✓ Test users and their teams created');
+
+                // Create organizer associated with admin team
+                $organizer = $this->createOrganizer($adminUser);
+
                 $this->info('✓ Organizer created');
 
-                $events = $this->createMultipleEvents($user, $organizer, $venues);
+                $events = $this->createMultipleEvents($adminUser, $organizer, $venues);
                 $this->info('✓ Multiple events created');
 
                 $this->createTicketTypes($events);
@@ -171,6 +181,9 @@ final class SeedProductionData extends Command
 
                 $this->createShares($testUsers, $events);
                 $this->info('✓ Shares created');
+
+                $this->createFeaturedEvents($events);
+                $this->info('✓ Featured events created');
             });
 
             $this->info('Production data seeding completed successfully!');
@@ -339,7 +352,7 @@ final class SeedProductionData extends Command
                 'slug' => Str::slug($title),
                 'description' => $description,
                 'address' => $venue->address,
-                'feature_image' => 'https://picsum.photos/800/600',
+                'feature_image' => null,
                 'start_date' => $startDate,
                 'end_date' => $startDate->copy()->addHours(random_int(2, 48)),
                 'user_id' => $user->id,
@@ -416,6 +429,10 @@ final class SeedProductionData extends Command
                         'linkedin' => 'https://linkedin.com/in/johndoe',
                     ],
                 ],
+                'team' => [
+                    'name' => 'Tech Events Cambodia',
+                    'members' => ['jane@example.com', 'bob@example.com'],
+                ],
             ],
             [
                 'name' => 'Jane Smith',
@@ -430,6 +447,10 @@ final class SeedProductionData extends Command
                         'twitter' => 'https://twitter.com/janesmith',
                         'linkedin' => 'https://linkedin.com/in/janesmith',
                     ],
+                ],
+                'team' => [
+                    'name' => 'Digital Marketing Events',
+                    'members' => ['alice@example.com'],
                 ],
             ],
             [
@@ -496,6 +517,26 @@ final class SeedProductionData extends Command
                 $user->profile()->create($userData['profile']);
             }
 
+            // Create team if specified
+            if (isset($userData['team'])) {
+                $team = $user->ownedTeams()->firstOrCreate([
+                    'name' => $userData['team']['name'],
+                ]);
+
+                // Set as user's current team
+                $user->switchTeam($team);
+
+                // Add team members
+                foreach ($userData['team']['members'] as $memberEmail) {
+                    $member = User::where('email', $memberEmail)->first();
+                    if ($member) {
+                        $team->users()->attach($member);
+                        // Also set this team as the member's current team
+                        $member->switchTeam($team);
+                    }
+                }
+            }
+
             $users[] = $user;
         }
 
@@ -546,6 +587,22 @@ final class SeedProductionData extends Command
                     'share_url' => json_encode($shareUrls),
                 ]);
             }
+        }
+    }
+
+    private function createFeaturedEvents(array $events): void
+    {
+        // Select 5 random events to feature
+        $featuredEvents = collect($events)->random(5);
+
+        foreach ($featuredEvents as $index => $event) {
+            FeaturedEvent::query()->create([
+                'event_id' => $event->id,
+                'user_id' => $event->user_id,
+                'order' => $index + 1,
+                'active_from' => now(),
+                'active_until' => now()->addMonths(random_int(1, 3)),
+            ]);
         }
     }
 }

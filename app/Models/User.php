@@ -67,6 +67,11 @@ final class User extends Authenticatable
         // && $this->hasRole(['super-admin', 'admin']);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasAnyRole(['admin', 'super-admin']);
+    }
+
     public function eventParticipations(): HasMany
     {
         return $this->hasMany(EventParticipant::class);
@@ -86,6 +91,11 @@ final class User extends Authenticatable
     public function socialProviders(): HasMany
     {
         return $this->hasMany(SocialProvider::class);
+    }
+
+    public function organizer()
+    {
+        return $this->hasOne(Organizer::class);
     }
 
     /**

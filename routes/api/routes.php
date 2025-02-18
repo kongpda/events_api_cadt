@@ -42,6 +42,7 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+
     // profile routes
     Route::apiResource('profiles', UserProfileController::class);
     Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar']);
@@ -56,9 +57,13 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
     // Protected Event routes
+    Route::get('user/events', [EventController::class, 'userEvents'])->name('user.events');
+    Route::get('events/featured', [EventController::class, 'featured'])->name('events.featured');
+    Route::get('organizer/events', [EventController::class, 'organizerEvents'])->name('organizer.events');
+
     Route::get('events', [EventController::class, 'index'])->name('events.index');
-    Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::post('events', [EventController::class, 'store'])->name('events.store');
+    Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::put('events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 

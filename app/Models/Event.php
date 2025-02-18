@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\EventStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 final class Event extends Model
@@ -41,7 +43,6 @@ final class Event extends Model
         'feature_image',
         'start_date',
         'end_date',
-        'category_id',
         'user_id',
         'organizer_id',
         'participation_type',
@@ -50,6 +51,17 @@ final class Event extends Model
         'registration_status',
         'event_type',
         'online_url',
+        'status',
+        'category_id',
+    ];
+
+    protected $casts = [
+        'id' => 'string',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'registration_deadline' => 'datetime',
+        'capacity' => 'integer',
+        'status' => EventStatus::class,
     ];
 
     /**
@@ -129,7 +141,7 @@ final class Event extends Model
     /**
      * Scope a query to only include events with a specific status.
      */
-    public function scopeStatus(Builder $query, string $status): Builder
+    public function scopeStatus(Builder $query, EventStatus $status): Builder
     {
         return $query->where('status', $status);
     }
@@ -174,15 +186,19 @@ final class Event extends Model
         return $query->where('start_date', '<', now());
     }
 
-    protected function casts(): array
+    public function featuredEvent(): HasOne
     {
-        return [
-            'id' => 'string',
-            'start_date' => 'datetime',
-            'end_date' => 'datetime',
-            'registration_deadline' => 'datetime',
-            'capacity' => 'integer',
-        ];
+        return $this->hasOne(FeaturedEvent::class);
+    }
+
+    /**
+     * Check if the event is currently featured.
+     */
+    public function isFeatured(): bool
+    {
+        return $this->featuredEvent()
+            ->active()
+            ->exists();
     }
 
     protected function featureImageUrl(): Attribute
@@ -190,7 +206,7 @@ final class Event extends Model
         return Attribute::make(
             get: fn () => $this->feature_image
                 ? Storage::disk('public')->url($this->feature_image)
-                : null
+                : 'https://picsum.photos/800/600',
         );
     }
 }
