@@ -16,6 +16,8 @@ use Illuminate\Http\Response;
 final class CategoryController extends Controller
 {
     /**
+     * All categories
+     *
      * Display a listing of the categories.
      */
     public function index(): AnonymousResourceCollection
@@ -29,6 +31,8 @@ final class CategoryController extends Controller
     }
 
     /**
+     * Create New Category
+     *
      * Store a newly created category.
      */
     public function store(StoreCategoryRequest $request): JsonResponse
@@ -42,6 +46,8 @@ final class CategoryController extends Controller
     }
 
     /**
+     * Show Category by slug
+     *
      * Display the specified category.
      */
     public function show(Category $category): CategoryResource
@@ -54,6 +60,8 @@ final class CategoryController extends Controller
     }
 
     /**
+     * Update Category by slug
+     *
      * Update the specified category.
      */
     public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
@@ -67,12 +75,16 @@ final class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified category.
+     * Remove Category by slug
+     *
+     * Remove the specified category from storage.
      */
-    public function destroy(Category $category): Response
+    public function destroy(Category $category): JsonResponse
     {
         $category->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Category deleted successfully',
+        ], Response::HTTP_OK);
     }
 }
