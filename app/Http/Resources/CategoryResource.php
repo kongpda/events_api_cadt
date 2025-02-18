@@ -25,10 +25,11 @@ final class CategoryResource extends JsonResource
                     'updated_at' => $this->updated_at,
                 ]),
             ],
-            'relationship' => [
-                $this->mergeWhen($request->routeIs('categories.show'), [
-                    'events' => EventResource::collection($this->whenLoaded('events')),
-                ]),
+            'relationships' => [
+                'events' => $this->when(
+                    $request->routeIs('categories.show') && $this->relationLoaded('events'),
+                    fn () => EventResource::collection($this->events)
+                ),
             ],
             'links' => [
                 'self' => route('categories.show', $this->slug),

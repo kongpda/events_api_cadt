@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 final class OrganizerController extends Controller
 {
     /**
+     * All Organizer
+     *
      * Display a listing of the organizers.
      */
     public function index(Request $request): AnonymousResourceCollection
@@ -44,6 +46,8 @@ final class OrganizerController extends Controller
     }
 
     /**
+     * Create New Organizer
+     *
      * Store a newly created organizer.
      */
     public function store(StoreOrganizerRequest $request): JsonResponse
@@ -57,6 +61,8 @@ final class OrganizerController extends Controller
     }
 
     /**
+     * Show Organizer by id
+     *
      * Display the specified organizer.
      */
     public function show(Request $request, Organizer $organizer): OrganizerResource
@@ -80,6 +86,8 @@ final class OrganizerController extends Controller
     }
 
     /**
+     * Update Organizer
+     *
      * Update the specified organizer.
      */
     public function update(UpdateOrganizerRequest $request, Organizer $organizer): JsonResponse
@@ -96,6 +104,8 @@ final class OrganizerController extends Controller
     }
 
     /**
+     * Delete Organizer by id
+     *
      * Remove the specified organizer.
      */
     public function destroy(Organizer $organizer): Response
