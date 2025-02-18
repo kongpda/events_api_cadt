@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EventStatus;
+use App\Enums\EventType;
+use App\Enums\ParticipationType;
+use App\Enums\RegistrationStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
@@ -39,7 +42,7 @@ final class Event extends Model
         'title',
         'slug',
         'description',
-        'address',
+        'location',
         'feature_image',
         'start_date',
         'end_date',
@@ -62,28 +65,9 @@ final class Event extends Model
         'registration_deadline' => 'datetime',
         'capacity' => 'integer',
         'status' => EventStatus::class,
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    private array $participationTypes = [
-        'paid' => 'Paid',
-        'free' => 'Free',
-    ];
-
-    private array $registrationStatuses = [
-        'open' => 'Open',
-        'closed' => 'Closed',
-        'full' => 'Full',
-    ];
-
-    private array $eventTypes = [
-        'in_person' => 'In Person',
-        'online' => 'Online',
-        'hybrid' => 'Hybrid',
+        'participation_type' => ParticipationType::class,
+        'registration_status' => RegistrationStatus::class,
+        'event_type' => EventType::class,
     ];
 
     public function user(): BelongsTo
@@ -144,36 +128,6 @@ final class Event extends Model
     public function scopeStatus(Builder $query, EventStatus $status): Builder
     {
         return $query->where('status', $status);
-    }
-
-    /**
-     * Get the available participation types.
-     *
-     * @return array<string, string>
-     */
-    public function getParticipationTypes(): array
-    {
-        return $this->participationTypes;
-    }
-
-    /**
-     * Get the available registration statuses.
-     *
-     * @return array<string, string>
-     */
-    public function getRegistrationStatuses(): array
-    {
-        return $this->registrationStatuses;
-    }
-
-    /**
-     * Get the available event types.
-     *
-     * @return array<string, string>
-     */
-    public function getEventTypes(): array
-    {
-        return $this->eventTypes;
     }
 
     public function scopeUpcoming($query)

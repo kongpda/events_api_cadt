@@ -116,4 +116,5 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         'update' => 'ticket_types.update',
         'destroy' => 'ticket_types.destroy',
     ]);
+
 });

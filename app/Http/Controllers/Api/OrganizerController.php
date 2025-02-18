@@ -48,11 +48,7 @@ final class OrganizerController extends Controller
      */
     public function store(StoreOrganizerRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $validated['user_id'] = $request->user()->id;
-        $validated['slug'] = Str::slug($validated['name']);
-
-        $organizer = Organizer::create($validated);
+        $organizer = Organizer::create($request->validated());
         $organizer->loadCount('events')->load(['user']);
 
         return (new OrganizerResource($organizer))

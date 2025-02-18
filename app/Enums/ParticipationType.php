@@ -6,6 +6,14 @@ namespace App\Enums;
 
 enum ParticipationType: string
 {
-    case TICKET = 'ticket_holder';
-    case FREE = 'free_participant';
+    case PAID = 'paid';
+    case FREE = 'free';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::PAID => 'Paid',
+            self::FREE => 'Free',
+        };
+    }
 }
