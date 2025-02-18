@@ -48,11 +48,7 @@ final class OrganizerController extends Controller
      */
     public function store(StoreOrganizerRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-        $validated['user_id'] = $request->user()->id;
-        $validated['slug'] = Str::slug($validated['name']);
-
-        $organizer = Organizer::create($validated);
+        $organizer = Organizer::create($request->validated());
         $organizer->loadCount('events')->load(['user']);
 
         return (new OrganizerResource($organizer))
@@ -108,29 +104,5 @@ final class OrganizerController extends Controller
         $organizer->delete();
 
         return response()->noContent();
-    }
-
-    /**
-     * Create Organizer for User
-     *
-     * Quickly create an organizer with minimal required fields.
-     */
-    public function createOrganizer(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ]);
-
-        $validated['user_id'] = $request->user()->id;
-        $validated['slug'] = Str::slug($validated['name']);
-        $validated['is_verified'] = false; // Default value for new organizers
-
-        $organizer = Organizer::create($validated);
-        $organizer->loadCount('events')->load(['user']);
-
-        return (new OrganizerResource($organizer))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
     }
 }

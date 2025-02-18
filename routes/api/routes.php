@@ -83,7 +83,6 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         'update' => 'organizers.update',
         'destroy' => 'organizers.destroy',
     ]);
-    Route::post('organizers/create-organizer', [OrganizerController::class, 'createOrganizer'])->middleware('auth:sanctum');
 
     // Protected Share routes (all operations)
     Route::apiResource('shares', ShareController::class)->names([
