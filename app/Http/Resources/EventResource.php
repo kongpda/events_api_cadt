@@ -40,7 +40,16 @@ final class EventResource extends JsonResource
             'relationships' => [
                 $this->mergeWhen($request->routeIs('events.show'), [
                     'category' => new CategoryResource($this->whenLoaded('category')),
-                    'user' => new UserResource($this->whenLoaded('user')),
+                    'user' => $this->whenLoaded('user', fn () => [
+                        'id' => $this->user->id,
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                        'profile' => [
+                            'first_name' => $this->user->profile->first_name,
+                            'last_name' => $this->user->profile->last_name,
+                            'avatar' => $this->user->profile->avatar_url,
+                        ],
+                    ]),
                     'organizer' => new OrganizerResource($this->whenLoaded('organizer')),
                     'tags' => TagResource::collection($this->whenLoaded('tags')),
                     'participants' => EventParticipantResource::collection($this->whenLoaded('participants')),

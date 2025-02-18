@@ -33,7 +33,7 @@ final class EventController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $events = Event::query()
-            ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
+            ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
             ->withCount('favorites')
             ->when($request->filled('category_id'), function ($query) use ($request): void {
                 $query->where('category_id', $request->input('category_id'));
@@ -92,7 +92,7 @@ final class EventController extends Controller
      */
     public function show(Event $event): EventResource
     {
-        $event->load(['category', 'user', 'organizer', 'tags'])
+        $event->load(['category', 'user.profile', 'organizer', 'tags'])
             ->loadCount('favorites');
 
         if (auth()->check()) {
@@ -160,9 +160,8 @@ final class EventController extends Controller
      */
     public function userEvents(Request $request): AnonymousResourceCollection
     {
-
         $events = Event::query()
-            ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
+            ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
             ->withCount('favorites')
             ->where('user_id', $request->user()->id)
             ->when($request->filled('category_id'), function ($query) use ($request): void {
@@ -189,7 +188,7 @@ final class EventController extends Controller
         $organizerId = $request->user()->organizer?->id;
 
         $events = Event::query()
-            ->with(['category', 'user', 'organizer', 'tags', 'favorites'])
+            ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
             ->withCount('favorites')
             ->where('organizer_id', $organizerId)
             ->when($request->filled('category_id'), function ($query) use ($request): void {
@@ -214,7 +213,7 @@ final class EventController extends Controller
     public function featured(Request $request): AnonymousResourceCollection
     {
         $events = Event::query()
-            ->with(['category', 'user', 'organizer', 'tags', 'featuredEvent'])
+            ->with(['category', 'user.profile', 'organizer', 'tags', 'featuredEvent'])
             ->withCount('favorites')
             ->whereHas('featuredEvent', function ($query): void {
                 $query->active();

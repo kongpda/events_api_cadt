@@ -9,6 +9,7 @@ use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 final class UserProfile extends Model
 {
@@ -43,5 +44,12 @@ final class UserProfile extends Model
     public function getFullNameAttribute(): string
     {
         return mb_trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar
+            ? Storage::url($this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->full_name);
     }
 }

@@ -30,7 +30,7 @@ final class StoreEventRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'category_id' => ['required', 'exists:categories,id'],
-            'organizer_id' => ['required', 'exists:organizers,id'],
+            'organizer_id' => ['nullable', 'string', 'exists:organizers,id'],
             'participation_type' => ['required', 'string', Rule::enum(ParticipationType::class)],
             'capacity' => ['required', 'integer', 'min:0'],
             'registration_deadline' => ['nullable', 'date', 'before:start_date'],
