@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Organizer;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 final class UpdateOrganizerRequest extends FormRequest
@@ -26,6 +27,11 @@ final class UpdateOrganizerRequest extends FormRequest
                 'email',
                 Rule::unique('organizers')->ignore($this->route('organizer')),
             ],
+            'slug' => [
+                'nullable',
+                'string',
+                Rule::unique('organizers')->ignore($this->route('organizer')),
+            ],
             'phone' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
@@ -33,5 +39,17 @@ final class UpdateOrganizerRequest extends FormRequest
             'social_media' => ['nullable', 'url'],
             'logo' => ['nullable', 'string'],
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('name') && ! $this->has('slug')) {
+            $this->merge([
+                'slug' => Str::slug($this->input('name')),
+            ]);
+        }
     }
 }
