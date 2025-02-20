@@ -33,6 +33,7 @@ final class AppServiceProvider extends ServiceProvider
         $this->configureModels();
         $this->configureUrl();
         $this->configureVite();
+        Model::preventLazyLoading( ! app()->isProduction());
 
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi): void {
             $openApi->secure(
