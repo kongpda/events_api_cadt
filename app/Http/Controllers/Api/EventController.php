@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\AuthorizeOrganizerAction;
 use App\Actions\UploadImage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Event\SearchEventRequest;
 use App\Http\Requests\Event\StoreEventRequest;
 use App\Http\Requests\Event\UpdateEventRequest;
 use App\Http\Resources\EventResource;
@@ -30,16 +31,24 @@ final class EventController extends Controller
      *
      * Display a listing of the events.
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(SearchEventRequest $request): AnonymousResourceCollection
     {
+        $validated = $request->validated();
+
         $events = Event::query()
             ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
             ->withCount('favorites')
-            ->when($request->filled('category_id'), function ($query) use ($request): void {
-                $query->where('category_id', $request->input('category_id'));
+            ->when($validated['search'] ?? null, function ($query) use ($validated): void {
+                $query->where('title', 'like', "%{$validated['search']}%");
             })
-            ->when($request->filled('organizer_id'), function ($query) use ($request): void {
-                $query->where('organizer_id', $request->input('organizer_id'));
+            ->when($validated['location'] ?? null, function ($query) use ($validated): void {
+                $query->where('location', 'like', "%{$validated['location']}%");
+            })
+            ->when($validated['category_id'] ?? null, function ($query) use ($validated): void {
+                $query->where('category_id', $validated['category_id']);
+            })
+            ->when($validated['organizer_id'] ?? null, function ($query) use ($validated): void {
+                $query->where('organizer_id', $validated['organizer_id']);
             })
             ->when($request->user(), function ($query) use ($request): void {
                 $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
