@@ -11,7 +11,7 @@ final class StoreOrganizerRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -28,6 +28,8 @@ final class StoreOrganizerRequest extends FormRequest
             'website' => ['nullable', 'url'],
             'social_media' => ['nullable', 'url'],
             'logo' => ['nullable', 'string'],
+            'user_id' => ['required', 'exists:users,id'],
+            'slug' => ['nullable', 'string', 'unique:organizers'],
         ];
     }
 
@@ -72,9 +74,15 @@ final class StoreOrganizerRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
+        $userId = auth()->id();
+
+        if ( ! $userId) {
+            throw new \Illuminate\Auth\AuthenticationException('Unauthenticated.');
+        }
+
         $this->merge([
-            'slug' => Str::slug($this->name),
-            'user_id' => $this->user()->id,
+            'user_id' => $userId,
+            'slug' => $this->input('slug') ?? Str::slug($this->input('name')),
         ]);
     }
 }
