@@ -21,6 +21,11 @@ final class StoreOrganizerRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'nullable',
+                'string',
+                'unique:organizers',
+            ],
             'email' => ['nullable', 'email', 'unique:organizers'],
             'phone' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -29,7 +34,6 @@ final class StoreOrganizerRequest extends FormRequest
             'social_media' => ['nullable', 'url'],
             'logo' => ['nullable', 'string'],
             'user_id' => ['required', 'exists:users,id'],
-            'slug' => ['nullable', 'string', 'unique:organizers'],
         ];
     }
 
