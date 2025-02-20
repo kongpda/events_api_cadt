@@ -25,18 +25,24 @@ final class UpdateEventRequest extends FormRequest
             'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('events')->ignore($this->event)],
             'description' => ['sometimes', 'required', 'string', 'max:65535'],
             'location' => ['sometimes', 'required', 'string', 'max:255'],
-            'feature_image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Remove 'required' as it's an update
+            'feature_image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'start_date' => ['sometimes', 'required', 'date'],
-            'end_date' => ['nullable', 'date', 'after:start_date'], // Make nullable consistent with StoreEventRequest
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'category_id' => ['sometimes', 'required', 'exists:categories,id'],
             'participation_type' => ['sometimes', 'required', 'string', Rule::enum(ParticipationType::class)],
+            /** @ignoreParam */
             'capacity' => ['sometimes', 'required', 'integer', 'min:1'],
-            'registration_deadline' => ['nullable', 'date', 'before:start_date'], // Make consistent with StoreEventRequest
+            /** @ignoreParam */
+            'registration_deadline' => ['nullable', 'date', 'before:start_date'],
             'registration_status' => ['sometimes', 'required', 'string', Rule::enum(RegistrationStatus::class)],
             'event_type' => ['sometimes', 'required', 'string', Rule::enum(EventType::class)],
+            /** @ignoreParam */
             'online_url' => ['sometimes', 'required_if:event_type,online,hybrid', 'nullable', 'url'],
-            'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)], // Add status field
+            /** @ignoreParam */
+            'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)],
+            /** @ignoreParam */
             'tags' => ['sometimes', 'array'],
+            /** @ignoreParam */
             'tags.*' => ['exists:tags,id'],
         ];
     }

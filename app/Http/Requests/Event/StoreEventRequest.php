@@ -30,15 +30,22 @@ final class StoreEventRequest extends FormRequest
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'category_id' => ['required', 'exists:categories,id'],
+            /** @ignoreParam */
             'organizer_id' => ['nullable', 'string', 'exists:organizers,id'],
             'participation_type' => ['required', 'string', Rule::enum(ParticipationType::class)],
+            /** @ignoreParam */
             'capacity' => ['required', 'integer', 'min:0'],
+            /** @ignoreParam */
             'registration_deadline' => ['nullable', 'date', 'before:start_date'],
             'registration_status' => ['required', 'string', Rule::enum(RegistrationStatus::class)],
             'event_type' => ['required', 'string', Rule::enum(EventType::class)],
+            /** @ignoreParam */
             'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
+            /** @ignoreParam */
             'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)],
+            /** @ignoreParam */
             'tags' => ['sometimes', 'array'],
+            /** @ignoreParam */
             'tags.*' => ['exists:tags,id'],
         ];
     }
