@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 final class Organizer extends Model
 {
@@ -59,20 +58,6 @@ final class Organizer extends Model
     public function events()
     {
         return $this->hasMany(Event::class);
-    }
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        self::creating(function (self $organizer): void {
-            if (empty($organizer->slug)) {
-                $organizer->slug = Str::slug($organizer->name);
-            }
-        });
     }
 
     /**
