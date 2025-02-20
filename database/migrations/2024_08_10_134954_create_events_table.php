@@ -28,7 +28,6 @@ return new class() extends Migration
             $table->string('registration_status');
             $table->string('event_type');
             $table->string('online_url')->nullable()->comment('Required if location_type is online or hybrid');
-            $table->string('status');
             $table->timestamps();
         });
     }
