@@ -28,7 +28,7 @@ final class EventResource extends JsonResource
                     // 'registration_deadline' => $this->registration_deadline,
                     'registration_status' => $this->registration_status,
                     'event_type' => $this->event_type,
-                    'status' => $this->status,
+                    'status' => $this->status ?? '',
                     // 'online_url' => $this->online_url,
                     'created_at' => $this->created_at,
                     'updated_at' => $this->updated_at,

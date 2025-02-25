@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EventParticipant\StoreEventParticipantRequest;
 use App\Http\Requests\EventParticipant\UpdateEventParticipantRequest;
 use App\Http\Resources\EventParticipantResource;
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Models\EventParticipant;
 use Illuminate\Http\JsonResponse;
@@ -49,7 +50,9 @@ final class EventParticipantController extends Controller
      */
     public function show(Event $event, EventParticipant $participant): EventParticipantResource
     {
-        return new EventParticipantResource($participant->load(['user', 'ticketType']));
+        $participant->loadMissing(['user', 'ticketType']);
+
+        return new EventParticipantResource($participant);
     }
 
     public function update(
@@ -59,7 +62,9 @@ final class EventParticipantController extends Controller
     ): EventParticipantResource {
         $participant->update($request->validated());
 
-        return new EventParticipantResource($participant->load(['user', 'ticketType']));
+        $participant->loadMissing(['user', 'ticketType']);
+
+        return new EventParticipantResource($participant);
     }
 
     /**
@@ -72,5 +77,22 @@ final class EventParticipantController extends Controller
         $participant->delete();
 
         return response()->json(status: Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Get events by user
+     *
+     * Retrieve all events that a specific user is participating in.
+     */
+    public function eventsByUser(string $userId): AnonymousResourceCollection
+    {
+        $events = Event::whereHas('participants', function ($query) use ($userId): void {
+            $query->where('user_id', $userId);
+        })
+            ->withCount('favorites')
+            ->with(['participants'])
+            ->paginate();
+
+        return EventResource::collection($events);
     }
 }
