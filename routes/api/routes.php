@@ -75,6 +75,9 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     // Protected Event Participant routes (all operations)
     Route::apiResource('event-participants', EventParticipantController::class);
 
+    Route::get('/users/{userId}/events', [EventParticipantController::class, 'eventsByUser'])
+        ->name('events.participants.user');
+
     // Protected Organizer routes (all operations)
     Route::apiResource('organizers', OrganizerController::class)->names([
         'index' => 'organizers.index',

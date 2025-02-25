@@ -23,7 +23,7 @@ final class StoreEventParticipantRequest extends FormRequest
             'user_id' => ['required', 'exists:users,id'],
             'status' => ['required', new Enum(ParticipationStatus::class)],
             'participation_type' => ['required', new Enum(ParticipationType::class)],
-            'ticket_id' => ['nullable', 'exists:tickets,id'],
+            'ticket_type_id' => ['nullable', 'exists:ticket_types,id'],
             'check_in_time' => ['nullable', 'date'],
             'joined_at' => ['required', 'date'],
         ];
