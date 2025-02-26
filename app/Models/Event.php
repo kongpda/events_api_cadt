@@ -158,9 +158,19 @@ final class Event extends Model
     protected function featureImageUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->feature_image
-                ? Storage::disk('public')->url($this->feature_image)
-                : 'https://picsum.photos/800/600',
+            get: function () {
+                if ( ! $this->feature_image) {
+                    return 'https://picsum.photos/800/600';
+                }
+
+                // Check if the feature_image is already a URL
+                if (filter_var($this->feature_image, FILTER_VALIDATE_URL)) {
+                    return $this->feature_image;
+                }
+
+                // Otherwise, treat it as a local file path
+                return Storage::disk('public')->url($this->feature_image);
+            },
         );
     }
 }
