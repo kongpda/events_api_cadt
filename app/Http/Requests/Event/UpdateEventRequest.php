@@ -27,7 +27,7 @@ final class UpdateEventRequest extends FormRequest
             'location' => ['sometimes', 'required', 'string', 'max:255'],
             'feature_image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'start_date' => ['sometimes', 'required', 'date'],
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date'],
             'category_id' => ['sometimes', 'required', 'exists:categories,id'],
             'participation_type' => ['sometimes', 'required', 'string', Rule::enum(ParticipationType::class)],
             /** @ignoreParam */
@@ -52,6 +52,13 @@ final class UpdateEventRequest extends FormRequest
         if ($this->filled('title') && $this->missing('slug')) {
             $this->merge([
                 'slug' => str()->slug($this->input('title')),
+            ]);
+        }
+
+        // Set end_date to start_date if it's null or not provided
+        if ($this->filled('start_date') && $this->missing('end_date')) {
+            $this->merge([
+                'end_date' => $this->input('start_date'),
             ]);
         }
 
