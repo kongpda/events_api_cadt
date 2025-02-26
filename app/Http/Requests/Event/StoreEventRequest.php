@@ -28,7 +28,7 @@ final class StoreEventRequest extends FormRequest
             'location' => ['required', 'string', 'max:255'],
             'feature_image' => ['image', 'required', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
             'start_date' => ['required', 'date'],
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date'],
             'category_id' => ['required', 'exists:categories,id'],
             /** @ignoreParam */
             'organizer_id' => ['nullable', 'string', 'exists:organizers,id'],
@@ -67,6 +67,12 @@ final class StoreEventRequest extends FormRequest
         if ($this->missing('capacity')) {
             $this->merge([
                 'capacity' => 0,
+            ]);
+        }
+
+        if ($this->missing('end_date') && $this->filled('start_date')) {
+            $this->merge([
+                'end_date' => $this->input('start_date'),
             ]);
         }
 
