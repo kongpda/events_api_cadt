@@ -26,7 +26,19 @@ final class StoreEventRequest extends FormRequest
             'slug' => ['nullable', 'string', 'max:255', 'unique:events,slug'],
             'description' => ['required', 'string', 'max:65535'],
             'location' => ['required', 'string', 'max:255'],
-            'feature_image' => ['image', 'required', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'feature_image' => ['nullable', function ($attribute, $value, $fail): void {
+                if (is_string($value) && filter_var($value, FILTER_VALIDATE_URL)) {
+                    return;
+                }
+
+                $validator = validator(request()->only($attribute), [
+                    $attribute => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+                ]);
+
+                if ($validator->fails()) {
+                    $fail('The feature image must be a valid image file (jpeg, png, jpg, gif) or a valid URL.');
+                }
+            }],
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date'],
             'category_id' => ['required', 'exists:categories,id'],
