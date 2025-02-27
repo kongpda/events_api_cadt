@@ -23,9 +23,9 @@ return new class() extends Migration
                 ->onDelete('cascade');
             $table->string('status');
             $table->string('participation_type');
-            $table->foreignUlid('ticket_id')
+            $table->foreignUlid('ticket_type_id')
                 ->nullable()
-                ->constrained('tickets')
+                ->constrained('ticket_types')
                 ->onDelete('set null');
             $table->timestamp('check_in_time')->nullable();
             $table->timestamp('joined_at');
