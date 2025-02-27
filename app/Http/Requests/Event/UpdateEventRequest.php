@@ -37,7 +37,7 @@ final class UpdateEventRequest extends FormRequest
             'registration_status' => ['sometimes', 'required', 'string', Rule::enum(RegistrationStatus::class)],
             'event_type' => ['sometimes', 'required', 'string', Rule::enum(EventType::class)],
             /** @ignoreParam */
-            'online_url' => ['sometimes', 'required_if:event_type,online,hybrid', 'nullable', 'url'],
+            'online_url' => ['sometimes', 'nullable', 'url'],
             /** @ignoreParam */
             'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)],
             /** @ignoreParam */

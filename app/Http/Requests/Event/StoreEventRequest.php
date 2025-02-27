@@ -52,7 +52,7 @@ final class StoreEventRequest extends FormRequest
             'registration_status' => ['required', 'string', Rule::enum(RegistrationStatus::class)],
             'event_type' => ['required', 'string', Rule::enum(EventType::class)],
             /** @ignoreParam */
-            'online_url' => ['required_if:event_type,online,hybrid', 'nullable', 'url'],
+            'online_url' => ['nullable', 'url'],
             /** @ignoreParam */
             'status' => ['sometimes', 'string', Rule::enum(EventStatus::class)],
             /** @ignoreParam */
