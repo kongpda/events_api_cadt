@@ -23,7 +23,7 @@ final class StoreEventRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:events,slug'],
+            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:65535'],
             'location' => ['required', 'string', 'max:255'],
             'feature_image' => ['nullable', function ($attribute, $value, $fail): void {
