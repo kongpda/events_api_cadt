@@ -25,7 +25,19 @@ final class UpdateEventRequest extends FormRequest
             'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('events')->ignore($this->event)],
             'description' => ['sometimes', 'required', 'string', 'max:65535'],
             'location' => ['sometimes', 'required', 'string', 'max:255'],
-            'feature_image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'feature_image' => ['sometimes', function ($attribute, $value, $fail): void {
+                if (is_string($value) && filter_var($value, FILTER_VALIDATE_URL)) {
+                    return;
+                }
+
+                $validator = validator(request()->only($attribute), [
+                    $attribute => ['image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+                ]);
+
+                if ($validator->fails()) {
+                    $fail('The feature image must be a valid image file (jpeg, png, jpg, gif) or a valid URL.');
+                }
+            }],
             'start_date' => ['sometimes', 'required', 'date'],
             'end_date' => ['nullable', 'date'],
             'category_id' => ['sometimes', 'required', 'exists:categories,id'],
