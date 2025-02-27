@@ -19,7 +19,7 @@ final class EventParticipantResource extends JsonResource
                 'user_id' => $this->user_id,
                 'status' => $this->status->value,
                 'participation_type' => $this->participation_type->value,
-                'ticket_id' => $this->ticket_id,
+                'ticket_type_id' => $this->ticket_type_id,
                 'check_in_time' => $this->check_in_time,
                 'joined_at' => $this->joined_at,
                 'created_at' => $this->created_at,
