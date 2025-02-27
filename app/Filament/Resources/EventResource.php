@@ -50,9 +50,8 @@ final class EventResource extends Resource
                                 $set('slug', Str::slug($state));
                             }),
                         TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->nullable()
+                            ->maxLength(255),
                         Hidden::make('user_id')
                             ->default(fn () => auth()->id()),
                         Textarea::make('description')

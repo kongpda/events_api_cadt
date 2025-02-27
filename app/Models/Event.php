@@ -155,6 +155,14 @@ final class Event extends Model
             ->exists();
     }
 
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'id';
+    }
+
     protected function featureImageUrl(): Attribute
     {
         return Attribute::make(
