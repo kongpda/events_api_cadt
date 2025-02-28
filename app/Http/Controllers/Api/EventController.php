@@ -144,9 +144,20 @@ final class EventController extends Controller
             $event->tags()->sync($tags);
         }
 
+        // Load the event with necessary relationships and counts
+        $event->load(['category', 'tags'])
+            ->loadCount('favorites');
+
+        // Load is_favorited if user is authenticated
+        if (auth()->check()) {
+            $event->loadExists(['favorites as is_favorited' => function ($query): void {
+                $query->where('user_id', auth()->id());
+            }]);
+        }
+
         return response()->json([
             'message' => 'Event updated successfully',
-            'data' => new EventResource($event->load(['category', 'tags'])),
+            'data' => new EventResource($event),
         ]);
     }
 

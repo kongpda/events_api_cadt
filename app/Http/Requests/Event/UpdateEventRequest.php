@@ -22,7 +22,7 @@ final class UpdateEventRequest extends FormRequest
     {
         return [
             'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('events')->ignore($this->event)],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255', Rule::unique('events')->ignore($this->event)],
             'description' => ['sometimes', 'required', 'string', 'max:65535'],
             'location' => ['sometimes', 'required', 'string', 'max:255'],
             'feature_image' => ['sometimes', function ($attribute, $value, $fail): void {
