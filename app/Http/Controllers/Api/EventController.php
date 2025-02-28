@@ -54,6 +54,11 @@ final class EventController extends Controller
                 $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
                     $query->where('user_id', $request->user()->id);
                 }]);
+
+                // Add check for current user participation
+                $query->withExists(['participants as is_participant' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
             })
             ->latest()
             ->paginate();
@@ -191,6 +196,11 @@ final class EventController extends Controller
                 $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
                     $query->where('user_id', $request->user()->id);
                 }]);
+
+                // Add check for current user participation
+                $query->withExists(['participants as is_participant' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
             })
             ->latest()
             ->paginate();
@@ -218,6 +228,11 @@ final class EventController extends Controller
                 $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
                     $query->where('user_id', $request->user()->id);
                 }]);
+
+                // Add check for current user participation
+                $query->withExists(['participants as is_participant' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
             })
             ->latest()
             ->paginate();
@@ -240,6 +255,11 @@ final class EventController extends Controller
             })
             ->when($request->user(), function ($query) use ($request): void {
                 $query->withExists(['favorites as is_favorited' => function ($query) use ($request): void {
+                    $query->where('user_id', $request->user()->id);
+                }]);
+
+                // Add check for current user participation
+                $query->withExists(['participants as is_participant' => function ($query) use ($request): void {
                     $query->where('user_id', $request->user()->id);
                 }]);
             })

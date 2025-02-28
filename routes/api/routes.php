@@ -73,8 +73,10 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         ->name('events.favorite');
 
     // Protected Event Participant routes (all operations)
-    Route::apiResource('event-participants', EventParticipantController::class);
-
+    Route::get('events/{event}/participants', [EventParticipantController::class, 'index'])
+        ->name('events.participants.index');
+    Route::post('events/{event}/toggle-participation', [EventParticipantController::class, 'toggle'])
+        ->name('events.participants.toggle');
     Route::get('/users/{userId}/events', [EventParticipantController::class, 'eventsByUser'])
         ->name('events.participants.user');
 
