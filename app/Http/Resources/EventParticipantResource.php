@@ -25,11 +25,19 @@ final class EventParticipantResource extends JsonResource
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,
             ],
-            'relationship' => [
-                $this->mergeWhen($request->routeIs('event_participants.show'), [
-                    'event' => new EventResource($this->whenLoaded('event')),
-                    'user' => new UserResource($this->whenLoaded('user')),
-                    'ticket' => new TicketResource($this->whenLoaded('ticket')),
+            'relationships' => [
+                'user' => [
+                    'data' => $this->whenLoaded('user', fn () => [
+                        'id' => $this->user->id,
+                        'name' => $this->user->name,
+                        'email' => $this->user->email,
+                        // Add other user fields you want to include
+                    ]),
+                ],
+                'ticket_type' => $this->whenLoaded('ticketType', fn () => [
+                    'id' => $this->ticketType->id,
+                    'name' => $this->ticketType->name,
+                    // Add other ticket type fields you want to include
                 ]),
             ],
         ];
