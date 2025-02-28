@@ -23,7 +23,7 @@ return new class() extends Migration
                 ->onDelete('cascade');
             $table->string('status');
             $table->string('participation_type');
-            $table->foreignUlid('ticket_type_id')
+            $table->foreignId('ticket_type_id')
                 ->nullable()
                 ->constrained('ticket_types')
                 ->onDelete('set null');
