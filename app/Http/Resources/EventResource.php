@@ -35,6 +35,7 @@ final class EventResource extends JsonResource
                 ]),
                 'favorites_count' => $this->favorites_count,
                 'is_favorited' => $request->user() ? $this->isFavoritedBy($request->user()) : false,
+                'is_participant' => $request->user() ? $this->is_participant ?? false : false,
                 'is_featured' => $this->whenLoaded('featuredEvent', fn () => true, false),
                 'featured_order' => $this->whenLoaded('featuredEvent', fn () => $this->featuredEvent->order),
             ],
@@ -59,6 +60,9 @@ final class EventResource extends JsonResource
             'links' => [
                 'self' => route('events.show', $this->id),
                 'toggleFavorite' => route('events.favorite', $this->id),
+                $this->mergeWhen($request->routeIs('events.show'), [
+                    'toggleParticipation' => route('events.participants.toggle', $this->id),
+                ]),
             ],
         ];
     }
