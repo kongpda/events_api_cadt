@@ -123,6 +123,28 @@ final class UserProfileService
     }
 
     /**
+     * Update user profile with validated data
+     */
+    public function updateProfile(UserProfile $profile, array $data): UserProfile
+    {
+        $profile->update($data);
+
+        return $profile->refresh();
+    }
+
+    /**
+     * Delete user profile
+     */
+    public function deleteProfile(UserProfile $profile): void
+    {
+        // Delete avatar if exists
+        $this->deleteAvatar($profile);
+
+        // Delete the profile
+        $profile->delete();
+    }
+
+    /**
      * Extract first and last names from user data
      */
     private function extractNames(User $user, ?array $providerData = null): array

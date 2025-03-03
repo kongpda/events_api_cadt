@@ -14,6 +14,7 @@ use App\Models\UserProfile;
 use App\Services\UserProfileService;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 final class UserProfileController extends Controller
@@ -25,13 +26,13 @@ final class UserProfileController extends Controller
     /**
      * List user profiles with pagination and optional filters
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $profiles = $this->profileService->listProfiles(
-                (int) request()->query('per_page', 15),
-                request()->query('search'),
-                request()->query('status')
+                (int) $request->query('per_page', 15),
+                $request->query('search'),
+                $request->query('status')
             );
 
             return response()->json([
@@ -177,6 +178,47 @@ final class UserProfileController extends Controller
 
             return response()->json([
                 'message' => 'Failed to create profile',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get current authenticated user's profile
+     */
+    public function getCurrentUserProfile(Request $request): JsonResponse
+    {
+        try {
+            // @phpstan-ignore-next-line
+            $user = auth()->user();
+
+            if ( ! $user) {
+                return response()->json([
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+
+            $profile = $user->profile;
+
+            if ( ! $profile) {
+                return response()->json([
+                    'message' => 'Profile not found',
+                ], 404);
+            }
+
+            return response()->json([
+                'message' => 'Profile retrieved successfully',
+                'user' => new UserResource($user->load('profile')),
+            ]);
+        } catch (Exception $e) {
+            // @phpstan-ignore-next-line
+            Log::error('Failed to fetch user profile', [
+                'error' => $e->getMessage(),
+                'user_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'message' => 'Failed to fetch profile',
                 'error' => $e->getMessage(),
             ], 500);
         }

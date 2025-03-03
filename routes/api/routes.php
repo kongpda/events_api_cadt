@@ -44,6 +44,7 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
 
     // profile routes
+    Route::get('/user/profile', [UserProfileController::class, 'getCurrentUserProfile'])->name('user.profile');
     Route::apiResource('profiles', UserProfileController::class);
     Route::post('/profile/avatar', [UserProfileController::class, 'updateAvatar']);
 
