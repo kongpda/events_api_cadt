@@ -113,6 +113,8 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
         'update' => 'tickets.update',
         'destroy' => 'tickets.destroy',
     ]);
+    Route::get('tickets/{id}/qr-code', [TicketController::class, 'getQrCodeData'])
+        ->name('tickets.qr-code');
 
     // Protected Ticket Type routes (all operations)
     Route::apiResource('ticket-types', TicketTypeController::class)->names([

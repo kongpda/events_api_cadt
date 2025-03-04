@@ -20,6 +20,7 @@ final class TicketResource extends JsonResource
                 'price' => $this->price,
                 'created_at' => $this->created_at->toISOString(),
                 'updated_at' => $this->updated_at->toISOString(),
+                'qr_code_data' => $this->getQrCodeData(),
             ],
             'relationships' => [
                 'events' => [

@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -23,17 +24,10 @@ final class TicketController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $tickets = Ticket::query()
-            ->with(['event', 'user', 'ticketType'])
-            ->when(
-                $request->filled('status'),
-                fn($query) => $query->where('status', $request->input('status')),
-            )
-            ->when(
-                $request->filled('event_id'),
-                fn($query) => $query->where('event_id', $request->input('event_id')),
-            )
-            ->latest()
+        $user = Auth::user();
+
+        $tickets = Ticket::where('user_id', $user->id)
+            ->with(['event', 'ticketType'])
             ->paginate();
 
         return TicketResource::collection($tickets);
@@ -55,7 +49,7 @@ final class TicketController extends Controller
             'price' => ['required', 'numeric', 'min:0', 'max:999999.99'],
         ]);
 
-        $ticket = DB::transaction(fn() => Ticket::create($validated));
+        $ticket = DB::transaction(fn () => Ticket::create($validated));
 
         return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
     }
@@ -65,9 +59,22 @@ final class TicketController extends Controller
      *
      * Display the specified ticket.
      */
-    public function show(Ticket $ticket): TicketResource
+    public function show(string $id): TicketResource|JsonResponse
     {
-        return new TicketResource($ticket->load(['event', 'user', 'ticketType']));
+        $user = Auth::user();
+
+        $ticket = Ticket::where('id', $id)
+            ->where('user_id', $user->id)
+            ->with(['event', 'ticketType'])
+            ->first();
+
+        if ( ! $ticket) {
+            return response()->json([
+                'message' => 'Ticket not found',
+            ], 404);
+        }
+
+        return new TicketResource($ticket);
     }
 
     /**
@@ -107,5 +114,27 @@ final class TicketController extends Controller
         });
 
         return response()->json(status: Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Get QR code data for a specific ticket.
+     */
+    public function getQrCodeData(string $id): JsonResponse
+    {
+        $user = Auth::user();
+
+        $ticket = Ticket::where('id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ( ! $ticket) {
+            return response()->json([
+                'message' => 'Ticket not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'data' => $ticket->getQrCodeData(),
+        ]);
     }
 }
