@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CreateTicketAction;
+use App\Actions\DeleteTicketAction;
 use App\Enums\ParticipationStatus;
 use App\Enums\ParticipationType;
 use App\Http\Controllers\Controller;
@@ -12,11 +14,13 @@ use App\Http\Resources\EventParticipantResource;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Models\EventParticipant;
+use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 final class EventParticipantController extends Controller
 {
@@ -66,51 +70,69 @@ final class EventParticipantController extends Controller
             ], 401);
         }
 
+        // Cast to User model
+        $user = User::find($user->id);
+
         $participant = EventParticipant::where('event_id', $event->id)
             ->where('user_id', $user->id)
             ->first();
 
-        if ($participant) {
-            $participant->delete();
-            $isParticipating = false;
-            $message = 'You are no longer participating in this event';
-        } else {
-            // Get validated data from request with defaults
-            $validated = $request->validated();
-            $status = $validated['status'] ?? ParticipationStatus::REGISTERED;
-            $participationType = $validated['participation_type'] ?? ParticipationType::PAID;
-            $ticketTypeId = $validated['ticket_type_id'] ?? null;
+        try {
+            if ($participant) {
+                $participant->delete();
 
-            // Use a transaction to ensure atomicity when checking capacity and creating participant
-            try {
-                DB::beginTransaction();
+                // Delete tickets when user leaves the event
+                app(DeleteTicketAction::class)->execute($event, $user);
 
-                EventParticipant::create([
+                $isParticipating = false;
+                $message = 'You are no longer participating in this event';
+            } else {
+                // Get validated data from request with defaults
+                $validated = $request->validated();
+
+                // Create participant record
+                $participant = EventParticipant::create([
                     'event_id' => $event->id,
                     'user_id' => $user->id,
-                    'status' => $status,
-                    'participation_type' => $participationType,
-                    'ticket_type_id' => $ticketTypeId,
+                    'status' => $validated['status'] ?? ParticipationStatus::REGISTERED,
+                    'participation_type' => $validated['participation_type'] ?? ParticipationType::FREE,
+                    'ticket_type_id' => $validated['ticket_type_id'] ?? null,
                     'joined_at' => now(),
                 ]);
 
-                DB::commit();
+                // Create ticket when user joins the event
+                app(CreateTicketAction::class)->execute(
+                    $event,
+                    $user,
+                    $validated['ticket_type_id'] ?? null
+                );
+
                 $isParticipating = true;
                 $message = 'You are now participating in this event';
-            } catch (Exception $e) {
-                DB::rollBack();
-                ray($e);
-
-                return response()->json([
-                    'message' => 'An error occurred while registering for the event',
-                    'is_participating' => false,
-                ], 500);
             }
-        }
 
-        return response()->json([
-            'message' => $message,
-            'is_participating' => $isParticipating,
-        ]);
+            return response()->json([
+                'message' => $message,
+                'is_participating' => $isParticipating,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'The selected ticket type does not exist for this event.',
+                'is_participating' => false,
+            ], 422);
+        } catch (Exception $e) {
+            // Log the error for debugging
+            Log::error('Error in toggle participation', [
+                'event_id' => $event->id,
+                'user_id' => $user->id,
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'An error occurred while processing your request. Please try again later.',
+                'is_participating' => false,
+            ], 500);
+        }
     }
 }
