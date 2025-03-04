@@ -22,8 +22,6 @@ final readonly class CreateTicketAction
      * @param  User  $user  The user joining the event
      * @param  int|null  $ticketTypeId  Optional ticket type ID
      * @return Ticket The created ticket
-     *
-     * @throws ModelNotFoundException When specified ticket type is not found
      */
     public function execute(Event $event, User $user, ?int $ticketTypeId = null): Ticket
     {
@@ -47,7 +45,18 @@ final readonly class CreateTicketAction
                         'user_id' => $user->id,
                         'ticket_type_id' => $ticketTypeId,
                     ]);
-                    // We'll continue without a ticket type
+
+                    // Try to get any ticket type for this event
+                    $ticketType = TicketType::where('event_id', $event->id)->first();
+
+                    if ($ticketType) {
+                        $finalTicketTypeId = $ticketType->id;
+                        $price = $ticketType->price;
+                    } else {
+                        // Create a default ticket type
+                        $ticketType = $this->createDefaultTicketType($event);
+                        $finalTicketTypeId = $ticketType->id;
+                    }
                 }
             } else {
                 // Try to get the default ticket type (first one)
@@ -57,11 +66,14 @@ final readonly class CreateTicketAction
                     $finalTicketTypeId = $ticketType->id;
                     $price = $ticketType->price;
                 } else {
-                    Log::info('No ticket type found for event, creating ticket without ticket type', [
+                    Log::info('No ticket type found for event, creating default ticket type', [
                         'event_id' => $event->id,
                         'user_id' => $user->id,
                     ]);
-                    // We'll continue without a ticket type
+
+                    // Create a default ticket type
+                    $ticketType = $this->createDefaultTicketType($event);
+                    $finalTicketTypeId = $ticketType->id;
                 }
             }
 
@@ -69,11 +81,56 @@ final readonly class CreateTicketAction
             return Ticket::create([
                 'event_id' => $event->id,
                 'user_id' => $user->id,
-                'ticket_type_id' => $finalTicketTypeId, // This can now be null
+                'ticket_type_id' => $finalTicketTypeId,
                 'status' => ParticipationStatus::REGISTERED->value,
                 'purchase_date' => now(),
                 'price' => $price,
             ]);
         });
+    }
+
+    /**
+     * Create a default ticket type for an event.
+     *
+     * @param  Event  $event  The event to create a ticket type for
+     * @return TicketType The created ticket type
+     */
+    private function createDefaultTicketType(Event $event): TicketType
+    {
+        // Create a free general admission ticket type
+        $generalAdmission = TicketType::create([
+            'event_id' => $event->id,
+            'created_by' => $event->user_id,
+            'name' => 'General Admission',
+            'price' => 0,
+            'quantity' => 0, // 0 for unlimited
+            'description' => 'Standard entry to the event',
+            'status' => 'active',
+        ]);
+
+        // Create a premium ticket type
+        TicketType::create([
+            'event_id' => $event->id,
+            'created_by' => $event->user_id,
+            'name' => 'Premium',
+            'price' => 25.00,
+            'quantity' => 50,
+            'description' => 'Premium access with additional benefits',
+            'status' => 'active',
+        ]);
+
+        // Create a VIP ticket type
+        TicketType::create([
+            'event_id' => $event->id,
+            'created_by' => $event->user_id,
+            'name' => 'VIP',
+            'price' => 50.00,
+            'quantity' => 20,
+            'description' => 'VIP access with exclusive perks',
+            'status' => 'active',
+        ]);
+
+        // Return the general admission ticket type as the default
+        return $generalAdmission;
     }
 }

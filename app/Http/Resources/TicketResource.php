@@ -36,7 +36,7 @@ final class TicketResource extends JsonResource
                     ]),
                 ],
                 'ticket_types' => [
-                    'data' => $this->when($this->relationLoaded('ticketType'), fn () => [
+                    'data' => $this->when($this->relationLoaded('ticketType') && null !== $this->ticketType, fn () => [
                         'type' => 'ticket_types',
                         'id' => (string) $this->ticketType->id,
                     ]),
@@ -51,7 +51,7 @@ final class TicketResource extends JsonResource
                 'self' => route('tickets.show', $this->resource),
                 'event' => route('events.show', $this->event_id),
                 'user' => route('users.show', $this->user_id),
-                'ticket_type' => route('ticket_types.show', $this->ticket_type_id),
+                'ticket_type' => $this->ticket_type_id ? route('ticket_types.show', $this->ticket_type_id) : null,
             ],
         ];
     }
