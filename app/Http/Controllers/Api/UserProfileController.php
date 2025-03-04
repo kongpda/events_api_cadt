@@ -12,10 +12,15 @@ use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserResource;
 use App\Models\UserProfile;
 use App\Services\UserProfileService;
+
+use function auth;
+
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
+use function response;
 
 final class UserProfileController extends Controller
 {
@@ -24,15 +29,19 @@ final class UserProfileController extends Controller
     ) {}
 
     /**
-     * List user profiles with pagination and optional filters
+     * Display a listing of profiles.
      */
     public function index(Request $request): JsonResponse
     {
         try {
+            $perPage = $request->input('per_page', 15);
+            $search = $request->input('search');
+            $status = $request->input('status');
+
             $profiles = $this->profileService->listProfiles(
-                (int) $request->query('per_page', 15),
-                $request->query('search'),
-                $request->query('status')
+                perPage: (int) $perPage,
+                search: $search,
+                status: $status
             );
 
             return response()->json([
@@ -51,7 +60,7 @@ final class UserProfileController extends Controller
     }
 
     /**
-     * Get user profile details
+     * Display the specified profile.
      */
     public function show(UserProfile $profile): JsonResponse
     {
@@ -62,7 +71,7 @@ final class UserProfileController extends Controller
         } catch (Exception $e) {
             Log::error('Failed to fetch profile', [
                 'error' => $e->getMessage(),
-                'profile_id' => $profile->id,
+                'profile_id' => $profile->id ?? null,
             ]);
 
             return response()->json([
@@ -73,7 +82,7 @@ final class UserProfileController extends Controller
     }
 
     /**
-     * Update user profile
+     * Update the specified profile.
      */
     public function update(UpdateProfileRequest $request, UserProfile $profile): JsonResponse
     {
@@ -85,9 +94,9 @@ final class UserProfileController extends Controller
                 'user' => new UserResource($updatedProfile->user->load('profile')),
             ]);
         } catch (Exception $e) {
-            Log::error('Profile update failed', [
+            Log::error('Failed to update profile', [
                 'error' => $e->getMessage(),
-                'profile_id' => $profile->id,
+                'profile_id' => $profile->id ?? null,
             ]);
 
             return response()->json([
@@ -98,7 +107,7 @@ final class UserProfileController extends Controller
     }
 
     /**
-     * Update user's avatar
+     * Update user's avatar.
      */
     public function updateAvatar(UpdateAvatarRequest $request): JsonResponse
     {
@@ -113,9 +122,9 @@ final class UserProfileController extends Controller
                 'user' => new UserResource($user->load('profile')),
             ]);
         } catch (Exception $e) {
-            Log::error('Avatar update failed', [
+            Log::error('Failed to update avatar', [
                 'error' => $e->getMessage(),
-                'user_id' => $user->id ?? null,
+                'user_id' => $request->user()?->id ?? null,
             ]);
 
             return response()->json([
@@ -126,7 +135,7 @@ final class UserProfileController extends Controller
     }
 
     /**
-     * Delete user profile
+     * Remove the specified profile.
      */
     public function destroy(UserProfile $profile): JsonResponse
     {
@@ -137,9 +146,9 @@ final class UserProfileController extends Controller
                 'message' => 'Profile deleted successfully',
             ]);
         } catch (Exception $e) {
-            Log::error('Profile deletion failed', [
+            Log::error('Failed to delete profile', [
                 'error' => $e->getMessage(),
-                'profile_id' => $profile->id,
+                'profile_id' => $profile->id ?? null,
             ]);
 
             return response()->json([
@@ -150,7 +159,7 @@ final class UserProfileController extends Controller
     }
 
     /**
-     * Create a new user profile
+     * Store a newly created profile.
      */
     public function store(StoreProfileRequest $request): JsonResponse
     {
@@ -171,7 +180,7 @@ final class UserProfileController extends Controller
                 'user' => new UserResource($user->load('profile')),
             ], 201);
         } catch (Exception $e) {
-            Log::error('Profile creation failed', [
+            Log::error('Failed to create profile', [
                 'error' => $e->getMessage(),
                 'user_id' => $user->id ?? null,
             ]);
