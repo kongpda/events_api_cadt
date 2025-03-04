@@ -104,12 +104,6 @@ final class Ticket extends Model
      */
     protected function getVerificationHash(): string
     {
-        // Ensure token is not null by generating one if needed
-        if (empty($this->token)) {
-            $this->token = Str::random(32);
-            $this->save();
-        }
-
         return hash_hmac('sha256', $this->id . $this->event_id . $this->user_id, $this->token);
     }
 }

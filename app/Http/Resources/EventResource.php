@@ -34,6 +34,7 @@ final class EventResource extends JsonResource
                     'updated_at' => $this->updated_at,
                 ]),
                 'favorites_count' => $this->favorites_count,
+                'participants_count' => $this->participants_count ?? 0,
                 'is_favorited' => $request->user() ? $this->isFavoritedBy($request->user()) : false,
                 'is_participant' => $request->user() ? $this->is_participant ?? false : false,
                 'is_featured' => $this->whenLoaded('featuredEvent', fn () => true, false),
