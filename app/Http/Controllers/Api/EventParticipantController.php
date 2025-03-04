@@ -14,6 +14,7 @@ use App\Http\Resources\EventParticipantResource;
 use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Models\EventParticipant;
+use App\Models\TicketType;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -100,11 +101,29 @@ final class EventParticipantController extends Controller
                     'joined_at' => now(),
                 ]);
 
+                // If participation type is PAID but no ticket type is specified,
+                // get the cheapest paid ticket type
+                $ticketTypeId = $validated['ticket_type_id'] ?? null;
+                if (
+                    ($validated['participation_type'] ?? null) === ParticipationType::PAID->value &&
+                    null === $ticketTypeId
+                ) {
+                    // Get the cheapest paid ticket type
+                    $cheapestPaidTicket = TicketType::where('event_id', $event->id)
+                        ->where('price', '>', 0)
+                        ->orderBy('price', 'asc')
+                        ->first();
+
+                    if ($cheapestPaidTicket) {
+                        $ticketTypeId = $cheapestPaidTicket->id;
+                    }
+                }
+
                 // Create ticket when user joins the event
                 app(CreateTicketAction::class)->execute(
                     $event,
                     $user,
-                    $validated['ticket_type_id'] ?? null
+                    $ticketTypeId
                 );
 
                 $isParticipating = true;
