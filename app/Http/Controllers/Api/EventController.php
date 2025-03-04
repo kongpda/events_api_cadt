@@ -37,7 +37,7 @@ final class EventController extends Controller
 
         $events = Event::query()
             ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
-            ->withCount('favorites')
+            ->withCount(['favorites', 'participants'])
             ->when($validated['search'] ?? null, function ($query) use ($validated): void {
                 $query->where('title', 'like', "%{$validated['search']}%");
             })
@@ -107,7 +107,7 @@ final class EventController extends Controller
     public function show(Event $event): EventResource
     {
         $event->load(['category', 'user.profile', 'organizer', 'tags'])
-            ->loadCount('favorites');
+            ->loadCount(['favorites', 'participants']);
 
         if (auth()->check()) {
             $event->loadExists(['favorites as is_favorited' => function ($query): void {
@@ -187,7 +187,7 @@ final class EventController extends Controller
     {
         $events = Event::query()
             ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
-            ->withCount('favorites')
+            ->withCount(['favorites', 'participants'])
             ->where('user_id', $request->user()->id)
             ->when($request->filled('category_id'), function ($query) use ($request): void {
                 $query->where('category_id', $request->input('category_id'));
@@ -219,7 +219,7 @@ final class EventController extends Controller
 
         $events = Event::query()
             ->with(['category', 'user.profile', 'organizer', 'tags', 'favorites'])
-            ->withCount('favorites')
+            ->withCount(['favorites', 'participants'])
             ->where('organizer_id', $organizerId)
             ->when($request->filled('category_id'), function ($query) use ($request): void {
                 $query->where('category_id', $request->input('category_id'));
@@ -249,7 +249,7 @@ final class EventController extends Controller
     {
         $events = Event::query()
             ->with(['category', 'user.profile', 'organizer', 'tags', 'featuredEvent'])
-            ->withCount('favorites')
+            ->withCount(['favorites', 'participants'])
             ->whereHas('featuredEvent', function ($query): void {
                 $query->active();
             })
